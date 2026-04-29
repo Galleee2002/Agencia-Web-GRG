@@ -1,6 +1,6 @@
 "use client";
 
-import StaggeredMenu from "@/components/StaggeredMenu";
+import StaggeredMenu from "./StaggeredMenu";
 
 const NAV_ITEMS = [
   { label: "Inicio", link: "/#inicio", ariaLabel: "Ir al inicio" },
@@ -11,7 +11,7 @@ export function AgencyStaggeredMenu() {
   return (
     <StaggeredMenu
       isFixed
-      position="right"
+      position="left"
       logoUrl="/gmg-wordmark.svg"
       colors={["#090909", "#000000"]}
       accentColor="#0099ff"

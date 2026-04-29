@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import styles from "./Hero.module.scss";
 
-const Beams = dynamic(() => import("@/components/Beams"), {
+const Beams = dynamic(() => import("./Beams"), {
   ssr: false,
   loading: () => null,
 });

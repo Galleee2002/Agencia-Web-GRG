@@ -26,6 +26,10 @@ export type StaggeredMenuProps = {
   changeMenuColorOnOpen?: boolean;
   isFixed?: boolean;
   closeOnClickAway?: boolean;
+  /** Header CTA link (e.g. contact). Omit or set showHeaderCta false to hide. */
+  ctaHref?: string;
+  ctaLabel?: string;
+  showHeaderCta?: boolean;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
 };

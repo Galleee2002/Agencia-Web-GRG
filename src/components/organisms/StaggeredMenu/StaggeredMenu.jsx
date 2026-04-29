@@ -1,4 +1,5 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
@@ -17,6 +18,9 @@ export const StaggeredMenu = ({
   changeMenuColorOnOpen = true,
   isFixed = false,
   closeOnClickAway = true,
+  ctaHref = '/#contact',
+  ctaLabel = '(Contacto)',
+  showHeaderCta = true,
   onMenuOpen,
   onMenuClose
 }) => {
@@ -369,6 +373,34 @@ export const StaggeredMenu = ({
         })()}
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
+        <div className="sm-header-left">
+          <button
+            ref={toggleBtnRef}
+            className="sm-toggle"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="staggered-menu-panel"
+            onClick={toggleMenu}
+            type="button"
+          >
+            <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
+              <span ref={textInnerRef} className="sm-toggle-textInner">
+                {textLines.map((l, i) => (
+                  <span className="sm-toggle-line" key={i}>
+                    {l}
+                  </span>
+                ))}
+              </span>
+            </span>
+            <span ref={iconRef} className="sm-icon" aria-hidden="true">
+              <span ref={plusHRef} className="sm-icon-line" />
+              <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
+            </span>
+          </button>
+          <span className="sm-header-plus" aria-hidden="true">
+            +
+          </span>
+        </div>
         <div className="sm-logo" aria-label="Logo">
           <img
             src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
@@ -379,29 +411,17 @@ export const StaggeredMenu = ({
             height={24}
           />
         </div>
-        <button
-          ref={toggleBtnRef}
-          className="sm-toggle"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-expanded={open}
-          aria-controls="staggered-menu-panel"
-          onClick={toggleMenu}
-          type="button"
-        >
-          <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
-            <span ref={textInnerRef} className="sm-toggle-textInner">
-              {textLines.map((l, i) => (
-                <span className="sm-toggle-line" key={i}>
-                  {l}
-                </span>
-              ))}
-            </span>
+        <div className="sm-header-right">
+          <span className="sm-header-plus" aria-hidden="true">
+            +
           </span>
-          <span ref={iconRef} className="sm-icon" aria-hidden="true">
-            <span ref={plusHRef} className="sm-icon-line" />
-            <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
-          </span>
-        </button>
+          {showHeaderCta && ctaHref ? (
+            <a className="sm-header-cta" href={ctaHref}>
+              <span className="sm-header-cta-label">{ctaLabel}</span>
+              <ArrowUpRight className="sm-header-cta-icon" size={14} strokeWidth={2.25} aria-hidden />
+            </a>
+          ) : null}
+        </div>
       </header>
 
       <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
