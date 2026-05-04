@@ -1,20 +1,22 @@
 import Link from "next/link";
 
 import { HeroBeamsBackground } from "./HeroBeamsBackground";
+import { HeroToolsLogoLoop } from "./HeroToolsLogoLoop";
 import styles from "./Hero.module.scss";
 
 export function Hero() {
   return (
     <section id="inicio" className={styles.hero} aria-label="Inicio">
       <HeroBeamsBackground />
+      <div className={styles.sectionFadeWrap}>
+        <div className={styles.sectionFade} aria-hidden />
+        <div className={styles.sectionFadeDepth} aria-hidden />
+      </div>
       <div className={styles.inner}>
-        <h1 className={styles.title}>
-          Webs que se sienten
-          <span className={styles.titleBreak}> premium.</span>
+        <h1 className={styles.title}>EXPERIENCIAS WEB DE ALTO NIVEL
         </h1>
         <p className={styles.description}>
-          Sitios rápidos, identidad sólida y desarrollo a medida. Menos ruido,
-          más precisión — la web que tu marca merece.
+        Diseñamos y desarrollamos sitios rápidos, escalables y a medida, con una identidad clara y una ejecución precisa. Menos ruido, más impacto — la presencia digital que tu marca necesita.
         </p>
         <Link className={styles.cta} href="#contact">
           Empezar proyecto
@@ -22,6 +24,16 @@ export function Hero() {
         <span id="contact" className={styles.anchorTarget} tabIndex={-1}>
           Contacto
         </span>
+      </div>
+      <div className={styles.heroToolsBand}>
+        <p className={styles.sectionFadeLabel}>
+          Nuestras herramientas de trabajo
+        </p>
+        <div className={styles.toolsCarouselShell}>
+          <div className={styles.toolsCarousel}>
+            <HeroToolsLogoLoop />
+          </div>
+        </div>
       </div>
     </section>
   );
