@@ -43,6 +43,15 @@ The overall effect is a nightclub for web designers: dark, precise, seductive, a
 - **Blue Glow** (`rgba(0, 153, 255, 0.15)`): Focus ring shadow, subtle blue halo around interactive elements
 - **Default Link Blue** (`#0000ee`): Standard browser link color (used sparingly in content areas)
 
+### Light surface band (Projects)
+The main site stays void-black first. The **Projects** block may use a **pure white** (`#ffffff`) canvas as a deliberate contrast beat. In that band only:
+
+- **Primary text / headings**: Void Black (`#000000`) on white for WCAG-aligned contrast
+- **Secondary / descriptions**: Ink Muted (`#5c5c5c`) — darker than Muted Silver on dark, so body copy stays readable on white
+- **Cards**: Elevated surface `#fafafa` or white with a **neutral hairline** (`rgba(0, 0, 0, 0.06)`–`0.1`) and soft ambient shadow — **no** Framer Blue ring (blue stays for **focus** and true interactive accents)
+- **Primary CTA in the band**: Inverted pill — void-black fill, white label (mirrors the white pill on void elsewhere)
+- **Tertiary chips / ghost controls**: `rgba(0, 0, 0, 0.06)` surfaces, `rgba(0, 0, 0, 0.72)` text
+
 ### Gradient System
 - No prominent gradient usage — Framer relies on pure flat black surfaces with occasional blue-tinted glows for depth
 - Subtle radial glow effects behind product screenshots using Framer Blue at very low opacity
@@ -190,7 +199,7 @@ Framer's elevation system is inverted from traditional light-theme designs. Inst
 - Add decorative imagery, illustrations, or icons — the product IS the illustration
 - Use positive letter-spacing on headlines — everything is compressed, negative tracking
 - Create heavy drop shadows — depth is communicated through subtle rings and minimal ambients
-- Place light/white backgrounds behind content sections — the void is sacred
+- Place light/white backgrounds behind arbitrary sections — the void is sacred site-wide; **exception**: the documented **Projects** light band (see §2 *Light surface band*) where tokens invert as specified
 - Use serif or display-weight fonts — the system is geometric sans-serif only
 
 ## 8. Responsive Behavior
@@ -229,6 +238,7 @@ Framer's elevation system is inverted from traditional light-theme designs. Inst
 - Secondary Text: Muted Silver (`#a6a6a6`)
 - Frosted Surface: Translucent White (`rgba(255, 255, 255, 0.1)`)
 - Elevation Ring: Blue Glow (`rgba(0, 153, 255, 0.15)`)
+- **Projects (light band)**: Background Pure White (`#ffffff`); primary text Void Black (`#000000`); secondary body Ink Muted (`#5c5c5c`); cards use neutral hairline, not the blue elevation ring
 
 ### Example Component Prompts
 - "Create a hero section on pure black background with 110px GT Walsheim heading in white, letter-spacing -5.5px, line-height 0.85, and a pill-shaped white CTA button (100px radius) with black text"

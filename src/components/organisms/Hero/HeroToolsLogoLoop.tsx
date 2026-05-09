@@ -30,7 +30,6 @@ export function HeroToolsLogoLoop() {
               alt=""
               width={36}
               height={36}
-              unoptimized
             />
             <span className={styles.toolsName}>{name}</span>
           </span>

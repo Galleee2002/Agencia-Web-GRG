@@ -1,7 +1,18 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
+
+function getDocumentScrollY() {
+  if (typeof window === 'undefined') return 0;
+  return (
+    window.scrollY ||
+    window.pageYOffset ||
+    document.documentElement.scrollTop ||
+    document.body.scrollTop ||
+    0
+  );
+}
 
 export const StaggeredMenu = ({
   position = 'right',
@@ -42,8 +53,18 @@ export const StaggeredMenu = ({
   const textCycleAnimRef = useRef(null);
   const colorTweenRef = useRef(null);
   const toggleBtnRef = useRef(null);
+  const menuShellRef = useRef(null);
+  const stickyBrandHostRef = useRef(null);
+  const stickyBrandInnerRef = useRef(null);
+  /** Logo + CTA: ocultos al bajar; solo React/CSS (evita GSAP inline vs sticky/capa). */
+  const [brandStripHidden, setBrandStripHidden] = useState(false);
+  const menuScrollCenteredRef = useRef(false);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef(null);
+
+  const SCROLL_MENU_THRESHOLD_PX = 8;
+  const SCROLL_MENU_DURATION = 0.4;
+  const SCROLL_MENU_EASE = 'power3.out';
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -185,7 +206,7 @@ export const StaggeredMenu = ({
 
     openTlRef.current = tl;
     return tl;
-  }, []);
+  }, [position]);
 
   const playOpen = useCallback(() => {
     if (busyRef.current) return;
@@ -354,13 +375,175 @@ export const StaggeredMenu = ({
     };
   }, [closeOnClickAway, open, closeMenu]);
 
-  return (
-    <div
-      className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
-      style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
-      data-position={position}
+  useLayoutEffect(() => {
+    if (!isFixed || !menuShellRef.current) return;
+    const el = menuShellRef.current;
+    const host = stickyBrandHostRef.current;
+    const brand = stickyBrandInnerRef.current;
+    if (brand) gsap.set(brand, { clearProps: 'opacity,visibility' });
+    const active = getDocumentScrollY() > SCROLL_MENU_THRESHOLD_PX;
+    menuScrollCenteredRef.current = active;
+    setBrandStripHidden(active);
+
+    gsap.set(el, {
+      left: active ? '50%' : '2em',
+      xPercent: active ? -50 : 0,
+      top: '2em'
+    });
+
+    if (host) {
+      gsap.set(host, {
+        paddingTop: active ? 0 : '2em',
+        paddingLeft: active ? 0 : '2em',
+        paddingRight: active ? 0 : '2em'
+      });
+    }
+  }, [isFixed]);
+
+  useEffect(() => {
+    if (!isFixed || !menuShellRef.current) return;
+    const el = menuShellRef.current;
+    const host = stickyBrandHostRef.current;
+    let raf = 0;
+
+    const apply = () => {
+      const active = getDocumentScrollY() > SCROLL_MENU_THRESHOLD_PX;
+      if (active === menuScrollCenteredRef.current) return;
+      menuScrollCenteredRef.current = active;
+      setBrandStripHidden(active);
+      const reduceMotion =
+        typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const d = reduceMotion ? 0 : SCROLL_MENU_DURATION;
+      const ease = SCROLL_MENU_EASE;
+
+      const tl = gsap.timeline();
+      tl.to(
+        el,
+        {
+          left: active ? '50%' : '2em',
+          xPercent: active ? -50 : 0,
+          duration: d,
+          ease,
+          overwrite: 'auto'
+        },
+        0
+      );
+      if (host) {
+        tl.to(
+          host,
+          {
+            paddingTop: active ? 0 : '2em',
+            paddingLeft: active ? 0 : '2em',
+            paddingRight: active ? 0 : '2em',
+            duration: d,
+            ease,
+            overwrite: 'auto'
+          },
+          0
+        );
+      }
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        apply();
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      gsap.killTweensOf([el, host].filter(Boolean));
+    };
+  }, [isFixed]);
+
+  const logoBlock = (
+    <div className="sm-logo" aria-label="Logo">
+      <img
+        src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
+        alt="Logo"
+        className="sm-logo-img"
+        draggable={false}
+        width={110}
+        height={24}
+      />
+    </div>
+  );
+
+  const rightColumn = (
+    <div className="sm-header-right">
+      <span className="sm-header-plus" aria-hidden="true">
+        +
+      </span>
+      {showHeaderCta && ctaHref ? (
+        <a className="sm-header-cta" href={ctaHref}>
+          <span className="sm-header-cta-label">{ctaLabel}</span>
+          <ArrowUpRight className="sm-header-cta-icon" size={14} strokeWidth={2.25} aria-hidden />
+        </a>
+      ) : null}
+    </div>
+  );
+
+  const menuLeftColumn = (
+    <div className="sm-header-left">
+      <button
+        ref={toggleBtnRef}
+        className="sm-toggle"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-expanded={open}
+        aria-controls="staggered-menu-panel"
+        onClick={toggleMenu}
+        type="button"
+      >
+        <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
+          <span ref={textInnerRef} className="sm-toggle-textInner">
+            {textLines.map((l, i) => (
+              <span className="sm-toggle-line" key={i}>
+                {l}
+              </span>
+            ))}
+          </span>
+        </span>
+        <span ref={iconRef} className="sm-icon" aria-hidden="true">
+          <span ref={plusHRef} className="sm-icon-line" />
+          <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
+        </span>
+      </button>
+      <span className="sm-header-plus" aria-hidden="true">
+        +
+      </span>
+    </div>
+  );
+
+  const stickyBrandBar = isFixed ? (
+    <header
+      ref={stickyBrandHostRef}
+      className="sm-sticky-brand-host"
       data-open={open || undefined}
+      aria-label="Marca y contacto"
     >
+      <div
+        ref={stickyBrandInnerRef}
+        className="sm-sticky-brand-inner"
+        data-brand-concealed={brandStripHidden ? '' : undefined}
+        aria-hidden={brandStripHidden ? true : undefined}
+      >
+        {logoBlock}
+        {rightColumn}
+      </div>
+    </header>
+  ) : null;
+
+  const fixedMenuShell = isFixed ? (
+    <div ref={menuShellRef} className="sm-fixed-menu-shell" data-open={open || undefined}>
+      {menuLeftColumn}
+    </div>
+  ) : null;
+
+  const overlayBody = (
+    <>
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
         {(() => {
           const raw = colors && colors.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c'];
@@ -372,57 +555,13 @@ export const StaggeredMenu = ({
           return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
         })()}
       </div>
-      <header className="staggered-menu-header" aria-label="Main navigation header">
-        <div className="sm-header-left">
-          <button
-            ref={toggleBtnRef}
-            className="sm-toggle"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            aria-controls="staggered-menu-panel"
-            onClick={toggleMenu}
-            type="button"
-          >
-            <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
-              <span ref={textInnerRef} className="sm-toggle-textInner">
-                {textLines.map((l, i) => (
-                  <span className="sm-toggle-line" key={i}>
-                    {l}
-                  </span>
-                ))}
-              </span>
-            </span>
-            <span ref={iconRef} className="sm-icon" aria-hidden="true">
-              <span ref={plusHRef} className="sm-icon-line" />
-              <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
-            </span>
-          </button>
-          <span className="sm-header-plus" aria-hidden="true">
-            +
-          </span>
-        </div>
-        <div className="sm-logo" aria-label="Logo">
-          <img
-            src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
-            alt="Logo"
-            className="sm-logo-img"
-            draggable={false}
-            width={110}
-            height={24}
-          />
-        </div>
-        <div className="sm-header-right">
-          <span className="sm-header-plus" aria-hidden="true">
-            +
-          </span>
-          {showHeaderCta && ctaHref ? (
-            <a className="sm-header-cta" href={ctaHref}>
-              <span className="sm-header-cta-label">{ctaLabel}</span>
-              <ArrowUpRight className="sm-header-cta-icon" size={14} strokeWidth={2.25} aria-hidden />
-            </a>
-          ) : null}
-        </div>
-      </header>
+      {!isFixed ? (
+        <header className="staggered-menu-header" aria-label="Main navigation header">
+          {menuLeftColumn}
+          {logoBlock}
+          {rightColumn}
+        </header>
+      ) : null}
 
       <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
         <div className="sm-panel-inner">
@@ -459,8 +598,30 @@ export const StaggeredMenu = ({
           )}
         </div>
       </aside>
-    </div>
+    </>
   );
+
+  const wrapperClassName =
+    (className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '');
+
+  const wrapperProps = {
+    className: wrapperClassName,
+    style: accentColor ? { ['--sm-accent']: accentColor } : undefined,
+    'data-position': position,
+    'data-open': open || undefined
+  };
+
+  if (isFixed) {
+    return (
+      <>
+        {stickyBrandBar}
+        <div {...wrapperProps}>{overlayBody}</div>
+        {fixedMenuShell}
+      </>
+    );
+  }
+
+  return <div {...wrapperProps}>{overlayBody}</div>;
 };
 
 export default StaggeredMenu;

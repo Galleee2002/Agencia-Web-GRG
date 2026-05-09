@@ -31,6 +31,72 @@
   z-index: 20;
 }
 
+/* Logo + CTA: sticky en el stack del hero (quedan en la franja superior al hacer scroll). */
+.sm-sticky-brand-host {
+  box-sizing: border-box;
+  padding: 2em 2em 0;
+  width: 100%;
+}
+
+.sm-sticky-brand-inner {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2rem;
+  width: 100%;
+  pointer-events: auto;
+  will-change: opacity;
+  transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.sm-sticky-brand-inner[data-brand-concealed] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-sticky-brand-inner {
+    transition-duration: 0s;
+  }
+}
+
+.sm-sticky-brand-inner .sm-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  grid-column: unset;
+  justify-self: unset;
+}
+
+.sm-sticky-brand-inner .sm-header-right {
+  flex: 0 0 auto;
+}
+
+/* Menu+: capa fixed; posición horizontal la anima GSAP al hacer scroll. */
+.sm-fixed-menu-shell {
+  position: fixed;
+  top: 2em;
+  left: 2em;
+  z-index: 50;
+  pointer-events: none;
+  will-change: transform, left;
+}
+
+.sm-fixed-menu-shell .sm-header-left {
+  pointer-events: auto;
+}
+
+.sm-fixed-menu-shell[data-open] .sm-header-left .sm-toggle {
+  color: #0a0a0a !important;
+}
+
+.sm-fixed-menu-shell[data-open] .sm-header-left .sm-header-plus {
+  color: rgba(10, 10, 10, 0.35);
+}
+
 .sm-header-left {
   display: flex;
   align-items: center;
@@ -216,6 +282,11 @@
   z-index: 10;
   pointer-events: auto;
   opacity: 0;
+}
+
+/* Cerrado: no interceptar rueda/touch — si no, el documento no hace scroll y window.scrollY no sube en el hero. */
+.staggered-menu-panel[aria-hidden='true'] {
+  pointer-events: none;
 }
 
 [data-position='left'] .staggered-menu-panel {
@@ -412,7 +483,8 @@
     right: 0;
   }
 
-  .staggered-menu-wrapper[data-open] .sm-logo-img {
+  .staggered-menu-wrapper[data-open] .sm-logo-img,
+  .sm-sticky-brand-host[data-open] .sm-logo-img {
     filter: invert(100%);
   }
 }
@@ -424,7 +496,8 @@
     right: 0;
   }
 
-  .staggered-menu-wrapper[data-open] .sm-logo-img {
+  .staggered-menu-wrapper[data-open] .sm-logo-img,
+  .sm-sticky-brand-host[data-open] .sm-logo-img {
     filter: invert(100%);
   }
 }
