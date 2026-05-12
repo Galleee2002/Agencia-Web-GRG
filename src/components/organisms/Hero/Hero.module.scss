@@ -273,7 +273,11 @@ $muted-silver: #a6a6a6;
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.15px;
-  font-feature-settings: "cv06" on, "cv11" on, "dlig" on, "ss03" on;
+  font-feature-settings:
+    "cv06" on,
+    "cv11" on,
+    "dlig" on,
+    "ss03" on;
   text-decoration: none;
   box-shadow:
     rgba(255, 255, 255, 0.1) 0 0.5px 0 0.5px,
