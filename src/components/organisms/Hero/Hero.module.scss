@@ -71,7 +71,7 @@ $muted-silver: #a6a6a6;
   --hero-tools-pad: clamp(20px, 4vw, 40px);
 
   position: absolute;
-  // Por encima del canvas WebGL (beams z-index: 0) y del velo inferior
+  // Por encima del fondo decorativo (z-index: 0) y del velo inferior
   z-index: 5;
   inset-inline: 0;
   // Borde inferior del módulo = inicio exacto del difuminado (misma longitud que .sectionFadeWrap)
@@ -318,22 +318,10 @@ $muted-silver: #a6a6a6;
   border: 0;
 }
 
-.beamsLayer {
+.heroBackdrop {
   position: absolute;
   inset: 0;
   z-index: 0;
-  isolation: isolate;
+  // El canvas de Plasma usa pointer-events según `mouseInteractive`; el wrapper deja pasar el resto.
   pointer-events: none;
-}
-
-.beamsLayer :global(.beams-container),
-.beamsLayer :global(canvas) {
-  position: relative;
-  z-index: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .beamsLayer {
-    display: none;
-  }
 }
