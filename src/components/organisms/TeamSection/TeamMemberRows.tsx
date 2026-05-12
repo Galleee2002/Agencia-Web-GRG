@@ -106,7 +106,7 @@ export function TeamMemberRows({ members }: Props) {
               src={member.imageSrc}
               alt={member.imageAlt}
               fill
-              sizes="(min-width: 809px) 300px, 100vw"
+              sizes="(min-width: 809px) 300px, min(72vw, 300px)"
               unoptimized={member.imageSrc.endsWith(".svg")}
               priority={false}
             />
