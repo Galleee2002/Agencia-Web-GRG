@@ -3,6 +3,8 @@
   min-height: 100dvh;
   display: grid;
   align-items: start;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Apila el hero, el overlay fijo y la barra sticky (logo GMG + CTA) en una sola celda. Menu+ va en capa fixed dentro de StaggeredMenu. */
@@ -11,6 +13,7 @@
   grid-template-columns: 1fr;
   grid-template-areas: "hero";
   width: 100%;
+  min-width: 0;
 }
 
 .pageHeroStack :global(header.sm-sticky-brand-host) {
