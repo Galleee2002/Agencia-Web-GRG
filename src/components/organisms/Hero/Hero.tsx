@@ -8,10 +8,6 @@ export function Hero() {
   return (
     <section id="inicio" className={styles.hero} aria-label="Inicio">
       <HeroBeamsBackground />
-      <div className={styles.sectionFadeWrap}>
-        <div className={styles.sectionFade} aria-hidden />
-        <div className={styles.sectionFadeDepth} aria-hidden />
-      </div>
       <div className={styles.inner}>
         <h1 className={styles.title}>EXPERIENCIAS WEB DE ALTO NIVEL
         </h1>

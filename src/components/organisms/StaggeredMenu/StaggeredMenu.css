@@ -8,12 +8,39 @@
 
 .staggered-menu-wrapper.fixed-wrapper {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   z-index: 40;
   overflow: hidden;
+}
+
+/* Por encima del sticky brand (45), por debajo del toggle fijo (50), para que el backdrop cubra el hero y la barra. */
+.staggered-menu-wrapper.fixed-wrapper[data-open] {
+  z-index: 48;
+}
+
+.staggered-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.32s ease,
+    backdrop-filter 0.32s ease;
+}
+
+.staggered-menu-wrapper[data-open] .staggered-menu-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staggered-menu-backdrop {
+    transition-duration: 0.01ms;
+  }
 }
 
 .staggered-menu-header {
@@ -47,20 +74,6 @@
   min-height: 2rem;
   width: 100%;
   pointer-events: auto;
-  will-change: opacity;
-  transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1);
-}
-
-.sm-sticky-brand-inner[data-brand-concealed] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sm-sticky-brand-inner {
-    transition-duration: 0s;
-  }
 }
 
 .sm-sticky-brand-inner .sm-logo {
@@ -75,7 +88,7 @@
   flex: 0 0 auto;
 }
 
-/* Menu+: capa fixed; posición horizontal la anima GSAP al hacer scroll. */
+/* Menu+: capa fixed; posición fija (sin cambios al hacer scroll). */
 .sm-fixed-menu-shell {
   position: fixed;
   top: 2em;
@@ -87,14 +100,30 @@
 
 .sm-fixed-menu-shell .sm-header-left {
   pointer-events: auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-self: start;
+  min-width: 0;
+  background: #ffffff;
+  color: #000000;
+  padding: 0.55rem 0.95rem;
+  border-radius: 0;
+  line-height: 1;
 }
 
-.sm-fixed-menu-shell[data-open] .sm-header-left .sm-toggle {
+.sm-fixed-menu-shell .sm-header-left.sm-toggle {
   color: #0a0a0a !important;
 }
 
-.sm-fixed-menu-shell[data-open] .sm-header-left .sm-header-plus {
-  color: rgba(10, 10, 10, 0.35);
+.sm-fixed-menu-shell .sm-header-left.sm-toggle:focus-visible {
+  outline: 2px solid var(--sm-accent, #0099ff);
+  outline-offset: 3px;
+}
+
+.sm-fixed-menu-shell[data-open] .sm-header-left.sm-toggle {
+  color: #0a0a0a !important;
 }
 
 .sm-header-left {
@@ -105,6 +134,15 @@
   min-width: 0;
 }
 
+/* Bloque completo (texto + icono) es un único botón */
+.sm-header-left.sm-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: auto;
+  max-width: 100%;
+}
+
 .sm-header-right {
   display: flex;
   align-items: center;
@@ -113,22 +151,9 @@
   min-width: 0;
 }
 
-.sm-header-plus {
-  flex: 0 0 auto;
-  color: rgba(255, 255, 255, 0.28);
-  font-size: 0.8125rem;
-  font-weight: 300;
-  line-height: 1;
-  user-select: none;
-}
-
 /* Menú claro: el toggle a la izquierda queda sobre el panel — contraste oscuro al abrir */
-.staggered-menu-wrapper[data-open] .sm-header-left .sm-toggle {
+.staggered-menu-wrapper[data-open] .sm-header-left.sm-toggle {
   color: #0a0a0a !important;
-}
-
-.staggered-menu-wrapper[data-open] .sm-header-left .sm-header-plus {
-  color: rgba(10, 10, 10, 0.35);
 }
 
 .sm-header-cta {
@@ -301,7 +326,7 @@
   bottom: 0;
   width: clamp(260px, 38vw, 420px);
   pointer-events: none;
-  z-index: 5;
+  z-index: 6;
   opacity: 0;
 }
 

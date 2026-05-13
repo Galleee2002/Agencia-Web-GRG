@@ -3,16 +3,8 @@ import { ArrowUpRight } from 'lucide-react';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
-function getDocumentScrollY() {
-  if (typeof window === 'undefined') return 0;
-  return (
-    window.scrollY ||
-    window.pageYOffset ||
-    document.documentElement.scrollTop ||
-    document.body.scrollTop ||
-    0
-  );
-}
+const TOGGLE_LABEL_MENU = 'Menú';
+const TOGGLE_LABEL_CLOSE = 'Cerrar';
 
 export const StaggeredMenu = ({
   position = 'right',
@@ -45,7 +37,10 @@ export const StaggeredMenu = ({
   const iconRef = useRef(null);
   const textInnerRef = useRef(null);
   const textWrapRef = useRef(null);
-  const [textLines, setTextLines] = useState(['Menu', 'Close']);
+  const [textLines, setTextLines] = useState([
+    TOGGLE_LABEL_MENU,
+    TOGGLE_LABEL_CLOSE,
+  ]);
 
   const openTlRef = useRef(null);
   const closeTweenRef = useRef(null);
@@ -55,16 +50,8 @@ export const StaggeredMenu = ({
   const toggleBtnRef = useRef(null);
   const menuShellRef = useRef(null);
   const stickyBrandHostRef = useRef(null);
-  const stickyBrandInnerRef = useRef(null);
-  /** Logo + CTA: ocultos al bajar; solo React/CSS (evita GSAP inline vs sticky/capa). */
-  const [brandStripHidden, setBrandStripHidden] = useState(false);
-  const menuScrollCenteredRef = useRef(false);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef(null);
-
-  const SCROLL_MENU_THRESHOLD_PX = 8;
-  const SCROLL_MENU_DURATION = 0.4;
-  const SCROLL_MENU_EASE = 'power3.out';
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -304,13 +291,13 @@ export const StaggeredMenu = ({
     if (!inner) return;
     textCycleAnimRef.current?.kill();
 
-    const currentLabel = opening ? 'Menu' : 'Close';
-    const targetLabel = opening ? 'Close' : 'Menu';
+    const currentLabel = opening ? TOGGLE_LABEL_MENU : TOGGLE_LABEL_CLOSE;
+    const targetLabel = opening ? TOGGLE_LABEL_CLOSE : TOGGLE_LABEL_MENU;
     const cycles = 3;
     const seq = [currentLabel];
     let last = currentLabel;
     for (let i = 0; i < cycles; i++) {
-      last = last === 'Menu' ? 'Close' : 'Menu';
+      last = last === TOGGLE_LABEL_MENU ? TOGGLE_LABEL_CLOSE : TOGGLE_LABEL_MENU;
       seq.push(last);
     }
     if (last !== targetLabel) seq.push(targetLabel);
@@ -375,94 +362,71 @@ export const StaggeredMenu = ({
     };
   }, [closeOnClickAway, open, closeMenu]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const scrollY = window.scrollY;
+    const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    const body = document.body;
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+      paddingRight: body.style.paddingRight,
+      overscroll: body.style.overscrollBehavior,
+    };
+
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    body.style.overscrollBehavior = 'none';
+    if (scrollbarW > 0) {
+      body.style.paddingRight = `${scrollbarW}px`;
+    }
+
+    return () => {
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.left = prev.left;
+      body.style.right = prev.right;
+      body.style.width = prev.width;
+      body.style.overflow = prev.overflow;
+      body.style.paddingRight = prev.paddingRight;
+      body.style.overscrollBehavior = prev.overscroll;
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
+
   useLayoutEffect(() => {
     if (!isFixed || !menuShellRef.current) return;
     const el = menuShellRef.current;
     const host = stickyBrandHostRef.current;
-    const brand = stickyBrandInnerRef.current;
-    if (brand) gsap.set(brand, { clearProps: 'opacity,visibility' });
-    const active = getDocumentScrollY() > SCROLL_MENU_THRESHOLD_PX;
-    menuScrollCenteredRef.current = active;
-    setBrandStripHidden(active);
 
     gsap.set(el, {
-      left: active ? '50%' : '2em',
-      xPercent: active ? -50 : 0,
-      top: '2em'
+      left: '2em',
+      xPercent: 0,
+      top: '2em',
     });
 
     if (host) {
       gsap.set(host, {
-        paddingTop: active ? 0 : '2em',
-        paddingLeft: active ? 0 : '2em',
-        paddingRight: active ? 0 : '2em'
+        paddingTop: '2em',
+        paddingLeft: '2em',
+        paddingRight: '2em',
       });
     }
-  }, [isFixed]);
-
-  useEffect(() => {
-    if (!isFixed || !menuShellRef.current) return;
-    const el = menuShellRef.current;
-    const host = stickyBrandHostRef.current;
-    let raf = 0;
-
-    const apply = () => {
-      const active = getDocumentScrollY() > SCROLL_MENU_THRESHOLD_PX;
-      if (active === menuScrollCenteredRef.current) return;
-      menuScrollCenteredRef.current = active;
-      setBrandStripHidden(active);
-      const reduceMotion =
-        typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const d = reduceMotion ? 0 : SCROLL_MENU_DURATION;
-      const ease = SCROLL_MENU_EASE;
-
-      const tl = gsap.timeline();
-      tl.to(
-        el,
-        {
-          left: active ? '50%' : '2em',
-          xPercent: active ? -50 : 0,
-          duration: d,
-          ease,
-          overwrite: 'auto'
-        },
-        0
-      );
-      if (host) {
-        tl.to(
-          host,
-          {
-            paddingTop: active ? 0 : '2em',
-            paddingLeft: active ? 0 : '2em',
-            paddingRight: active ? 0 : '2em',
-            duration: d,
-            ease,
-            overwrite: 'auto'
-          },
-          0
-        );
-      }
-    };
-
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        apply();
-      });
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      gsap.killTweensOf([el, host].filter(Boolean));
-    };
   }, [isFixed]);
 
   const logoBlock = (
     <div className="sm-logo" aria-label="Logo">
       <img
-        src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
+        src={logoUrl || '/logo.svg'}
         alt="Logo"
         className="sm-logo-img"
         draggable={false}
@@ -474,9 +438,6 @@ export const StaggeredMenu = ({
 
   const rightColumn = (
     <div className="sm-header-right">
-      <span className="sm-header-plus" aria-hidden="true">
-        +
-      </span>
       {showHeaderCta && ctaHref ? (
         <a className="sm-header-cta" href={ctaHref}>
           <span className="sm-header-cta-label">{ctaLabel}</span>
@@ -487,34 +448,29 @@ export const StaggeredMenu = ({
   );
 
   const menuLeftColumn = (
-    <div className="sm-header-left">
-      <button
-        ref={toggleBtnRef}
-        className="sm-toggle"
-        aria-label={open ? 'Close menu' : 'Open menu'}
-        aria-expanded={open}
-        aria-controls="staggered-menu-panel"
-        onClick={toggleMenu}
-        type="button"
-      >
-        <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
-          <span ref={textInnerRef} className="sm-toggle-textInner">
-            {textLines.map((l, i) => (
-              <span className="sm-toggle-line" key={i}>
-                {l}
-              </span>
-            ))}
-          </span>
+    <button
+      ref={toggleBtnRef}
+      type="button"
+      className="sm-header-left sm-toggle"
+      aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+      aria-expanded={open}
+      aria-controls="staggered-menu-panel"
+      onClick={toggleMenu}
+    >
+      <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
+        <span ref={textInnerRef} className="sm-toggle-textInner">
+          {textLines.map((l, i) => (
+            <span className="sm-toggle-line" key={i}>
+              {l}
+            </span>
+          ))}
         </span>
-        <span ref={iconRef} className="sm-icon" aria-hidden="true">
-          <span ref={plusHRef} className="sm-icon-line" />
-          <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
-        </span>
-      </button>
-      <span className="sm-header-plus" aria-hidden="true">
-        +
       </span>
-    </div>
+      <span ref={iconRef} className="sm-icon" aria-hidden="true">
+        <span ref={plusHRef} className="sm-icon-line" />
+        <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
+      </span>
+    </button>
   );
 
   const stickyBrandBar = isFixed ? (
@@ -524,12 +480,7 @@ export const StaggeredMenu = ({
       data-open={open || undefined}
       aria-label="Marca y contacto"
     >
-      <div
-        ref={stickyBrandInnerRef}
-        className="sm-sticky-brand-inner"
-        data-brand-concealed={brandStripHidden ? '' : undefined}
-        aria-hidden={brandStripHidden ? true : undefined}
-      >
+      <div className="sm-sticky-brand-inner">
         {logoBlock}
         {rightColumn}
       </div>
@@ -544,6 +495,7 @@ export const StaggeredMenu = ({
 
   const overlayBody = (
     <>
+      <div className="staggered-menu-backdrop" aria-hidden="true" />
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
         {(() => {
           const raw = colors && colors.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c'];
