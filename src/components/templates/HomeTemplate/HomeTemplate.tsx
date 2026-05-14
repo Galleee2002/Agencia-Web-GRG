@@ -2,6 +2,7 @@ import {
   AgencyStaggeredMenu,
   Hero,
   ProjectsSection,
+  SiteFooter,
   TeamSection,
 } from "@/components/organisms";
 import styles from "./HomeTemplate.module.scss";
@@ -15,6 +16,7 @@ export function HomeTemplate() {
       </div>
       <ProjectsSection />
       <TeamSection />
+      <SiteFooter />
     </div>
   );
 }

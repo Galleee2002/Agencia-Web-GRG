@@ -228,18 +228,20 @@ $grg-cyan-bright: #7ae0ff;
 @media (max-width: 899px) {
   .slider {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    // Misma idea que .pagination: grupo centrado con espacio simétrico a los lados
+    grid-template-columns: 1fr auto auto 1fr;
     grid-template-areas:
-      "showcase showcase"
-      "prev next";
-    gap: 16px;
-    justify-items: stretch;
-    align-items: stretch;
+      "showcase showcase showcase showcase"
+      ". prev next .";
+    row-gap: 16px;
+    column-gap: clamp(14px, 3.5vw, 28px);
+    align-items: center;
   }
 
   .sliderMain {
     grid-area: showcase;
     width: 100%;
+    min-width: 0;
   }
 
   .showcaseWrap {
@@ -248,14 +250,18 @@ $grg-cyan-bright: #7ae0ff;
 
   .slider > .arrow:first-of-type {
     grid-area: prev;
-    justify-self: stretch;
+    justify-self: end;
+    align-self: center;
     min-height: 52px;
+    width: clamp(44px, 11vw, 52px);
   }
 
   .slider > .arrow:last-of-type {
     grid-area: next;
-    justify-self: stretch;
+    justify-self: start;
+    align-self: center;
     min-height: 52px;
+    width: clamp(44px, 11vw, 52px);
   }
 }
 
