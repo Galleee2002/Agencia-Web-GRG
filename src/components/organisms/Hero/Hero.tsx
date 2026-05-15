@@ -17,9 +17,6 @@ export function Hero() {
         <Link className={styles.cta} href="#contact">
           Empezar proyecto
         </Link>
-        <span id="contact" className={styles.anchorTarget} tabIndex={-1}>
-          Contacto
-        </span>
       </div>
     </section>
   );

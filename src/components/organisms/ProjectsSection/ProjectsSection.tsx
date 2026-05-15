@@ -12,6 +12,7 @@ import {
 import { gsap } from "gsap";
 import {
   Fragment,
+  memo,
   useCallback,
   useEffect,
   useId,
@@ -19,6 +20,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -60,7 +62,7 @@ function buildHeadingWords(): HeadingWord[] {
   }));
 }
 
-function GalleryImage({
+const GalleryImage = memo(function GalleryImage({
   src,
   alt,
   className,
@@ -104,16 +106,17 @@ function GalleryImage({
         fill
         loading="lazy"
         decoding="async"
-        sizes="(max-width: 899px) 100vw, (max-width: 1199px) 65vw, 58vw"
+        quality={72}
+        sizes="(max-width: 899px) 92vw, (max-width: 1199px) 42vw, 38vw"
         className={styles.imageCover}
       />
     </div>
   );
-}
+});
 
 const GALLERY_SLICES = 3;
 
-function ShowcaseCard({
+const ShowcaseCard = memo(function ShowcaseCard({
   project,
   headingId,
 }: {
@@ -127,7 +130,6 @@ function ShowcaseCard({
 
   const [detailsCompact, setDetailsCompact] = useState(false);
   const [overlayHidden, setOverlayHidden] = useState(false);
-  const [hoverOutsideDetails, setHoverOutsideDetails] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -173,15 +175,6 @@ function ShowcaseCard({
       window.removeEventListener("keydown", onKey);
     };
   }, [closeLightbox, goLightboxNext, goLightboxPrev, lightboxOpen]);
-
-  const handleStagePointerMove = useCallback((e: React.PointerEvent) => {
-    const el = e.target as HTMLElement | null;
-    setHoverOutsideDetails(!el?.closest?.("[data-details-card]"));
-  }, []);
-
-  const handleStagePointerLeave = useCallback(() => {
-    setHoverOutsideDetails(false);
-  }, []);
 
   const handleStageClick = useCallback(
     (e: React.MouseEvent) => {
@@ -279,16 +272,8 @@ function ShowcaseCard({
       className={styles.showcase}
       aria-labelledby={titleId}
       data-overlay-hidden={overlayHidden ? "true" : undefined}
-      data-hover-outside-details={
-        hoverOutsideDetails && !overlayHidden ? "true" : undefined
-      }
     >
-      <div
-        className={styles.showcaseStage}
-        onPointerMove={handleStagePointerMove}
-        onPointerLeave={handleStagePointerLeave}
-        onClick={handleStageClick}
-      >
+      <div className={styles.showcaseStage} onClick={handleStageClick}>
         <div className={styles.gallery}>
           <GalleryImage
             src={a}
@@ -366,15 +351,51 @@ function ShowcaseCard({
       {lightboxModal}
     </article>
   );
+});
+
+function useProjectsScrollPerf(sectionRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let scrollEndTimer = 0;
+    let scrolling = false;
+
+    const setScrolling = (value: boolean) => {
+      if (scrolling === value) return;
+      scrolling = value;
+      if (value) {
+        section.setAttribute("data-scrolling", "true");
+      } else {
+        section.removeAttribute("data-scrolling");
+      }
+    };
+
+    const onScroll = () => {
+      setScrolling(true);
+      window.clearTimeout(scrollEndTimer);
+      scrollEndTimer = window.setTimeout(() => setScrolling(false), 140);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(scrollEndTimer);
+      setScrolling(false);
+    };
+  }, [sectionRef]);
 }
 
 export function ProjectsSection() {
   const baseId = useId().replace(/:/g, "");
+  const sectionRef = useRef<HTMLElement>(null);
   const projects = portfolioProjects;
   const count = projects.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const headingWords = useMemo(() => buildHeadingWords(), []);
+
+  useProjectsScrollPerf(sectionRef);
 
   const active = useMemo(
     () => projects[Math.min(activeIndex, count - 1)] ?? projects[0],
@@ -389,14 +410,13 @@ export function ProjectsSection() {
     if (mq.matches) return;
 
     const ctx = gsap.context(() => {
-      const chars = root.querySelectorAll<HTMLElement>("[data-title-char]");
-      if (!chars.length) return;
+      const split = root.querySelector<HTMLElement>("[data-title-split]");
+      if (!split) return;
 
-      gsap.from(chars, {
-        y: 28,
+      gsap.from(split, {
+        y: 20,
         opacity: 0,
-        duration: 0.52,
-        stagger: 0.018,
+        duration: 0.55,
         ease: "power3.out",
       });
     }, root);
@@ -418,6 +438,7 @@ export function ProjectsSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="proyectos"
       className={styles.section}
       aria-labelledby={headingId}
@@ -449,7 +470,11 @@ export function ProjectsSection() {
                   className={styles.title}
                   aria-label={PROJECTS_HEADING_FULL}
                 >
-                  <span className={styles.titleSplit} aria-hidden="true">
+                  <span
+                    className={styles.titleSplit}
+                    data-title-split
+                    aria-hidden="true"
+                  >
                     {headingWords.map((word, wi) => (
                       <Fragment key={word.key}>
                         {wi > 0 ? " " : null}

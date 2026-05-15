@@ -1,6 +1,7 @@
 import {
   AgencyStaggeredMenu,
   Hero,
+  ContactSection,
   ProjectsSection,
   SiteFooter,
   TeamSection,
@@ -16,6 +17,7 @@ export function HomeTemplate() {
       </div>
       <ProjectsSection />
       <TeamSection />
+      <ContactSection />
       <SiteFooter />
     </div>
   );

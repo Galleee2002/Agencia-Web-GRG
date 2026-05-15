@@ -27,19 +27,19 @@ $footer-breakpoint: 809px;
 
 .top {
   display: grid;
-  gap: clamp(28px, 4vw, 40px);
+  gap: clamp(24px, 3.5vw, 32px);
 
   @media (min-width: $footer-breakpoint) {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
-    gap: clamp(32px, 5vw, 80px);
+    gap: clamp(40px, 6vw, 96px);
   }
 }
 
 .brand {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   min-width: 0;
 }
 
@@ -63,16 +63,6 @@ $footer-breakpoint: 809px;
   width: auto;
 }
 
-.tagline {
-  margin: 0;
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-size: clamp(1.125rem, 1.5vw + 0.75rem, 1.375rem);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.04em;
-  color: $void-black;
-}
-
 .description {
   margin: 0;
   max-width: 36rem;
@@ -87,7 +77,6 @@ $footer-breakpoint: 809px;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 4px;
 }
 
 .socialLink {
@@ -223,8 +212,8 @@ $footer-breakpoint: 809px;
 
 .watermarkZone {
   position: relative;
-  margin-top: clamp(8px, 2vw, 16px);
-  padding-block: clamp(12px, 3vw, 28px) clamp(8px, 2vw, 16px);
+  margin-top: clamp(4px, 1.5vw, 12px);
+  padding-block: clamp(16px, 3.5vw, 32px) clamp(8px, 2vw, 16px);
   display: flex;
   justify-content: center;
   pointer-events: none;

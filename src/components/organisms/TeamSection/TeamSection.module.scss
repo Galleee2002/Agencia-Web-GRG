@@ -5,7 +5,9 @@ $pure-white: #ffffff;
 $muted-silver: #6a6a6a;
 $framer-blue: #0099ff;
 $team-breakpoint: 809px;
-$photo-max: 300px;
+$photo-width: 300px;
+$photo-aspect: 4 / 5;
+$photo-radius: 14px;
 
 .section {
   position: relative;
@@ -129,7 +131,7 @@ $photo-max: 300px;
     transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
 
   @media (min-width: $team-breakpoint) {
-    grid-template-columns: 1fr min(36%, #{$photo-max});
+    grid-template-columns: 1fr min(36%, #{$photo-width});
     grid-template-areas: "copy media";
     gap: clamp(32px, 5vw, 56px);
   }
@@ -144,7 +146,7 @@ $photo-max: 300px;
   transform: translate3d(8px, 16px, 0);
 
   @media (min-width: $team-breakpoint) {
-    grid-template-columns: min(36%, #{$photo-max}) 1fr;
+    grid-template-columns: min(36%, #{$photo-width}) 1fr;
     grid-template-areas: "media copy";
   }
 }
@@ -238,19 +240,18 @@ $photo-max: 300px;
 .media {
   grid-area: media;
   position: relative;
-  width: min(100%, #{$photo-max});
-  max-width: $photo-max;
+  width: min(100%, #{$photo-width});
+  max-width: $photo-width;
   margin-inline: auto;
-  aspect-ratio: 1;
-  border-radius: 999px;
+  aspect-ratio: $photo-aspect;
+  border-radius: $photo-radius;
   overflow: hidden;
   box-shadow:
     rgba(0, 0, 0, 0.06) 0 0 0 1px inset,
     rgba(0, 0, 0, 0.12) 0 14px 36px;
 
   @media (max-width: ($team-breakpoint - 1px)) {
-    // Foto un poco más contenida en tablet/móvil ancho
-    width: min(100%, clamp(200px, 72vw, #{$photo-max}));
+    width: min(100%, clamp(200px, 72vw, #{$photo-width}));
   }
 
   @media (min-width: $team-breakpoint) {

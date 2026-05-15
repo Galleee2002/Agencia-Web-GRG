@@ -36,7 +36,7 @@ export const teamMembers: readonly TeamMember[] = [
       },
     ],
     imageSrc: "/team/integrante-1-photo.jpg",
-    imageAlt: "Retrato de Integrante 1",
+    imageAlt: "Retrato de Gael Garcia",
   },
   {
     name: "Manuel Rodriguez Garcia",
@@ -58,6 +58,6 @@ export const teamMembers: readonly TeamMember[] = [
       },
     ],
     imageSrc: "/team/miembro-2.svg",
-    imageAlt: "Retrato de Integrante 2",
+    imageAlt: "Retrato de Manuel Rodriguez Garcia",
   },
 ] as const;

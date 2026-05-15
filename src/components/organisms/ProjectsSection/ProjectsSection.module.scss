@@ -15,114 +15,167 @@ $grg-cyan-bright: #7ae0ff;
   overflow-x: clip;
   color: $pure-white;
   background: #070708;
-  transition: background 0.5s ease;
+  /* Solo el color base transiciona; los gradientes viven en ::before (más barato al scroll). */
+  transition: background-color 0.45s ease;
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh;
   /* Misma indentación horizontal que el shell para alinear carrusel y cabecera */
   --projects-pad-x: clamp(20px, 4vw, 48px);
+  --projects-glass-bg: rgba(8, 10, 16, 0.88);
+  --projects-card-bg: rgba(6, 8, 14, 0.9);
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.section[data-scrolling="true"]::before {
+  transition: none;
+}
+
+.section[data-scrolling="true"] .showcase,
+.section[data-scrolling="true"] .detailsCard,
+.section[data-scrolling="true"] .overlayGradient,
+.section[data-scrolling="true"] .imageCover {
+  transition: none !important;
 }
 
 .section[data-project-theme="1"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 15% -10%,
-      rgba(0, 153, 255, 0.38) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 70% at 100% 30%,
-      rgba(0, 80, 140, 0.45) 0%,
-      transparent 52%
-    ),
-    #04080f;
+  background-color: #04080f;
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 15% -10%,
+        rgba(0, 153, 255, 0.38) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 100% 30%,
+        rgba(0, 80, 140, 0.45) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .section[data-project-theme="2"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 12% -8%,
-      rgba(251, 113, 133, 0.38) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 70% at 95% 25%,
-      rgba(190, 24, 93, 0.35) 0%,
-      transparent 52%
-    ),
-    #10060a;
+  background-color: #10060a;
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 12% -8%,
+        rgba(251, 113, 133, 0.38) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 95% 25%,
+        rgba(190, 24, 93, 0.35) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .section[data-project-theme="3"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 18% -10%,
-      rgba(52, 211, 153, 0.34) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 70% at 100% 35%,
-      rgba(5, 150, 105, 0.38) 0%,
-      transparent 52%
-    ),
-    #030d0a;
+  background-color: #030d0a;
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 18% -10%,
+        rgba(52, 211, 153, 0.34) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 100% 35%,
+        rgba(5, 150, 105, 0.38) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .section[data-project-theme="4"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 10% -8%,
-      rgba(167, 139, 250, 0.4) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 70% at 100% 28%,
-      rgba(91, 33, 182, 0.42) 0%,
-      transparent 52%
-    ),
-    #0a0614;
+  background-color: #0a0614;
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 10% -8%,
+        rgba(167, 139, 250, 0.4) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 100% 28%,
+        rgba(91, 33, 182, 0.42) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .section[data-project-theme="5"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 15% -10%,
-      rgba(251, 146, 60, 0.38) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 70% at 98% 30%,
-      rgba(234, 88, 12, 0.35) 0%,
-      transparent 52%
-    ),
-    #100804;
+  background-color: #100804;
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 15% -10%,
+        rgba(251, 146, 60, 0.38) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 98% 30%,
+        rgba(234, 88, 12, 0.35) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .section[data-project-theme="6"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 15% -10%,
-      rgba(34, 211, 238, 0.36) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 70% at 100% 32%,
-      rgba(8, 145, 178, 0.4) 0%,
-      transparent 52%
-    ),
-    #030c10;
+  background-color: #030c10;
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 15% -10%,
+        rgba(34, 211, 238, 0.36) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 100% 32%,
+        rgba(8, 145, 178, 0.4) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .section[data-project-theme="7"] {
-  background:
-    radial-gradient(
-      ellipse 130% 90% at 14% -10%,
-      color.change($vivid_red, $alpha: 0.4) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 90% 72% at 100% 30%,
-      color.change($vivid_blue, $alpha: 0.48) 0%,
-      transparent 52%
-    ),
-    color.mix($vivid_blue, #03060f, 72%);
+  background-color: color.mix($vivid_blue, #03060f, 72%);
+
+  &::before {
+    background:
+      radial-gradient(
+        ellipse 130% 90% at 14% -10%,
+        color.change($vivid_red, $alpha: 0.4) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 90% 72% at 100% 30%,
+        color.change($vivid_blue, $alpha: 0.48) 0%,
+        transparent 52%
+      );
+  }
 }
 
 .shell {
@@ -131,6 +184,8 @@ $grg-cyan-bright: #7ae0ff;
   max-width: none;
   min-height: 100vh;
   min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   margin-inline: 0;
   padding: clamp(28px, 5vw, 56px) var(--projects-pad-x) clamp(24px, 4vw, 40px);
   display: flex;
@@ -140,8 +195,6 @@ $grg-cyan-bright: #7ae0ff;
 
 @media (max-width: 899px) {
   .shell {
-    min-height: min(100vh, auto);
-    min-height: min(100dvh, auto);
     padding-bottom: clamp(32px, 8vw, 56px);
   }
 }
@@ -309,7 +362,7 @@ $grg-cyan-bright: #7ae0ff;
 .showcaseWrap {
   min-width: 0;
   flex: 1 1 auto;
-  min-height: clamp(380px, 48vh, 720px);
+  min-height: 0;
   display: flex;
 }
 
@@ -319,20 +372,20 @@ $grg-cyan-bright: #7ae0ff;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   padding: clamp(16px, 2.2vw, 22px);
-  min-height: clamp(380px, 52vh, 760px);
   border-radius: 18px;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.07) 0%,
-    rgba(255, 255, 255, 0.025) 100%
+    rgba(255, 255, 255, 0.09) 0%,
+    var(--projects-glass-bg) 100%
   );
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.35),
     0 28px 90px rgba(0, 0, 0, 0.48);
-  backdrop-filter: blur(14px);
   overflow: hidden;
+  contain: layout paint style;
   transition:
     border-color 0.35s ease,
     box-shadow 0.35s ease;
@@ -343,10 +396,10 @@ $grg-cyan-bright: #7ae0ff;
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
-  min-height: clamp(340px, 48vh, 700px);
+  min-height: 0;
   border-radius: 14px;
   overflow: hidden;
-  isolation: isolate;
+  contain: layout paint;
 }
 
 .gallery {
@@ -389,15 +442,18 @@ $grg-cyan-bright: #7ae0ff;
 .imageCover {
   object-fit: cover;
   object-position: center center;
+  transform: translateZ(0);
 }
 
-.imageFrame[data-gallery-image] .imageCover {
-  opacity: 1;
-  transition: opacity 0.35s ease;
-}
+@media (hover: hover) {
+  .imageFrame[data-gallery-image] .imageCover {
+    opacity: 1;
+    transition: opacity 0.35s ease;
+  }
 
-.imageFrame[data-gallery-image]:hover .imageCover {
-  opacity: 0.88;
+  .imageFrame[data-gallery-image]:hover .imageCover {
+    opacity: 0.88;
+  }
 }
 
 @media (min-width: 520px) {
@@ -468,9 +524,13 @@ $grg-cyan-bright: #7ae0ff;
   );
 }
 
-.showcase[data-hover-outside-details="true"]:not([data-overlay-hidden="true"])
-  .overlayGradient::after {
-  opacity: 1;
+@media (hover: hover) {
+  .showcaseStage:hover:not(:has([data-details-card]:hover)):not(
+      :has([data-gallery-image]:hover)
+    )
+    .overlayGradient::after {
+    opacity: 1;
+  }
 }
 
 .showcase[data-overlay-hidden="true"] .overlayGradient {
@@ -503,9 +563,8 @@ $grg-cyan-bright: #7ae0ff;
   gap: clamp(12px, 1.5vw, 16px);
   align-self: flex-end;
   border-radius: 14px;
-  background: rgba(6, 8, 14, 0.52);
+  background: var(--projects-card-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
   box-shadow:
     -12px 0 48px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -643,8 +702,7 @@ $grg-cyan-bright: #7ae0ff;
   margin: 0;
   padding: 0;
   border: none;
-  background: rgba(2, 6, 12, 0.82);
-  backdrop-filter: blur(8px);
+  background: rgba(2, 6, 12, 0.92);
   cursor: pointer;
 }
 
@@ -674,7 +732,6 @@ $grg-cyan-bright: #7ae0ff;
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.45),
     0 28px 80px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(16px);
 }
 
 .lightboxClose {
@@ -856,7 +913,12 @@ $grg-cyan-bright: #7ae0ff;
 
 .paginationCurrent {
   color: $grg-cyan-mid;
-  text-shadow: 0 0 24px rgba(0, 153, 255, 0.35);
+}
+
+@media (hover: hover) {
+  .paginationCurrent {
+    text-shadow: 0 0 24px rgba(0, 153, 255, 0.35);
+  }
 }
 
 .progressTrack {
@@ -878,8 +940,14 @@ $grg-cyan-bright: #7ae0ff;
     $grg-cyan-mid 50%,
     $grg-cyan-bright 100%
   );
-  box-shadow: 0 0 20px rgba(0, 153, 255, 0.45);
   transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  transform: translateZ(0);
+}
+
+@media (hover: hover) {
+  .progressFill {
+    box-shadow: 0 0 20px rgba(0, 153, 255, 0.45);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -12,7 +12,7 @@ import styles from "./SiteFooter.module.scss";
 
 const COMPANY_NAME = "Agencia Web GMG";
 /** Texto corto solo para la marca decorativa inferior. */
-const WATERMARK_BRAND = "Agencia GMG";
+const WATERMARK_BRAND = "Agencia GRG";
 
 const DESCRIPTION =
   "Somos tu socio digital de confianza: diseño y desarrollo web con criterio, " +
@@ -42,14 +42,13 @@ export function SiteFooter() {
             >
               <Image
                 className={styles.logo}
-                src="/logo.svg"
+                src="/logo-negro.svg"
                 alt=""
                 width={120}
                 height={36}
                 decoding="async"
               />
             </Link>
-            <p className={styles.tagline}>{COMPANY_NAME}</p>
             <p className={styles.description}>{DESCRIPTION}</p>
             {showSocials ? (
               <div className={styles.socials}>

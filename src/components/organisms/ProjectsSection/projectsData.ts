@@ -41,9 +41,9 @@ export const portfolioProjects: PortfolioProject[] = [
       "Responsive Design",
     ],
     images: [
-      "/projects/bvi-dashboard.png",
-      "/projects/bvi-memberships.png",
-      "/projects/bvi-login.png",
+      "/projects/bvi-dashboard.webp",
+      "/projects/bvi-memberships.webp",
+      "/projects/bvi-login.webp",
     ],
     href: "/proyectos/bvi-finance",
   },
