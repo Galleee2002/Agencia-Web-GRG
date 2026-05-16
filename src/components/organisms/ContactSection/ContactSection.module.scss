@@ -36,6 +36,18 @@ $contact-breakpoint: 809px;
   min-width: 0;
 }
 
+.revealBlock {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.form .field,
+.form .fieldPair,
+.form .submitWrap {
+  will-change: transform, opacity;
+}
+
 // —— Intro (top block) ——
 
 .intro {

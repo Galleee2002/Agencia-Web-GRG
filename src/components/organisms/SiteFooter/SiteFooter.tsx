@@ -45,6 +45,8 @@ export function SiteFooter() {
                 width={120}
                 height={36}
                 decoding="async"
+                // CSS fija la altura (clamp); Next pide explicitar la otra dimensión en style.
+                style={{ width: "auto" }}
               />
             </Link>
             <p className={styles.description}>{DESCRIPTION}</p>

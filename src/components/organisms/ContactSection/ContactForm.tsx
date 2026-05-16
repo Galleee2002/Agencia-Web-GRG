@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, useTransform, type MotionValue } from "motion/react";
 import { useId, useRef, useState } from "react";
 import {
   Building2,
@@ -28,7 +29,44 @@ const INITIAL_FORM = {
   timeline: "",
 };
 
-export function ContactForm() {
+/** Rangos solapados sobre `scrollYProgress` de la sección (0 = entra por abajo, 1 = sale por arriba). */
+const REVEAL_NAME: readonly [number, number] = [0.06, 0.2];
+const REVEAL_EMAIL: readonly [number, number] = [0.12, 0.26];
+const REVEAL_COMPANY: readonly [number, number] = [0.18, 0.32];
+const REVEAL_SERVICE: readonly [number, number] = [0.24, 0.4];
+const REVEAL_PROJECT: readonly [number, number] = [0.32, 0.5];
+const REVEAL_PAIR: readonly [number, number] = [0.42, 0.62];
+const REVEAL_SUBMIT: readonly [number, number] = [0.52, 0.78];
+
+function FormReveal({
+  progress,
+  range,
+  className,
+  children,
+}: {
+  progress: MotionValue<number>;
+  range: readonly [number, number];
+  className: string;
+  children: React.ReactNode;
+}) {
+  const [a, b] = range;
+  const peak = Math.min(a + (b - a) * 0.55, 0.98);
+  const end = Math.min(b + 0.05, 1);
+  // Incluir 0 en las claves para no extrapolar opacidad negativa antes del tramo a.
+  const opacity = useTransform(progress, [0, a, peak, end], [0, 0, 1, 1]);
+  const y = useTransform(progress, [0, a, b], [26, 26, 0]);
+  return (
+    <motion.div className={className} style={{ opacity, y }}>
+      {children}
+    </motion.div>
+  );
+}
+
+export type ContactFormProps = {
+  scrollYProgress: MotionValue<number>;
+};
+
+export function ContactForm({ scrollYProgress }: ContactFormProps) {
   const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<FormStatus>("idle");
@@ -79,6 +117,8 @@ export function ContactForm() {
     );
   }
 
+  const p = scrollYProgress;
+
   return (
     <div className={styles.formCard}>
       <form
@@ -87,7 +127,7 @@ export function ContactForm() {
         className={styles.form}
         onSubmit={handleSubmit}
       >
-        <div className={styles.field}>
+        <FormReveal progress={p} range={REVEAL_NAME} className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-name`}>
             Nombre
           </label>
@@ -105,9 +145,9 @@ export function ContactForm() {
               onChange={(e) => handleChange("name", e.target.value)}
             />
           </div>
-        </div>
+        </FormReveal>
 
-        <div className={styles.field}>
+        <FormReveal progress={p} range={REVEAL_EMAIL} className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-email`}>
             Email
           </label>
@@ -125,9 +165,9 @@ export function ContactForm() {
               onChange={(e) => handleChange("email", e.target.value)}
             />
           </div>
-        </div>
+        </FormReveal>
 
-        <div className={styles.field}>
+        <FormReveal progress={p} range={REVEAL_COMPANY} className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-company`}>
             Empresa<span className={styles.optional}>(opcional)</span>
           </label>
@@ -144,9 +184,13 @@ export function ContactForm() {
               onChange={(e) => handleChange("company", e.target.value)}
             />
           </div>
-        </div>
+        </FormReveal>
 
-        <div className={`${styles.field} ${styles.fieldFull}`}>
+        <FormReveal
+          progress={p}
+          range={REVEAL_SERVICE}
+          className={`${styles.field} ${styles.fieldFull}`}
+        >
           <label className={styles.label} htmlFor={`${formId}-service`}>
             ¿Qué servicio necesitas?
           </label>
@@ -169,9 +213,13 @@ export function ContactForm() {
               ))}
             </select>
           </div>
-        </div>
+        </FormReveal>
 
-        <div className={`${styles.field} ${styles.fieldFull}`}>
+        <FormReveal
+          progress={p}
+          range={REVEAL_PROJECT}
+          className={`${styles.field} ${styles.fieldFull}`}
+        >
           <label className={styles.label} htmlFor={`${formId}-project`}>
             Cuéntanos sobre tu proyecto
           </label>
@@ -191,9 +239,13 @@ export function ContactForm() {
               onChange={(e) => handleChange("project", e.target.value)}
             />
           </div>
-        </div>
+        </FormReveal>
 
-        <div className={`${styles.fieldPair} ${styles.fieldFull}`}>
+        <FormReveal
+          progress={p}
+          range={REVEAL_PAIR}
+          className={`${styles.fieldPair} ${styles.fieldFull}`}
+        >
           <div className={styles.field}>
             <label className={styles.label} htmlFor={`${formId}-budget`}>
               Presupuesto<span className={styles.optional}>(ARS)</span>
@@ -240,9 +292,13 @@ export function ContactForm() {
               </select>
             </div>
           </div>
-        </div>
+        </FormReveal>
 
-        <div className={`${styles.submitWrap} ${styles.fieldFull}`}>
+        <FormReveal
+          progress={p}
+          range={REVEAL_SUBMIT}
+          className={`${styles.submitWrap} ${styles.fieldFull}`}
+        >
           <button
             type="submit"
             className={styles.submit}
@@ -251,7 +307,7 @@ export function ContactForm() {
             {status === "submitting" ? "Enviando…" : "Enviar mensaje"}
             <Send aria-hidden />
           </button>
-        </div>
+        </FormReveal>
       </form>
     </div>
   );

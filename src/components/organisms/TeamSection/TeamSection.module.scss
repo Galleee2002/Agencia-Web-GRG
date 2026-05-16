@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Alineado con ProjectsSection: banda clara + acento Framer
 $void-black: #000000;
 $pure-white: #ffffff;
@@ -6,7 +8,7 @@ $muted-silver: #6a6a6a;
 $framer-blue: #0099ff;
 $team-breakpoint: 809px;
 $photo-width: 300px;
-$photo-aspect: 4 / 5;
+$photo-aspect: math.div(4, 5);
 $photo-radius: 14px;
 
 .section {

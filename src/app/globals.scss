@@ -9,6 +9,12 @@
   padding: 0;
 }
 
+html {
+  // motion/react useScroll mide offsets respecto al scrollingElement; con
+  // position: static el cálculo es poco fiable y la lib avisa en desarrollo.
+  position: relative;
+}
+
 html,
 body {
   min-height: 100%;
