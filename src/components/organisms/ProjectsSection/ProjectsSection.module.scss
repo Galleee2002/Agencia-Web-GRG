@@ -1,9 +1,26 @@
 @use "sass:color";
 
+/* Transiciones suaves entre temas: colores registrados interpolan; el gradiente comparte geometría. */
+@property --p-surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #070708;
+}
+
+@property --p-spot1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 153, 255, 0.22);
+}
+
+@property --p-spot2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 80, 140, 0.28);
+}
+
 $pure-white: #ffffff;
 $muted-silver: #a6a6a6;
-$vivid_red: #e93125;
-$vivid_blue: #104394;
 $framer-blue: #0099ff;
 $grg-cyan: #0099ff;
 $grg-cyan-mid: #33c4ff;
@@ -14,9 +31,15 @@ $grg-cyan-bright: #7ae0ff;
   min-width: 0;
   overflow-x: clip;
   color: $pure-white;
-  background: #070708;
-  /* Solo el color base transiciona; los gradientes viven en ::before (más barato al scroll). */
-  transition: background-color 0.45s ease;
+  /* Tema por defecto antes del primer paint con data-project-theme */
+  --p-surface: #070708;
+  --p-spot1: rgba(0, 153, 255, 0.22);
+  --p-spot2: rgba(0, 80, 140, 0.28);
+  background-color: var(--p-surface);
+  transition:
+    --p-surface 0.9s cubic-bezier(0.33, 1, 0.53, 1),
+    --p-spot1 0.9s cubic-bezier(0.33, 1, 0.53, 1),
+    --p-spot2 0.9s cubic-bezier(0.33, 1, 0.53, 1);
   contain: layout style;
   content-visibility: auto;
   contain-intrinsic-size: auto 100vh;
@@ -33,6 +56,18 @@ $grg-cyan-bright: #7ae0ff;
   z-index: 0;
   pointer-events: none;
   opacity: 1;
+  /* Misma geometría en todos los temas: solo cambian --p-spot* (transición suave). */
+  background:
+    radial-gradient(
+      ellipse 130% 90% at 15% -10%,
+      var(--p-spot1) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 90% 70% at 100% 30%,
+      var(--p-spot2) 0%,
+      transparent 52%
+    );
   transition: opacity 0.45s ease;
 }
 
@@ -53,129 +88,39 @@ $grg-cyan-bright: #7ae0ff;
 }
 
 .section[data-project-theme="1"] {
-  background-color: #04080f;
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 15% -10%,
-        rgba(0, 153, 255, 0.38) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 70% at 100% 30%,
-        rgba(0, 80, 140, 0.45) 0%,
-        transparent 52%
-      );
-  }
+  --p-surface: #04080f;
+  --p-spot1: rgba(0, 153, 255, 0.38);
+  --p-spot2: rgba(0, 80, 140, 0.45);
 }
 
 .section[data-project-theme="2"] {
-  background-color: #10060a;
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 12% -8%,
-        rgba(251, 113, 133, 0.38) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 70% at 95% 25%,
-        rgba(190, 24, 93, 0.35) 0%,
-        transparent 52%
-      );
-  }
+  --p-surface: #10060a;
+  --p-spot1: rgba(251, 113, 133, 0.38);
+  --p-spot2: rgba(190, 24, 93, 0.35);
 }
 
 .section[data-project-theme="3"] {
-  background-color: #030d0a;
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 18% -10%,
-        rgba(52, 211, 153, 0.34) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 70% at 100% 35%,
-        rgba(5, 150, 105, 0.38) 0%,
-        transparent 52%
-      );
-  }
+  --p-surface: #030d0a;
+  --p-spot1: rgba(52, 211, 153, 0.34);
+  --p-spot2: rgba(5, 150, 105, 0.38);
 }
 
 .section[data-project-theme="4"] {
-  background-color: #0a0614;
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 10% -8%,
-        rgba(167, 139, 250, 0.4) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 70% at 100% 28%,
-        rgba(91, 33, 182, 0.42) 0%,
-        transparent 52%
-      );
-  }
+  --p-surface: #0a0614;
+  --p-spot1: rgba(167, 139, 250, 0.4);
+  --p-spot2: rgba(91, 33, 182, 0.42);
 }
 
 .section[data-project-theme="5"] {
-  background-color: #100804;
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 15% -10%,
-        rgba(251, 146, 60, 0.38) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 70% at 98% 30%,
-        rgba(234, 88, 12, 0.35) 0%,
-        transparent 52%
-      );
-  }
+  --p-surface: #100804;
+  --p-spot1: rgba(251, 146, 60, 0.38);
+  --p-spot2: rgba(234, 88, 12, 0.35);
 }
 
 .section[data-project-theme="6"] {
-  background-color: #030c10;
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 15% -10%,
-        rgba(34, 211, 238, 0.36) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 70% at 100% 32%,
-        rgba(8, 145, 178, 0.4) 0%,
-        transparent 52%
-      );
-  }
-}
-
-.section[data-project-theme="7"] {
-  background-color: color.mix($vivid_blue, #03060f, 72%);
-
-  &::before {
-    background:
-      radial-gradient(
-        ellipse 130% 90% at 14% -10%,
-        color.change($vivid_red, $alpha: 0.4) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 90% 72% at 100% 30%,
-        color.change($vivid_blue, $alpha: 0.48) 0%,
-        transparent 52%
-      );
-  }
+  --p-surface: #030c10;
+  --p-spot1: rgba(34, 211, 238, 0.36);
+  --p-spot2: rgba(8, 145, 178, 0.4);
 }
 
 .shell {
