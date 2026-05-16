@@ -11,8 +11,6 @@ import {
 import styles from "./SiteFooter.module.scss";
 
 const COMPANY_NAME = "Agencia Web GMG";
-/** Texto corto solo para la marca decorativa inferior. */
-const WATERMARK_BRAND = "Agencia GRG";
 
 const DESCRIPTION =
   "Somos tu socio digital de confianza: diseño y desarrollo web con criterio, " +
@@ -106,10 +104,6 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
-        </div>
-
-        <div className={styles.watermarkZone} aria-hidden>
-          <p className={styles.watermark}>{WATERMARK_BRAND}</p>
         </div>
       </div>
     </footer>

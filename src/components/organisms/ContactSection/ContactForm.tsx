@@ -3,7 +3,6 @@
 import { useId, useRef, useState } from "react";
 import {
   Building2,
-  Lock,
   Mail,
   MessageSquare,
   Send,
@@ -130,7 +129,7 @@ export function ContactForm() {
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-company`}>
-            Empresa <span className={styles.optional}>(opcional)</span>
+            Empresa<span className={styles.optional}>(opcional)</span>
           </label>
           <div className={styles.inputWrap}>
             <Building2 className={styles.inputIcon} aria-hidden />
@@ -197,7 +196,7 @@ export function ContactForm() {
         <div className={`${styles.fieldPair} ${styles.fieldFull}`}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor={`${formId}-budget`}>
-              Presupuesto <span className={styles.optional}>(ARS)</span>
+              Presupuesto<span className={styles.optional}>(ARS)</span>
             </label>
             <div className={styles.inputWrap}>
               <select
@@ -252,18 +251,8 @@ export function ContactForm() {
             {status === "submitting" ? "Enviando…" : "Enviar mensaje"}
             <Send aria-hidden />
           </button>
-          <p className={styles.submitNote}>
-            Te responderemos en menos de 24h
-          </p>
         </div>
       </form>
-
-      <p className={styles.privacy}>
-        <Lock aria-hidden />
-        <span>
-          Tu información está protegida. No compartimos tus datos con terceros.
-        </span>
-      </p>
     </div>
   );
 }

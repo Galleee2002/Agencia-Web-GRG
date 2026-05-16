@@ -26,21 +26,3 @@ export const TIMELINE_OPTIONS: ContactSelectOption[] = [
   { value: "3_6_months", label: "3–6 meses" },
   { value: "flexible", label: "Sin prisa" },
 ];
-
-export const CONTACT_FEATURES = [
-  {
-    icon: "monitor" as const,
-    title: "Diseño Premium",
-    description: "Interfaces claras, modernas y alineadas a tu marca.",
-  },
-  {
-    icon: "code" as const,
-    title: "Desarrollo a Medida",
-    description: "Código escalable, rápido y pensado para crecer.",
-  },
-  {
-    icon: "zap" as const,
-    title: "Entrega y Soporte",
-    description: "Acompañamiento real antes, durante y después del lanzamiento.",
-  },
-] as const;
