@@ -1,7 +1,6 @@
 import { TeamHeading } from "./TeamHeading";
 import { teamMembers } from "./teamData";
 import { TeamMemberRows } from "./TeamMemberRows";
-import { TeamReadingPath } from "./TeamReadingPath";
 import styles from "./TeamSection.module.scss";
 
 export function TeamSection() {
@@ -19,7 +18,6 @@ export function TeamSection() {
           }}
         />
       </noscript>
-      <TeamReadingPath />
       <div className={styles.inner}>
         <TeamHeading />
 

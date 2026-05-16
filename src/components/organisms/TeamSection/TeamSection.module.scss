@@ -18,20 +18,6 @@ $photo-radius: 14px;
   overflow-x: hidden;
 }
 
-.readingPath {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.readingPathCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 .inner {
   position: relative;
   z-index: 1;
