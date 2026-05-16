@@ -2,8 +2,8 @@ export type ProjectClientType = "national" | "international";
 
 export interface PortfolioProject {
   id: number;
-  /** Acento visual del slide (1–7), enlazado a selectores `[data-project-theme]` en SCSS */
-  themeId: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  /** Acento visual del slide (1–6), enlazado a selectores `[data-project-theme]` en SCSS */
+  themeId: 1 | 2 | 3 | 4 | 5 | 6;
   name: string;
   description: string;
   clientType: ProjectClientType;
@@ -22,7 +22,7 @@ export function clientLabel(type: ProjectClientType): string {
 
 /**
  * Proyectos de ejemplo. Imágenes bajo `public/` (p. ej. `public/projects/...`).
- * `themeId` (1–7) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
+ * `themeId` (1–6) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
  */
 export const portfolioProjects: PortfolioProject[] = [
   {
@@ -101,23 +101,5 @@ export const portfolioProjects: PortfolioProject[] = [
     technologies: ["React", "Vite", "WebSockets", "S3", "Tailwind CSS"],
     images: ["", "", ""],
     href: "/proyectos/lens-studio",
-  },
-  {
-    id: 7,
-    themeId: 7,
-    name: "Vivid Commerce",
-    description:
-      "Tienda y vitrina digital con identidad de alto contraste: catálogo claro, storytelling de marca y checkout ágil para campañas multicanal.",
-    clientType: "international",
-    technologies: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Shopify",
-      "Sanity",
-      "Vercel",
-    ],
-    images: ["", "", ""],
-    href: "/proyectos/vivid-commerce",
   },
 ];

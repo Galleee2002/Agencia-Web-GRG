@@ -13,9 +13,10 @@ export function AgencyStaggeredMenu() {
       accentColor="#0099ff"
       items={SITE_NAV_ITEMS}
       displaySocials={false}
-      menuButtonColor="#0a0a0a"
-      openMenuButtonColor="#0a0a0a"
+      menuButtonColor="#ffffff"
+      openMenuButtonColor="#ffffff"
       changeMenuColorOnOpen={false}
+      ctaLabel="Contáctanos"
     />
   );
 }
