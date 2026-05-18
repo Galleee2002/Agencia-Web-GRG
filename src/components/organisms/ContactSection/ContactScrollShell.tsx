@@ -103,7 +103,7 @@ export function ContactScrollShell() {
       className={styles.section}
       aria-labelledby="contact-heading"
     >
-      <div className={styles.inner}>
+      <div className={styles.inner} data-contact-inner>
         <div className={styles.grid}>
           {!animateScroll ? (
             <>

@@ -1,0 +1,40 @@
+.revealZone {
+  position: relative;
+  height: clamp(300px, 64vh, 660px);
+  background-color: var(--background);
+  pointer-events: none;
+}
+
+.revealZoneReady {
+  pointer-events: auto;
+}
+
+.curtainShell {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  contain: layout style;
+  background-color: var(--background);
+}
+
+.footerBody {
+  position: relative;
+  z-index: 1;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-color: var(--background);
+  pointer-events: none;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: clip-path;
+}

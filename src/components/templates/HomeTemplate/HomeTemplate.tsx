@@ -3,7 +3,7 @@ import {
   Hero,
   ContactSection,
   ProjectsSection,
-  SiteFooter,
+  SiteFooterReveal,
   TeamSection,
 } from "@/components/organisms";
 import styles from "./HomeTemplate.module.scss";
@@ -18,7 +18,7 @@ export function HomeTemplate() {
       <ProjectsSection />
       <TeamSection />
       <ContactSection />
-      <SiteFooter />
+      <SiteFooterReveal />
     </div>
   );
 }

@@ -35,7 +35,7 @@ export const teamMembers: readonly TeamMember[] = [
         text: ", rendimiento y experiencias que convierten. Combina criterio de producto con ejecución técnica impecable.",
       },
     ],
-    imageSrc: "/team/gaelillo-el-brocolillo.jpg",
+    imageSrc: "/team/integrante-1-photo.jpg",
     imageAlt: "Retrato de Gael Garcia",
   },
   {
