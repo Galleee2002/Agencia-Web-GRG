@@ -67,11 +67,13 @@ export const StaggeredMenu = ({
 
       const offscreen = position === 'left' ? -100 : 100;
       gsap.set(panel, { xPercent: offscreen });
+      panel.classList.add('sm-gsap-ready');
       if (preLayers.length) {
         gsap.set(preLayers, { xPercent: offscreen, opacity: 1 });
       }
       if (preContainer) {
         gsap.set(preContainer, { xPercent: 0, opacity: 1 });
+        preContainer.classList.add('sm-gsap-ready');
       }
       gsap.set(icon, { scale: 1, transformOrigin: '50% 50%' });
       if (textInner) {

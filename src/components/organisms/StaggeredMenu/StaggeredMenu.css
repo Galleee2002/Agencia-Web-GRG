@@ -471,6 +471,11 @@
   opacity: 1;
 }
 
+/* Oculto hasta que GSAP fije la posición inicial (evita flash sin pisar transform). */
+.staggered-menu-panel:not(.sm-gsap-ready) {
+  visibility: hidden;
+}
+
 /* Cerrado: no interceptar rueda/touch; el panel queda fuera de pantalla con GSAP (xPercent). */
 .staggered-menu-panel[aria-hidden='true'] {
   pointer-events: none;
@@ -530,6 +535,10 @@
   pointer-events: none;
   z-index: 6;
   opacity: 0;
+}
+
+.sm-prelayers:not(.sm-gsap-ready) {
+  visibility: hidden;
 }
 
 [data-position='left'] .sm-prelayers {
