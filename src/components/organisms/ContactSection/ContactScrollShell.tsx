@@ -2,7 +2,6 @@
 
 import {
   motion,
-  motionValue,
   useReducedMotion,
   useMotionValue,
   useTransform,
@@ -10,7 +9,6 @@ import {
 import {
   useCallback,
   useLayoutEffect,
-  useMemo,
   useRef,
   type RefObject,
 } from "react";
@@ -82,7 +80,6 @@ function useSectionRevealProgress(
 export function ContactScrollShell() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
-  const staticRevealed = useMemo(() => motionValue(1), []);
 
   const animateScroll = reduceMotion !== true;
   const sectionProgress = useSectionRevealProgress(sectionRef, animateScroll);
@@ -93,8 +90,6 @@ export function ContactScrollShell() {
     [0, 1, 1],
   );
   const introY = useTransform(sectionProgress, [0, 0.2], [28, 0]);
-
-  const formProgress = reduceMotion === true ? staticRevealed : sectionProgress;
 
   return (
     <section
@@ -108,7 +103,7 @@ export function ContactScrollShell() {
           {!animateScroll ? (
             <>
               <ContactIntro />
-              <ContactForm scrollYProgress={staticRevealed} />
+              <ContactForm />
             </>
           ) : (
             <>
@@ -119,7 +114,7 @@ export function ContactScrollShell() {
                 <ContactIntro />
               </motion.div>
               <div className={styles.revealBlock}>
-                <ContactForm scrollYProgress={formProgress} />
+                <ContactForm />
               </div>
             </>
           )}

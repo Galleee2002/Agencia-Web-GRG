@@ -6,7 +6,7 @@ import './StaggeredMenu.css';
 const TOGGLE_LABEL_MENU = 'Menú';
 const TOGGLE_LABEL_CLOSE = 'Cerrar';
 
-export const StaggeredMenu = ({
+const StaggeredMenu = ({
   position = 'right',
   colors = ['#B497CF', '#5227FF'],
   items = [],
@@ -14,7 +14,7 @@ export const StaggeredMenu = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
+  logoUrl = '/logo.svg',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',

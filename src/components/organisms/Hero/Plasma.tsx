@@ -157,7 +157,7 @@ void main() {
   fragColor = vec4(finalColor, alpha);
 }`;
 
-export function Plasma({
+function Plasma({
   color,
   speed = 1,
   direction = "forward",

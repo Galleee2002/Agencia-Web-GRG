@@ -30,6 +30,7 @@ $grg-cyan-bright: #7ae0ff;
   position: relative;
   min-width: 0;
   overflow-x: clip;
+  scroll-margin-top: 5rem;
   color: $pure-white;
   /* Tema por defecto antes del primer paint con data-project-theme */
   --p-surface: #070708;
@@ -41,10 +42,9 @@ $grg-cyan-bright: #7ae0ff;
     --p-spot1 0.9s cubic-bezier(0.33, 1, 0.53, 1),
     --p-spot2 0.9s cubic-bezier(0.33, 1, 0.53, 1);
   contain: layout style;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 100vh;
   /* Misma indentación horizontal que el shell para alinear carrusel y cabecera */
   --projects-pad-x: clamp(20px, 4vw, 48px);
+  --projects-showcase-min-h: clamp(280px, 48vh, 560px);
   --projects-glass-bg: rgba(8, 10, 16, 0.88);
   --projects-card-bg: rgba(6, 8, 14, 0.9);
 }
@@ -127,25 +127,19 @@ $grg-cyan-bright: #7ae0ff;
   box-sizing: border-box;
   width: 100%;
   max-width: none;
-  min-height: 100vh;
-  min-height: 100dvh;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 0;
+  height: auto;
   margin-inline: 0;
-  padding: clamp(28px, 5vw, 56px) var(--projects-pad-x) clamp(24px, 4vw, 40px);
+  padding: clamp(28px, 5vw, 56px) var(--projects-pad-x)
+    clamp(28px, 4.5vw, 48px);
   display: flex;
   flex-direction: column;
-  gap: clamp(24px, 4vw, 40px);
-}
-
-@media (max-width: 899px) {
-  .shell {
-    padding-bottom: clamp(32px, 8vw, 56px);
-  }
+  gap: clamp(22px, 3.5vw, 40px);
 }
 
 .header {
   flex-shrink: 0;
+  max-width: 52rem;
 }
 
 .eyebrow {
@@ -196,10 +190,9 @@ $grg-cyan-bright: #7ae0ff;
 }
 
 .sliderBleed {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   width: 100%;
   min-width: 0;
-  min-height: 0;
   display: flex;
   align-items: stretch;
 }
@@ -207,31 +200,31 @@ $grg-cyan-bright: #7ae0ff;
 .slider {
   flex: 1 1 auto;
   width: 100%;
+  min-height: 0;
+  height: auto;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto;
   gap: clamp(10px, 1.5vw, 20px);
   align-items: stretch;
-  min-height: 0;
 }
 
 .sliderMain {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vw, 40px);
   min-width: 0;
-  flex: 1 1 auto;
-  min-height: 0;
+  min-height: var(--projects-showcase-min-h);
+  width: 100%;
 }
 
 @media (max-width: 899px) {
   .slider {
-    display: grid;
-    // Misma idea que .pagination: grupo centrado con espacio simétrico a los lados
     grid-template-columns: 1fr auto auto 1fr;
+    grid-template-rows: auto auto;
     grid-template-areas:
       "showcase showcase showcase showcase"
       ". prev next .";
-    row-gap: 16px;
+    row-gap: clamp(16px, 3vw, 24px);
     column-gap: clamp(14px, 3.5vw, 28px);
     align-items: center;
   }
@@ -240,10 +233,7 @@ $grg-cyan-bright: #7ae0ff;
     grid-area: showcase;
     width: 100%;
     min-width: 0;
-  }
-
-  .showcaseWrap {
-    width: 100%;
+    min-height: var(--projects-showcase-min-h);
   }
 
   .slider > .arrow:first-of-type {
@@ -304,20 +294,13 @@ $grg-cyan-bright: #7ae0ff;
   flex-shrink: 0;
 }
 
-.showcaseWrap {
-  min-width: 0;
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-}
-
 .showcase {
   flex: 1 1 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 0;
+  min-height: var(--projects-showcase-min-h);
   padding: clamp(16px, 2.2vw, 22px);
   border-radius: 18px;
   background: linear-gradient(
@@ -341,10 +324,19 @@ $grg-cyan-bright: #7ae0ff;
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
-  min-height: 0;
+  min-height: var(--projects-showcase-min-h);
   border-radius: 14px;
   overflow: hidden;
   contain: layout paint;
+}
+
+/* Agrupa galería + degradado; en desktop comparte fila con la tarjeta de detalle. */
+.showcaseMedia {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  min-width: 0;
+  min-height: 0;
 }
 
 .gallery {
@@ -427,6 +419,217 @@ $grg-cyan-bright: #7ae0ff;
   }
 }
 
+/* Escritorio: galería + panel de detalle en columnas; flechas superpuestas para ganar ancho. */
+@media (min-width: 900px) {
+  .section {
+    --projects-showcase-min-h: clamp(430px, 54vh, 600px);
+    --projects-details-w: clamp(340px, 42%, 480px);
+    --projects-details-pad: clamp(16px, 1.5vw, 22px);
+    --projects-details-inset-block: 0;
+  }
+
+  .shell {
+    gap: clamp(24px, 3.5vw, 44px);
+    padding-bottom: clamp(32px, 4.5vw, 56px);
+  }
+
+  .slider {
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+
+  .sliderMain {
+    width: 100%;
+    min-height: var(--projects-showcase-min-h);
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .slider > .arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 6;
+    width: 52px;
+    min-height: 52px;
+    height: 52px;
+    margin: 0;
+    padding: 0;
+    border-radius: 999px;
+    background: rgba(4, 8, 14, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    transform: translateY(-50%);
+    opacity: 0.72;
+  }
+
+  .slider > .arrow:first-of-type {
+    left: clamp(6px, 1vw, 14px);
+  }
+
+  .slider > .arrow:last-of-type {
+    right: clamp(6px, 1vw, 14px);
+  }
+
+  .slider > .arrow:hover {
+    opacity: 1;
+  }
+
+  .showcase {
+    width: 100%;
+    min-height: 0;
+    height: var(--projects-showcase-min-h);
+    max-height: var(--projects-showcase-min-h);
+    padding: clamp(14px, 1.6vw, 18px);
+    overflow: hidden;
+    contain: layout paint style;
+  }
+
+  .showcaseStage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--projects-details-w));
+    grid-template-rows: minmax(0, 1fr);
+    gap: clamp(14px, 1.4vw, 20px);
+    overflow: hidden;
+    contain: layout paint;
+    align-items: stretch;
+    justify-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .showcaseMedia {
+    position: relative;
+    inset: unset;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    aspect-ratio: auto;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .gallery {
+    position: absolute;
+    inset: 0;
+    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .galleryMain {
+    grid-row: 1 / span 2;
+    grid-column: 1;
+  }
+
+  .galleryStack {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .gallerySecondary {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .overlayGradient {
+    background: linear-gradient(
+      90deg,
+      rgba(2, 5, 10, 0) 0%,
+      rgba(2, 5, 10, 0.08) 48%,
+      rgba(2, 5, 10, 0.28) 100%
+    );
+  }
+
+  .overlayGradient::after {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(255, 255, 255, 0.06) 100%
+    );
+  }
+
+  .overlaySlot {
+    position: relative;
+    inset: unset;
+    grid-column: 2;
+    grid-row: 1;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    align-self: stretch;
+    padding: 0;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  .detailsCard {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: var(--projects-details-pad);
+    align-self: stretch;
+    border-radius: 14px;
+    overflow: visible;
+    overflow-y: visible;
+    gap: clamp(8px, 1vh, 11px);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .detailsCard .featuredLabel {
+    flex-shrink: 0;
+  }
+
+  .detailsCard .projectName {
+    flex-shrink: 0;
+    min-width: 0;
+    overflow-wrap: break-word;
+    font-size: clamp(1.2rem, 0.55vw + 1rem, 1.65rem);
+    line-height: 1.2;
+  }
+
+  .detailsCard .projectDescription {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    overflow: visible;
+    overflow-wrap: break-word;
+    font-size: clamp(0.75rem, 0.32vw + 0.66rem, 0.8125rem);
+    line-height: 1.5;
+  }
+
+  .detailsCard .clientLine {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: clamp(6px, 0.8vh, 10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
 .imageFrame[data-gallery-image] {
   cursor: pointer;
 }
@@ -498,9 +701,6 @@ $grg-cyan-bright: #7ae0ff;
   pointer-events: auto;
   box-sizing: border-box;
   flex: 0 0 auto;
-  width: min(400px, 46vw);
-  max-height: 85vh;
-  overflow-y: auto;
   margin-inline-start: auto;
   padding: clamp(18px, 2vw, 26px);
   display: flex;
@@ -513,7 +713,6 @@ $grg-cyan-bright: #7ae0ff;
   box-shadow:
     -12px 0 48px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  -webkit-overflow-scrolling: touch;
   transition:
     max-width 0.42s cubic-bezier(0.33, 1, 0.53, 1),
     padding 0.42s cubic-bezier(0.33, 1, 0.53, 1),
@@ -529,6 +728,21 @@ $grg-cyan-bright: #7ae0ff;
   overflow: visible;
   padding: clamp(10px, 1.4vw, 14px) clamp(12px, 1.6vw, 16px);
   gap: 0;
+}
+
+/* Desktop: anula scroll/max-height heredados; debe ir después de .detailsCard base. */
+@media (min-width: 900px) {
+  .detailsCard {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    overflow-y: visible;
+  }
+
+  .detailsCard:not(.detailsCardCompact) {
+    -webkit-overflow-scrolling: auto;
+  }
 }
 
 .detailsCompactBar {
@@ -612,6 +826,8 @@ $grg-cyan-bright: #7ae0ff;
     max-width: none;
     margin: 0;
     max-height: min(52vh, 420px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -844,7 +1060,9 @@ $grg-cyan-bright: #7ae0ff;
   align-items: center;
   justify-content: center;
   gap: clamp(14px, 2.2vw, 24px);
-  padding-top: clamp(10px, 1.8vw, 16px);
+  margin-top: 0;
+  padding-top: clamp(14px, 2.2vw, 22px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .paginationCurrent,

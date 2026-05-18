@@ -1,6 +1,5 @@
 "use client";
 
-import type { MotionValue } from "motion/react";
 import { useEffect, useId, useRef, useState } from "react";
 import {
   Building2,
@@ -29,10 +28,6 @@ const INITIAL_FORM = {
   timeline: "",
 };
 
-export type ContactFormProps = {
-  scrollYProgress: MotionValue<number>;
-};
-
 const FORM_ROW_COUNT = 8;
 
 type FormRevealRowProps = {
@@ -55,8 +50,7 @@ function FormRevealRow({ index, className, visible, children }: FormRevealRowPro
   );
 }
 
-export function ContactForm({ scrollYProgress }: ContactFormProps) {
-  void scrollYProgress;
+export function ContactForm() {
   const formId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);

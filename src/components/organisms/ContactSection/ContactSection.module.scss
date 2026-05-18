@@ -301,11 +301,6 @@ $form-reveal-offset-item: -28px;
     border-color: $framer-blue;
     box-shadow: 0 0 0 3px $blue-glow;
   }
-
-  &[aria-invalid="true"] {
-    border-color: #c62828;
-    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.12);
-  }
 }
 
 .input,
@@ -375,12 +370,6 @@ $form-reveal-offset-item: -28px;
     color: $void-black;
     background-color: $pure-white;
   }
-}
-
-.fieldError {
-  margin: 0;
-  font-size: 0.75rem;
-  color: #c62828;
 }
 
 .submitWrap {

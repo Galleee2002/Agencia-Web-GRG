@@ -274,7 +274,8 @@ const ShowcaseCard = memo(function ShowcaseCard({
       data-overlay-hidden={overlayHidden ? "true" : undefined}
     >
       <div className={styles.showcaseStage} onClick={handleStageClick}>
-        <div className={styles.gallery}>
+        <div className={styles.showcaseMedia}>
+          <div className={styles.gallery}>
           <GalleryImage
             src={a}
             alt={`${baseAlt} — vista principal`}
@@ -294,9 +295,10 @@ const ShowcaseCard = memo(function ShowcaseCard({
               className={styles.gallerySecondary}
               onOpenLightbox={() => openLightbox(2)}
             />
+            </div>
           </div>
+          <div className={styles.overlayGradient} aria-hidden />
         </div>
-        <div className={styles.overlayGradient} aria-hidden />
         <div className={styles.overlaySlot}>
           <div
             data-details-card
@@ -445,13 +447,49 @@ export function ProjectsSection() {
       data-project-theme={active.themeId}
     >
       <div className={styles.shell}>
-        <div className={styles.sliderBleed}>
-          <div
-            className={styles.slider}
-            role="region"
-            aria-roledescription="carrusel"
-            aria-label="Proyectos destacados"
+        <header className={styles.header}>
+          <p className={styles.eyebrow}>Nuestros proyectos</p>
+          <h2
+            id={headingId}
+            ref={headingRef}
+            className={styles.title}
+            aria-label={PROJECTS_HEADING_FULL}
           >
+            <span
+              className={styles.titleSplit}
+              data-title-split
+              aria-hidden="true"
+            >
+              {headingWords.map((word, wi) => (
+                <Fragment key={word.key}>
+                  {wi > 0 ? " " : null}
+                  <span className={styles.titleWord}>
+                    {word.chars.map((item, ci) => (
+                      <span
+                        key={ci}
+                        data-title-char
+                        className={clsx(
+                          styles.titleChar,
+                          item.gradient && styles.titleGradient,
+                        )}
+                      >
+                        {item.char}
+                      </span>
+                    ))}
+                  </span>
+                </Fragment>
+              ))}
+            </span>
+          </h2>
+        </header>
+
+        <div
+          className={styles.sliderBleed}
+          role="region"
+          aria-roledescription="carrusel"
+          aria-label="Proyectos destacados"
+        >
+          <div className={styles.slider}>
             <button
               type="button"
               className={styles.arrow}
@@ -461,71 +499,8 @@ export function ProjectsSection() {
               <ChevronLeft size={26} strokeWidth={2} aria-hidden />
             </button>
 
-            <div className={styles.sliderMain}>
-              <header className={styles.header}>
-                <p className={styles.eyebrow}>Nuestros proyectos</p>
-                <h2
-                  id={headingId}
-                  ref={headingRef}
-                  className={styles.title}
-                  aria-label={PROJECTS_HEADING_FULL}
-                >
-                  <span
-                    className={styles.titleSplit}
-                    data-title-split
-                    aria-hidden="true"
-                  >
-                    {headingWords.map((word, wi) => (
-                      <Fragment key={word.key}>
-                        {wi > 0 ? " " : null}
-                        <span className={styles.titleWord}>
-                          {word.chars.map((item, ci) => (
-                            <span
-                              key={ci}
-                              data-title-char
-                              className={clsx(
-                                styles.titleChar,
-                                item.gradient && styles.titleGradient,
-                              )}
-                            >
-                              {item.char}
-                            </span>
-                          ))}
-                        </span>
-                      </Fragment>
-                    ))}
-                  </span>
-                </h2>
-              </header>
-
-              <div className={styles.showcaseWrap}>
-                <ShowcaseCard
-                  key={active.id}
-                  project={active}
-                  headingId={baseId}
-                />
-              </div>
-
-              <footer
-                className={styles.pagination}
-                aria-live="polite"
-                data-progress-step={activeIndex + 1}
-              >
-                <span className={styles.paginationCurrent}>
-                  {String(activeIndex + 1).padStart(2, "0")}
-                </span>
-                <div className={styles.progressTrack} aria-hidden>
-                  <div
-                    className={styles.progressFill}
-                    style={{
-                      width: `${((activeIndex + 1) / count) * 100}%`,
-                    }}
-                  />
-                </div>
-                <span className={styles.paginationTotal}>
-                  {String(count).padStart(2, "0")}
-                </span>
-              </footer>
+            <div className={styles.sliderMain} key={active.id}>
+              <ShowcaseCard project={active} headingId={baseId} />
             </div>
 
             <button
@@ -538,6 +513,27 @@ export function ProjectsSection() {
             </button>
           </div>
         </div>
+
+        <footer
+          className={styles.pagination}
+          aria-live="polite"
+          data-progress-step={activeIndex + 1}
+        >
+          <span className={styles.paginationCurrent}>
+            {String(activeIndex + 1).padStart(2, "0")}
+          </span>
+          <div className={styles.progressTrack} aria-hidden>
+            <div
+              className={styles.progressFill}
+              style={{
+                width: `${((activeIndex + 1) / count) * 100}%`,
+              }}
+            />
+          </div>
+          <span className={styles.paginationTotal}>
+            {String(count).padStart(2, "0")}
+          </span>
+        </footer>
       </div>
     </section>
   );
