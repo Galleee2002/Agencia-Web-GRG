@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useTransform, type MotionValue } from "motion/react";
-import { useId, useRef, useState } from "react";
+import type { MotionValue } from "motion/react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   Building2,
   Mail,
@@ -29,48 +29,113 @@ const INITIAL_FORM = {
   timeline: "",
 };
 
-/** Rangos solapados sobre `scrollYProgress` de la sección (0 = entra por abajo, 1 = sale por arriba). */
-const REVEAL_NAME: readonly [number, number] = [0.06, 0.2];
-const REVEAL_EMAIL: readonly [number, number] = [0.12, 0.26];
-const REVEAL_COMPANY: readonly [number, number] = [0.18, 0.32];
-const REVEAL_SERVICE: readonly [number, number] = [0.24, 0.4];
-const REVEAL_PROJECT: readonly [number, number] = [0.32, 0.5];
-const REVEAL_PAIR: readonly [number, number] = [0.42, 0.62];
-const REVEAL_SUBMIT: readonly [number, number] = [0.52, 0.78];
-
-function FormReveal({
-  progress,
-  range,
-  className,
-  children,
-}: {
-  progress: MotionValue<number>;
-  range: readonly [number, number];
-  className: string;
-  children: React.ReactNode;
-}) {
-  const [a, b] = range;
-  const peak = Math.min(a + (b - a) * 0.55, 0.98);
-  const end = Math.min(b + 0.05, 1);
-  // Incluir 0 en las claves para no extrapolar opacidad negativa antes del tramo a.
-  const opacity = useTransform(progress, [0, a, peak, end], [0, 0, 1, 1]);
-  const y = useTransform(progress, [0, a, b], [26, 26, 0]);
-  return (
-    <motion.div className={className} style={{ opacity, y }}>
-      {children}
-    </motion.div>
-  );
-}
-
 export type ContactFormProps = {
   scrollYProgress: MotionValue<number>;
 };
 
+const FORM_ROW_COUNT = 8;
+
+type FormRevealRowProps = {
+  index: number;
+  className?: string;
+  visible: boolean;
+  children: React.ReactNode;
+};
+
+function FormRevealRow({ index, className, visible, children }: FormRevealRowProps) {
+  return (
+    <div
+      className={`${styles.formRevealRow}${className ? ` ${className}` : ""}`}
+      data-reveal-row
+      data-reveal-index={index}
+      data-row-visible={visible ? "true" : "false"}
+    >
+      {children}
+    </div>
+  );
+}
+
 export function ContactForm({ scrollYProgress }: ContactFormProps) {
+  void scrollYProgress;
   const formId = useId();
+  const cardRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [isCardVisible, setIsCardVisible] = useState(false);
+  const [visibleRows, setVisibleRows] = useState<Set<number>>(() => new Set());
   const [status, setStatus] = useState<FormStatus>("idle");
   const [form, setForm] = useState(INITIAL_FORM);
+
+  const isRowVisible = (index: number) => visibleRows.has(index);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setIsCardVisible(true);
+      return;
+    }
+
+    const cardObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        setIsCardVisible(entry.isIntersecting);
+      },
+      { threshold: [0, 0.12, 0.28], rootMargin: "0px 0px 6% 0px" },
+    );
+
+    cardObserver.observe(el);
+    return () => cardObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (status === "success") return;
+
+    const form = formRef.current;
+    if (!form) return;
+
+    setVisibleRows(new Set());
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisibleRows(new Set(Array.from({ length: FORM_ROW_COUNT }, (_, i) => i)));
+      return;
+    }
+
+    const rows = form.querySelectorAll<HTMLElement>("[data-reveal-row]");
+    if (!rows.length) return;
+
+    const rowObserver = new IntersectionObserver(
+      (entries) => {
+        setVisibleRows((prev) => {
+          const next = new Set(prev);
+          let changed = false;
+
+          for (const entry of entries) {
+            const index = Number(
+              (entry.target as HTMLElement).dataset.revealIndex,
+            );
+            if (Number.isNaN(index)) continue;
+
+            if (entry.isIntersecting) {
+              if (!next.has(index)) {
+                next.add(index);
+                changed = true;
+              }
+            } else if (next.delete(index)) {
+              changed = true;
+            }
+          }
+
+          return changed ? next : prev;
+        });
+      },
+      { threshold: [0, 0.18, 0.35], rootMargin: "0px 0px -10% 0px" },
+    );
+
+    rows.forEach((row) => rowObserver.observe(row));
+
+    return () => rowObserver.disconnect();
+  }, [status]);
 
   const handleChange = (
     field: keyof typeof INITIAL_FORM,
@@ -97,9 +162,13 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
     formRef.current?.reset();
   };
 
-  if (status === "success") {
-    return (
-      <div className={styles.formCard}>
+  return (
+    <div
+      ref={cardRef}
+      className={styles.formCard}
+      data-form-visible={isCardVisible ? "true" : "false"}
+    >
+      {status === "success" ? (
         <div className={styles.success} role="status">
           <p className={styles.successTitle}>¡Mensaje enviado!</p>
           <p className={styles.successText}>
@@ -113,21 +182,14 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
             Enviar otro mensaje
           </button>
         </div>
-      </div>
-    );
-  }
-
-  const p = scrollYProgress;
-
-  return (
-    <div className={styles.formCard}>
+      ) : (
       <form
         ref={formRef}
         id={formId}
         className={styles.form}
         onSubmit={handleSubmit}
       >
-        <FormReveal progress={p} range={REVEAL_NAME} className={styles.field}>
+        <FormRevealRow index={0} visible={isRowVisible(0)} className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-name`}>
             Nombre
           </label>
@@ -145,9 +207,9 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
               onChange={(e) => handleChange("name", e.target.value)}
             />
           </div>
-        </FormReveal>
+        </FormRevealRow>
 
-        <FormReveal progress={p} range={REVEAL_EMAIL} className={styles.field}>
+        <FormRevealRow index={1} visible={isRowVisible(1)} className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-email`}>
             Email
           </label>
@@ -165,9 +227,9 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
               onChange={(e) => handleChange("email", e.target.value)}
             />
           </div>
-        </FormReveal>
+        </FormRevealRow>
 
-        <FormReveal progress={p} range={REVEAL_COMPANY} className={styles.field}>
+        <FormRevealRow index={2} visible={isRowVisible(2)} className={styles.field}>
           <label className={styles.label} htmlFor={`${formId}-company`}>
             Empresa<span className={styles.optional}>(opcional)</span>
           </label>
@@ -184,13 +246,9 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
               onChange={(e) => handleChange("company", e.target.value)}
             />
           </div>
-        </FormReveal>
+        </FormRevealRow>
 
-        <FormReveal
-          progress={p}
-          range={REVEAL_SERVICE}
-          className={`${styles.field} ${styles.fieldFull}`}
-        >
+        <FormRevealRow index={3} visible={isRowVisible(3)} className={`${styles.field} ${styles.fieldFull}`}>
           <label className={styles.label} htmlFor={`${formId}-service`}>
             ¿Qué servicio necesitas?
           </label>
@@ -213,13 +271,9 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
               ))}
             </select>
           </div>
-        </FormReveal>
+        </FormRevealRow>
 
-        <FormReveal
-          progress={p}
-          range={REVEAL_PROJECT}
-          className={`${styles.field} ${styles.fieldFull}`}
-        >
+        <FormRevealRow index={4} visible={isRowVisible(4)} className={`${styles.field} ${styles.fieldFull}`}>
           <label className={styles.label} htmlFor={`${formId}-project`}>
             Cuéntanos sobre tu proyecto
           </label>
@@ -239,64 +293,58 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
               onChange={(e) => handleChange("project", e.target.value)}
             />
           </div>
-        </FormReveal>
+        </FormRevealRow>
 
-        <FormReveal
-          progress={p}
-          range={REVEAL_PAIR}
-          className={`${styles.fieldPair} ${styles.fieldFull}`}
-        >
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor={`${formId}-budget`}>
-              Presupuesto<span className={styles.optional}>(ARS)</span>
-            </label>
-            <div className={styles.inputWrap}>
-              <select
-                id={`${formId}-budget`}
-                className={`${styles.select} ${styles.selectNoIcon}`}
-                name="budget"
-                value={form.budget}
-                onChange={(e) => handleChange("budget", e.target.value)}
-              >
-                <option value="">Selecciona un rango</option>
-                {BUDGET_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor={`${formId}-timeline`}>
-              Plazo estimado
-            </label>
-            <div className={styles.inputWrap}>
-              <select
-                id={`${formId}-timeline`}
-                className={`${styles.select} ${styles.selectNoIcon}`}
-                name="timeline"
-                required
-                value={form.timeline}
-                onChange={(e) => handleChange("timeline", e.target.value)}
-              >
-                <option value="" disabled>
-                  Selecciona un plazo
+        <FormRevealRow index={5} visible={isRowVisible(5)} className={styles.field}>
+          <label className={styles.label} htmlFor={`${formId}-budget`}>
+            Presupuesto<span className={styles.optional}>(ARS)</span>
+          </label>
+          <div className={styles.inputWrap}>
+            <select
+              id={`${formId}-budget`}
+              className={`${styles.select} ${styles.selectNoIcon}`}
+              name="budget"
+              value={form.budget}
+              onChange={(e) => handleChange("budget", e.target.value)}
+            >
+              <option value="">Selecciona un rango</option>
+              {BUDGET_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
                 </option>
-                {TIMELINE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
           </div>
-        </FormReveal>
+        </FormRevealRow>
 
-        <FormReveal
-          progress={p}
-          range={REVEAL_SUBMIT}
+        <FormRevealRow index={6} visible={isRowVisible(6)} className={styles.field}>
+          <label className={styles.label} htmlFor={`${formId}-timeline`}>
+            Plazo estimado
+          </label>
+          <div className={styles.inputWrap}>
+            <select
+              id={`${formId}-timeline`}
+              className={`${styles.select} ${styles.selectNoIcon}`}
+              name="timeline"
+              required
+              value={form.timeline}
+              onChange={(e) => handleChange("timeline", e.target.value)}
+            >
+              <option value="" disabled>
+                Selecciona un plazo
+              </option>
+              {TIMELINE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </FormRevealRow>
+
+        <FormRevealRow
+          index={7}
+          visible={isRowVisible(7)}
           className={`${styles.submitWrap} ${styles.fieldFull}`}
         >
           <button
@@ -307,8 +355,9 @@ export function ContactForm({ scrollYProgress }: ContactFormProps) {
             {status === "submitting" ? "Enviando…" : "Enviar mensaje"}
             <Send aria-hidden />
           </button>
-        </FormReveal>
+        </FormRevealRow>
       </form>
+      )}
     </div>
   );
 }

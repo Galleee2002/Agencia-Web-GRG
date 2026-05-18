@@ -42,12 +42,6 @@ $contact-breakpoint: 809px;
   min-width: 0;
 }
 
-.form .field,
-.form .fieldPair,
-.form .submitWrap {
-  will-change: transform, opacity;
-}
-
 // —— Intro (top block) ——
 
 .intro {
@@ -99,6 +93,24 @@ $contact-breakpoint: 809px;
 
 // —— Form card (single-column vertical layout) ——
 
+$form-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$form-reveal-card-duration: 0.9s;
+$form-reveal-item-duration: 0.72s;
+$form-reveal-offset-card: -60px;
+$form-reveal-offset-item: -28px;
+
+@keyframes formRevealItem {
+  from {
+    opacity: 0;
+    transform: translate3d($form-reveal-offset-item, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .formCard {
   box-sizing: border-box;
   width: 100%;
@@ -108,6 +120,78 @@ $contact-breakpoint: 809px;
   border: 1px solid $hairline;
   background: transparent;
   box-shadow: none;
+  contain: layout style;
+  opacity: 0;
+  transform: translate3d($form-reveal-offset-card, 0, 0);
+  filter: blur(8px);
+  transition:
+    opacity $form-reveal-card-duration $form-reveal-ease,
+    transform $form-reveal-card-duration $form-reveal-ease,
+    filter $form-reveal-card-duration $form-reveal-ease;
+
+  @media (max-width: $contact-breakpoint) {
+    transform: translate3d(-40px, 0, 0);
+  }
+
+  &[data-form-visible="true"] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+
+  &[data-form-visible="false"] {
+    opacity: 0;
+    transform: translate3d($form-reveal-offset-card, 0, 0);
+    filter: blur(8px);
+
+    @media (max-width: $contact-breakpoint) {
+      transform: translate3d(-40px, 0, 0);
+    }
+  }
+}
+
+.formRevealRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  opacity: 0;
+  transform: translate3d($form-reveal-offset-item, 0, 0);
+  filter: blur(4px);
+  transition:
+    opacity $form-reveal-item-duration $form-reveal-ease,
+    transform $form-reveal-item-duration $form-reveal-ease,
+    filter $form-reveal-item-duration $form-reveal-ease;
+
+  @media (max-width: $contact-breakpoint) {
+    transform: translate3d(-20px, 0, 0);
+  }
+
+  &[data-row-visible="false"] {
+    opacity: 0;
+    transform: translate3d($form-reveal-offset-item, 0, 0);
+    filter: blur(4px);
+    will-change: transform, opacity, filter;
+
+    @media (max-width: $contact-breakpoint) {
+      transform: translate3d(-20px, 0, 0);
+    }
+  }
+
+  &[data-row-visible="true"] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+    will-change: auto;
+  }
+
+  &.fieldFull {
+    grid-column: 1 / -1;
+  }
+}
+
+.formRevealRow.fieldPair {
+  gap: 16px;
 }
 
 .form {
@@ -143,10 +227,15 @@ $contact-breakpoint: 809px;
   color: $void-black;
 }
 
+.field:has(:hover, :focus-within) .optional {
+  color: rgba(0, 0, 0, 0.55);
+}
+
 .optional {
   margin-inline-start: 0.35em;
   font-weight: 400;
   color: $ink-muted;
+  transition: color 0.25s $form-reveal-ease, opacity 0.25s $form-reveal-ease;
 }
 
 .inputWrap {
@@ -184,9 +273,18 @@ $contact-breakpoint: 809px;
   border: 1px solid $hairline-strong;
   border-radius: 10px;
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
+    border-color 0.22s $form-reveal-ease,
+    box-shadow 0.22s $form-reveal-ease,
+    background-color 0.22s $form-reveal-ease,
+    transform 0.22s $form-reveal-ease;
+
+  &:hover:not(:focus-visible) {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  &:focus-visible {
+    transform: none;
+  }
 
   &::placeholder {
     color: rgba(0, 0, 0, 0.45);
@@ -243,13 +341,21 @@ $contact-breakpoint: 809px;
   letter-spacing: -0.01em;
   box-shadow: none;
 
+  transition:
+    border-color 0.22s $form-reveal-ease,
+    box-shadow 0.22s $form-reveal-ease,
+    background-color 0.22s $form-reveal-ease,
+    transform 0.22s $form-reveal-ease;
+
   &:hover:not(:focus):not(:focus-visible) {
     background-color: rgba(0, 0, 0, 0.08);
     border-color: rgba(0, 0, 0, 0.1);
+    transform: translate3d(2px, 0, 0);
   }
 
   &:focus,
   &:focus-visible {
+    transform: none;
     background-color: $pure-white;
     border-color: $framer-blue;
     box-shadow: 0 0 0 3px $blue-glow;
@@ -303,11 +409,19 @@ $contact-breakpoint: 809px;
   text-transform: uppercase;
   cursor: pointer;
   transition:
-    opacity 0.2s ease,
-    transform 0.15s ease;
+    opacity 0.22s $form-reveal-ease,
+    transform 0.22s $form-reveal-ease,
+    box-shadow 0.22s $form-reveal-ease;
 
   &:hover:not(:disabled) {
-    opacity: 0.9;
+    opacity: 0.95;
+    transform: translate3d(0, -1px, 0);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  &:active:not(:disabled) {
+    transform: translate3d(0, 0, 0);
+    box-shadow: none;
   }
 
   &:focus-visible {
@@ -344,6 +458,8 @@ $contact-breakpoint: 809px;
   font-weight: 500;
   letter-spacing: -0.03em;
   color: $void-black;
+  animation: formRevealItem $form-reveal-item-duration $form-reveal-ease both;
+  animation-delay: 0.05s;
 }
 
 .successText {
@@ -353,6 +469,8 @@ $contact-breakpoint: 809px;
   font-size: 0.9375rem;
   line-height: 1.5;
   color: $ink-muted;
+  animation: formRevealItem $form-reveal-item-duration $form-reveal-ease both;
+  animation-delay: 0.12s;
 }
 
 .resetBtn {
@@ -366,10 +484,21 @@ $contact-breakpoint: 809px;
   font-weight: 500;
   color: $void-black;
   cursor: pointer;
+  animation: formRevealItem $form-reveal-item-duration $form-reveal-ease both;
+  animation-delay: 0.2s;
   transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
+    background 0.22s $form-reveal-ease,
+    color 0.22s $form-reveal-ease,
+    border-color 0.22s $form-reveal-ease,
+    transform 0.22s $form-reveal-ease;
+
+  &:hover {
+    transform: translate3d(0, -1px, 0);
+  }
+
+  &:active {
+    transform: translate3d(0, 0, 0);
+  }
 
   &:hover {
     background: $void-black;
@@ -380,5 +509,48 @@ $contact-breakpoint: 809px;
   &:focus-visible {
     outline: 2px solid $framer-blue;
     outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .formCard {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .formRevealRow {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .successTitle,
+  .successText,
+  .resetBtn {
+    animation: none;
+  }
+
+  .input,
+  .textarea,
+  .select,
+  .submit,
+  .resetBtn {
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease,
+      opacity 0.2s ease;
+
+    &:hover:not(:focus-visible) {
+      transform: none;
+    }
+  }
+
+  .submit:hover:not(:disabled) {
+    box-shadow: none;
   }
 }
