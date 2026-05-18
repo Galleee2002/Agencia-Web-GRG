@@ -15,8 +15,7 @@ export function Hero() {
           presencia digital que tu marca necesita.
         </p>
         <Link className={styles.cta} href="#contact">
-          Empezar proyecto
-        </Link>
+Empieza aquí        </Link>
       </div>
     </section>
   );
