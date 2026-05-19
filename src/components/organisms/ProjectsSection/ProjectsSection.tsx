@@ -349,8 +349,8 @@ const ShowcaseCard = memo(function ShowcaseCard({
                       key={currentLightboxSrc}
                       src={currentLightboxSrc}
                       alt={currentLightboxAlt}
-                      width={1448}
-                      height={1086}
+                      width={1100}
+                      height={825}
                       className={styles.lightboxImg}
                       sizes="(max-width: 1200px) 92vw"
                       priority

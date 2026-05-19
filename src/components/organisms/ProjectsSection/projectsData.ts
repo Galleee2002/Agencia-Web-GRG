@@ -21,7 +21,7 @@ export function clientLabel(type: ProjectClientType): string {
 }
 
 /** Subir al reemplazar capturas en `public/projects/` (invalida caché de `next/image`). */
-const PROJECT_IMAGE_CACHE_VERSION = "20260519";
+const PROJECT_IMAGE_CACHE_VERSION = "20260519b";
 
 function projectImage(path: string): string {
   return `${path}?v=${PROJECT_IMAGE_CACHE_VERSION}`;
