@@ -177,7 +177,7 @@
   padding: 0 1rem;
   background: transparent;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(220, 220, 220, 0.28);
   border-radius: 100px;
   line-height: 1;
   transition:
@@ -192,7 +192,7 @@
 
 .sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 1);
+  border-color: rgba(220, 220, 220, 0.58);
 }
 
 .sm-sticky-brand-inner .sm-header-left.sm-toggle:focus-visible {
@@ -268,7 +268,7 @@
   padding: 0 1rem;
   background: transparent;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(220, 220, 220, 0.28);
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: 15px;
   font-weight: 500;
@@ -293,12 +293,12 @@
 
 .sm-sticky-brand-inner .sm-header-cta {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.88);
+  border-color: rgba(220, 220, 220, 0.28);
 }
 
 .sm-sticky-brand-inner .sm-header-cta:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 1);
+  border-color: rgba(220, 220, 220, 0.58);
   color: #ffffff;
   transform: none;
 }

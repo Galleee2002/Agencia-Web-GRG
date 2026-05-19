@@ -1,6 +1,10 @@
 :root {
   --background: #f7f9fc;
   --foreground: #101828;
+  /* Altura útil de .sm-sticky-brand-host + .sm-sticky-brand-inner (StaggeredMenu). */
+  --site-sticky-nav-offset: calc(
+    max(1.25rem, env(safe-area-inset-top, 0px)) + 44px + 1.6rem
+  );
 }
 
 * {
