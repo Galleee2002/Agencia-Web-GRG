@@ -54,12 +54,12 @@ $framer-blue: #09f;
 }
 
 .titleWord {
-  display: inline;
+  display: block;
   opacity: 1;
+}
 
-  &:not(:last-of-type)::after {
-    content: "\00a0";
-  }
+.titleWordAccent {
+  color: $framer-blue;
 }
 
 @keyframes titleWordFadeIn {
@@ -113,12 +113,6 @@ $framer-blue: #09f;
   }
 
   .titleWord {
-    display: block;
-
-    &::after {
-      content: none;
-    }
-
     opacity: 0;
     animation: titleWordFadeIn 0.65s ease forwards;
 

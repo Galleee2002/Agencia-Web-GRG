@@ -5,6 +5,22 @@ import './StaggeredMenu.css';
 
 const TOGGLE_LABEL_MENU = 'Menú';
 const TOGGLE_LABEL_CLOSE = 'Cerrar';
+const MOBILE_BOTTOM_NAV_MAX_WIDTH = 809;
+
+function useMaxWidth(maxWidthPx) {
+  const query = `(max-width: ${maxWidthPx}px)`;
+  return React.useSyncExternalStore(
+    onStoreChange => {
+      if (typeof window === 'undefined') return () => {};
+      const mq = window.matchMedia(query);
+      mq.addEventListener('change', onStoreChange);
+      return () => mq.removeEventListener('change', onStoreChange);
+    },
+    () =>
+      typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
+    () => false
+  );
+}
 
 const StaggeredMenu = ({
   position = 'right',
@@ -29,6 +45,8 @@ const StaggeredMenu = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [compactNav, setCompactNav] = useState(false);
+  const mobileBottomNav = useMaxWidth(MOBILE_BOTTOM_NAV_MAX_WIDTH);
+  const mobileBottomNavRef = useRef(false);
   const openRef = useRef(false);
   const panelRef = useRef(null);
   const preLayersRef = useRef(null);
@@ -48,7 +66,12 @@ const StaggeredMenu = ({
   const colorTweenRef = useRef(null);
   const toggleBtnRef = useRef(null);
   const stickyBrandHostRef = useRef(null);
+  const mobileDockRef = useRef(null);
   const busyRef = useRef(false);
+
+  useEffect(() => {
+    mobileBottomNavRef.current = mobileBottomNav;
+  }, [mobileBottomNav]);
   const itemEntranceTweenRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -79,10 +102,18 @@ const StaggeredMenu = ({
       if (textInner) {
         gsap.set(textInner, { yPercent: 0 });
       }
-      if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+      if (toggleBtnRef.current && !mobileBottomNavRef.current) {
+        gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+      }
     });
     return () => ctx.revert();
   }, [menuButtonColor, position]);
+
+  useEffect(() => {
+    const btn = toggleBtnRef.current;
+    if (!btn || !mobileBottomNav) return;
+    gsap.set(btn, { clearProps: 'color' });
+  }, [mobileBottomNav]);
 
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current;
@@ -327,10 +358,12 @@ const StaggeredMenu = ({
       onMenuClose?.();
       playClose();
     }
-    animateIcon();
-    animateColor(target);
-    animateText(target);
-  }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose, isFixed]);
+    if (!mobileBottomNavRef.current) {
+      animateIcon();
+      animateColor(target);
+      animateText(target);
+    }
+  }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
 
   const closeMenu = useCallback(() => {
     if (openRef.current) {
@@ -338,11 +371,13 @@ const StaggeredMenu = ({
       setOpen(false);
       onMenuClose?.();
       playClose();
-      animateIcon();
-      animateColor(false);
-      animateText(false);
+      if (!mobileBottomNavRef.current) {
+        animateIcon();
+        animateColor(false);
+        animateText(false);
+      }
     }
-  }, [playClose, animateIcon, animateColor, animateText, onMenuClose, isFixed]);
+  }, [playClose, animateIcon, animateColor, animateText, onMenuClose]);
 
   React.useEffect(() => {
     if (!closeOnClickAway || !open) return;
@@ -351,7 +386,10 @@ const StaggeredMenu = ({
       const target = event.target;
       const inPanel = panelRef.current?.contains(target);
       const inNavChrome = isFixed
-        ? Boolean(stickyBrandHostRef.current?.contains(target))
+        ? Boolean(
+            stickyBrandHostRef.current?.contains(target) ||
+              mobileDockRef.current?.contains(target)
+          )
         : Boolean(toggleBtnRef.current?.contains(target));
 
       if (panelRef.current && !inPanel && !inNavChrome) {
@@ -429,16 +467,24 @@ const StaggeredMenu = ({
     </div>
   );
 
-  const rightColumn = (
-    <div className="sm-header-right">
-      {showHeaderCta && ctaHref ? (
-        <a className="sm-header-cta" href={ctaHref} aria-label={`${ctaLabel}, ir a contacto`}>
-          <span className="sm-header-cta-label">{ctaLabel}</span>
-          <Mail className="sm-header-cta-icon" size={15} strokeWidth={2} aria-hidden />
-        </a>
-      ) : null}
-    </div>
-  );
+  const headerContactCta =
+    showHeaderCta && ctaHref ? (
+      <a
+        className={`sm-header-cta${mobileBottomNav ? ' sm-header-cta--iconOnly' : ''}`}
+        href={ctaHref}
+        aria-label={`${ctaLabel}, ir a contacto`}
+      >
+        {!mobileBottomNav ? <span className="sm-header-cta-label">{ctaLabel}</span> : null}
+        <Mail
+          className="sm-header-cta-icon"
+          size={mobileBottomNav ? 20 : 15}
+          strokeWidth={2}
+          aria-hidden
+        />
+      </a>
+    ) : null;
+
+  const rightColumn = <div className="sm-header-right">{headerContactCta}</div>;
 
   const menuLeftColumnFloating = (
     <button
@@ -490,22 +536,57 @@ const StaggeredMenu = ({
     </button>
   );
 
+  const menuMobileDockToggle = (
+    <button
+      ref={toggleBtnRef}
+      type="button"
+      className="sm-header-left sm-toggle sm-toggle--fixedBar sm-toggle--dock"
+      aria-label="Abrir menú"
+      aria-expanded={open}
+      aria-controls="staggered-menu-panel"
+      onClick={toggleMenu}
+    >
+      <span className="sm-toggle-fixed-row" aria-hidden="true">
+        <span className="sm-toggle-labelPlain">Menú</span>
+        <span className="sm-icon">
+          <Menu className="sm-icon-svg" size={18} strokeWidth={2} />
+        </span>
+      </span>
+    </button>
+  );
+
   const menuLeftColumn = isFixed ? menuLeftColumnFixed : menuLeftColumnFloating;
 
   const stickyBrandBar = isFixed ? (
-    <header
-      ref={stickyBrandHostRef}
-      className="sm-sticky-brand-host"
-      data-open={open || undefined}
-      data-compact={compactNav || undefined}
-      aria-label="Marca y contacto"
-    >
-      <div className="sm-sticky-brand-inner">
-        <div className="sm-brand-col sm-brand-col--start">{menuLeftColumn}</div>
-        <div className="sm-brand-col sm-brand-col--center">{logoBlock}</div>
-        <div className="sm-brand-col sm-brand-col--end">{rightColumn}</div>
-      </div>
-    </header>
+    <>
+      <header
+        ref={stickyBrandHostRef}
+        className="sm-sticky-brand-host"
+        data-open={open || undefined}
+        data-compact={compactNav || undefined}
+        aria-label="Marca y contacto"
+      >
+        <div className="sm-sticky-brand-inner">
+          {!mobileBottomNav ? (
+            <div className="sm-brand-col sm-brand-col--start">{menuLeftColumn}</div>
+          ) : null}
+          <div className="sm-brand-col sm-brand-col--center">{logoBlock}</div>
+          {!mobileBottomNav ? (
+            <div className="sm-brand-col sm-brand-col--end">{rightColumn}</div>
+          ) : null}
+        </div>
+      </header>
+      {mobileBottomNav ? (
+        <nav
+          ref={mobileDockRef}
+          className="sm-mobile-bottom-dock"
+          aria-label="Acciones principales"
+        >
+          {menuMobileDockToggle}
+          {headerContactCta}
+        </nav>
+      ) : null}
+    </>
   ) : null;
 
   const overlayBody = (
@@ -531,29 +612,31 @@ const StaggeredMenu = ({
       ) : null}
 
       <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
-        {isFixed ? (
+        {isFixed && !mobileBottomNav ? (
           <button type="button" className="sm-panel-close" onClick={closeMenu} aria-label="Cerrar menú">
             <X className="sm-panel-close-icon" size={28} strokeWidth={2} aria-hidden />
           </button>
         ) : null}
         <div className="sm-panel-inner">
-          <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
-            {items && items.length ? (
-              items.map((it, idx) => (
-                <li className="sm-panel-itemWrap" key={it.label + idx}>
-                  <a className="sm-panel-item" href={it.link} aria-label={it.ariaLabel} data-index={idx + 1}>
-                    <span className="sm-panel-itemLabel">{it.label}</span>
-                  </a>
+          <div className={mobileBottomNav ? 'sm-panel-nav-mobile' : undefined}>
+            <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
+              {items && items.length ? (
+                items.map((it, idx) => (
+                  <li className="sm-panel-itemWrap" key={it.label + idx}>
+                    <a className="sm-panel-item" href={it.link} aria-label={it.ariaLabel} data-index={idx + 1}>
+                      <span className="sm-panel-itemLabel">{it.label}</span>
+                    </a>
+                  </li>
+                ))
+              ) : (
+                <li className="sm-panel-itemWrap" aria-hidden="true">
+                  <span className="sm-panel-item">
+                    <span className="sm-panel-itemLabel">No items</span>
+                  </span>
                 </li>
-              ))
-            ) : (
-              <li className="sm-panel-itemWrap" aria-hidden="true">
-                <span className="sm-panel-item">
-                  <span className="sm-panel-itemLabel">No items</span>
-                </span>
-              </li>
-            )}
-          </ul>
+              )}
+            </ul>
+          </div>
           {displaySocials && socialItems && socialItems.length > 0 && (
             <div className="sm-socials" aria-label="Social links">
               <h3 className="sm-socials-title">Socials</h3>
@@ -569,6 +652,16 @@ const StaggeredMenu = ({
             </div>
           )}
         </div>
+        {mobileBottomNav ? (
+          <button
+            type="button"
+            className="sm-panel-close-mobile"
+            onClick={closeMenu}
+            aria-label="Cerrar menú"
+          >
+            <X className="sm-panel-close-mobile-icon" size={56} strokeWidth={1.5} aria-hidden />
+          </button>
+        ) : null}
       </aside>
     </>
   );

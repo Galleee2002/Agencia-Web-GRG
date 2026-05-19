@@ -4,25 +4,25 @@ import sharp from "sharp";
 
 const PROJECTS_DIR = path.join(process.cwd(), "public", "projects");
 const ORIGINALS_DIR = path.join(PROJECTS_DIR, "originals");
+const OUTPUT_DIR = path.join(PROJECTS_DIR, "resize-imgs");
 
 /** Ancho máximo: lightbox ~1100px; 2× retina en galería ~960px → 1100px cubre ambos usos. */
 const MAX_WIDTH = 1100;
+const WEBP_QUALITY = 82;
 
 async function main() {
   fs.mkdirSync(ORIGINALS_DIR, { recursive: true });
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
+  const sourceDir = fs.existsSync(ORIGINALS_DIR) ? ORIGINALS_DIR : PROJECTS_DIR;
   const files = fs
-    .readdirSync(PROJECTS_DIR)
-    .filter((f) => f.toLowerCase().endsWith(".png"));
+    .readdirSync(sourceDir)
+    .filter((f) => /\.png$/i.test(f));
 
   for (const file of files) {
-    const inputPath = path.join(PROJECTS_DIR, file);
-    const originalBackupPath = path.join(ORIGINALS_DIR, file);
-
-    if (!fs.existsSync(originalBackupPath)) {
-      fs.copyFileSync(inputPath, originalBackupPath);
-      console.log(`Backup: ${file}`);
-    }
+    const inputPath = path.join(sourceDir, file);
+    const webpName = file.replace(/\.png$/i, ".webp");
+    const outputPath = path.join(OUTPUT_DIR, webpName);
 
     const meta = await sharp(inputPath).metadata();
     const needsResize = (meta.width ?? 0) > MAX_WIDTH;
@@ -36,19 +36,18 @@ async function main() {
     }
 
     const buffer = await pipeline
-      .png({
-        compressionLevel: 9,
-        adaptiveFiltering: true,
-        palette: false,
+      .webp({
+        quality: WEBP_QUALITY,
+        effort: 4,
       })
       .toBuffer();
 
-    fs.writeFileSync(inputPath, buffer);
+    fs.writeFileSync(outputPath, buffer);
 
     const outMeta = await sharp(buffer).metadata();
     const kb = (buffer.length / 1024).toFixed(0);
     console.log(
-      `${file}: ${meta.width}x${meta.height} → ${outMeta.width}x${outMeta.height} (${kb} KB)`,
+      `${file} → ${webpName}: ${meta.width}x${meta.height} → ${outMeta.width}x${outMeta.height} (${kb} KB)`,
     );
   }
 }
