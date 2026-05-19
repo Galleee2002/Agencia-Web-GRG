@@ -247,6 +247,7 @@ $form-reveal-offset-item: -28px;
 
 .inputIcon {
   position: absolute;
+  z-index: 1;
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
@@ -254,6 +255,31 @@ $form-reveal-offset-item: -28px;
   height: 18px;
   color: $ink-muted;
   pointer-events: none;
+  transition:
+    color 0.22s $form-reveal-ease,
+    transform 0.22s $form-reveal-ease;
+}
+
+.inputWrap:has(.input:hover:not(:focus-visible)),
+.inputWrap:has(.textarea:hover:not(:focus-visible)) {
+  .inputIcon:not(.textareaIcon) {
+    color: $void-black;
+    transform: translate3d(2px, -50%, 0);
+  }
+
+  .textareaIcon {
+    color: $void-black;
+    transform: translate3d(2px, 0, 0);
+  }
+
+  .input,
+  .textarea {
+    transform: translate3d(2px, 0, 0);
+  }
+}
+
+.inputWrap:has(:focus-within) .inputIcon {
+  color: $framer-blue;
 }
 
 .textareaIcon {
@@ -277,10 +303,6 @@ $form-reveal-offset-item: -28px;
     box-shadow 0.22s $form-reveal-ease,
     background-color 0.22s $form-reveal-ease,
     transform 0.22s $form-reveal-ease;
-
-  &:hover:not(:focus-visible) {
-    transform: translate3d(2px, 0, 0);
-  }
 
   &:focus-visible {
     transform: none;
@@ -536,6 +558,18 @@ $form-reveal-offset-item: -28px;
 
     &:hover:not(:focus-visible) {
       transform: none;
+    }
+  }
+
+  .inputWrap:has(.input:hover:not(:focus-visible)),
+  .inputWrap:has(.textarea:hover:not(:focus-visible)) {
+    .input,
+    .textarea {
+      transform: none;
+    }
+
+    .inputIcon:not(.textareaIcon) {
+      transform: translateY(-50%);
     }
   }
 

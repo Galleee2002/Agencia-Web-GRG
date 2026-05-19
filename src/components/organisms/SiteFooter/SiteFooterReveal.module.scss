@@ -1,6 +1,9 @@
 .revealZone {
   position: relative;
-  height: clamp(300px, 64vh, 660px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: clamp(220px, 40vh, 420px);
   background-color: var(--background);
   pointer-events: none;
 }
