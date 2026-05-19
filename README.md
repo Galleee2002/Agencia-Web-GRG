@@ -172,10 +172,10 @@ Convenciones detalladas, nombres de archivos, formularios, SEO y rendimiento: [`
 
 ## 📄 Licencia
 
-Proyecto **privado** (`"private": true` en `package.json`). Todos los derechos reservados salvo acuerdo explícito con Agencia Web GMG.
+Proyecto **privado** (`"private": true` en `package.json`). Todos los derechos reservados salvo acuerdo explícito con Agencia Web GRG.
 
 ---
 
 <p align="center">
-  Hecho con dedicación por <strong>Agencia Web GMG</strong> · Experiencias web de alto nivel
+  Hecho con dedicación por <strong>Agencia Web GRG</strong> · Experiencias web de alto nivel
 </p>
