@@ -12,6 +12,8 @@ export interface PlasmaProps {
   scale?: number;
   opacity?: number;
   mouseInteractive?: boolean;
+  /** Pausa el loop WebGL (p. ej. menú overlay abierto). */
+  paused?: boolean;
 }
 
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -164,11 +166,17 @@ function Plasma({
   scale = 1,
   opacity = 1,
   mouseInteractive = false,
+  paused = false,
 }: PlasmaProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const boundsRef = useRef({ left: 0, top: 0, width: 1, height: 1 });
   const mouseTarget = useRef({ x: 0, y: 0 });
   const mouseCurrent = useRef({ x: 0, y: 0 });
+  const pausedRef = useRef(paused);
+  const isVisibleRef = useRef(true);
+  const contextLostRef = useRef(false);
+  const rafRef = useRef(0);
+  const scheduleLoopRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -309,14 +317,25 @@ function Plasma({
     ro.observe(containerEl);
     setSize();
 
-    let raf = 0;
-    let contextLost = false;
     let isVisible = document.visibilityState === "visible";
+    isVisibleRef.current = isVisible;
+    contextLostRef.current = false;
     const t0 = performance.now();
     let lastDrawMs = 0;
 
+    const scheduleLoop = () => {
+      if (rafRef.current) return;
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    const stopLoop = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
+    };
+
     const loop = (t: number) => {
-      if (contextLost || !isVisible) return;
+      rafRef.current = 0;
+      if (contextLostRef.current || !isVisibleRef.current || pausedRef.current) return;
 
       if (mouseInteractive) {
         const current = mouseCurrent.current;
@@ -347,20 +366,20 @@ function Plasma({
         renderer.render({ scene: mesh });
       }
 
-      raf = requestAnimationFrame(loop);
+      scheduleLoop();
     };
 
     const handleContextLost = (event: Event) => {
       event.preventDefault();
-      contextLost = true;
-      cancelAnimationFrame(raf);
+      contextLostRef.current = true;
+      stopLoop();
     };
 
     const handleContextRestored = () => {
-      contextLost = false;
-      if (isVisible) {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(loop);
+      contextLostRef.current = false;
+      if (isVisibleRef.current && !pausedRef.current) {
+        stopLoop();
+        scheduleLoop();
       }
     };
 
@@ -369,11 +388,12 @@ function Plasma({
       if (nextVisible === isVisible) return;
 
       isVisible = nextVisible;
-      if (isVisible && !contextLost) {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(loop);
+      isVisibleRef.current = nextVisible;
+      if (isVisibleRef.current && !contextLostRef.current && !pausedRef.current) {
+        stopLoop();
+        scheduleLoop();
       } else {
-        cancelAnimationFrame(raf);
+        stopLoop();
       }
     };
 
@@ -391,22 +411,28 @@ function Plasma({
         const nextVisible = entry.isIntersecting && document.visibilityState === "visible";
         const wasVisible = isVisible;
         isVisible = nextVisible;
+        isVisibleRef.current = nextVisible;
 
-        if (isVisible && !wasVisible && !contextLost) {
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(loop);
-        } else if (!isVisible && wasVisible) {
-          cancelAnimationFrame(raf);
+        if (isVisibleRef.current && !wasVisible && !contextLostRef.current && !pausedRef.current) {
+          stopLoop();
+          scheduleLoop();
+        } else if (!isVisibleRef.current && wasVisible) {
+          stopLoop();
         }
       },
       { threshold: 0 },
     );
     io.observe(containerEl);
 
-    raf = requestAnimationFrame(loop);
+    scheduleLoopRef.current = scheduleLoop;
+
+    if (!pausedRef.current) {
+      scheduleLoop();
+    }
 
     return () => {
-      cancelAnimationFrame(raf);
+      scheduleLoopRef.current = null;
+      stopLoop();
       ro.disconnect();
       io.disconnect();
       canvas.removeEventListener("webglcontextlost", handleContextLost);
@@ -425,6 +451,18 @@ function Plasma({
       }
     };
   }, [color, speed, direction, scale, opacity, mouseInteractive]);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+    if (paused) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
+      return;
+    }
+    if (isVisibleRef.current && !contextLostRef.current) {
+      scheduleLoopRef.current?.();
+    }
+  }, [paused]);
 
   return (
     <div

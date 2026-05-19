@@ -38,14 +38,10 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(0, 0, 0, 0.42);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.38);
   opacity: 0;
   pointer-events: none;
-  transition:
-    opacity 0.32s ease,
-    backdrop-filter 0.32s ease;
+  transition: opacity 0.32s ease;
 }
 
 .staggered-menu-wrapper[data-open] .staggered-menu-backdrop {
@@ -129,6 +125,13 @@
   box-shadow:
     rgba(255, 255, 255, 0.06) 0 0.5px 0 0.5px inset,
     rgba(0, 0, 0, 0.35) 0 12px 40px;
+}
+
+/* Evita un tercer blur de la barra compacta mientras el overlay está activo */
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: rgba(9, 9, 9, 0.92);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -459,9 +462,7 @@
   right: 0;
   width: clamp(260px, 38vw, 420px);
   height: 100%;
-  background: white;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   padding: 6em 2em 2em 2em;
@@ -685,7 +686,6 @@
 
 .sm-panel-itemLabel {
   display: inline-block;
-  will-change: transform;
   transform-origin: 50% 100%;
 }
 

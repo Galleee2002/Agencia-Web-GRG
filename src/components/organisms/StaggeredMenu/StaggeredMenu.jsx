@@ -106,7 +106,7 @@ const StaggeredMenu = ({
     const panelStart = offscreen;
 
     if (itemEls.length) {
-      gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+      gsap.set(itemEls, { yPercent: 140, force3D: true });
     }
     if (numberEls.length) {
       gsap.set(numberEls, { '--sm-num-opacity': 0 });
@@ -140,10 +140,10 @@ const StaggeredMenu = ({
         itemEls,
         {
           yPercent: 0,
-          rotate: 0,
-          duration: 1,
-          ease: 'power4.out',
-          stagger: { each: 0.1, from: 'start' }
+          duration: 0.85,
+          ease: 'power3.out',
+          stagger: { each: 0.08, from: 'start' },
+          force3D: true
         },
         itemsStart
       );
@@ -230,7 +230,7 @@ const StaggeredMenu = ({
       onComplete: () => {
         const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
         if (itemEls.length) {
-          gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+          gsap.set(itemEls, { yPercent: 140 });
         }
         const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
         if (numberEls.length) {
@@ -366,27 +366,25 @@ const StaggeredMenu = ({
   }, [closeOnClickAway, open, closeMenu, isFixed]);
 
   useEffect(() => {
+    const onCloseRequest = () => closeMenu();
+    window.addEventListener('staggered-menu:close', onCloseRequest);
+    return () => window.removeEventListener('staggered-menu:close', onCloseRequest);
+  }, [closeMenu]);
+
+  useEffect(() => {
     if (!open) return;
 
-    const scrollY = window.scrollY;
     const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    const html = document.documentElement;
     const body = document.body;
     const prev = {
-      position: body.style.position,
-      top: body.style.top,
-      left: body.style.left,
-      right: body.style.right,
-      width: body.style.width,
-      overflow: body.style.overflow,
-      paddingRight: body.style.paddingRight,
-      overscroll: body.style.overscrollBehavior,
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyPaddingRight: body.style.paddingRight,
+      bodyOverscroll: body.style.overscrollBehavior,
     };
 
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.left = '0';
-    body.style.right = '0';
-    body.style.width = '100%';
+    html.style.overflow = 'hidden';
     body.style.overflow = 'hidden';
     body.style.overscrollBehavior = 'none';
     if (scrollbarW > 0) {
@@ -394,15 +392,10 @@ const StaggeredMenu = ({
     }
 
     return () => {
-      body.style.position = prev.position;
-      body.style.top = prev.top;
-      body.style.left = prev.left;
-      body.style.right = prev.right;
-      body.style.width = prev.width;
-      body.style.overflow = prev.overflow;
-      body.style.paddingRight = prev.paddingRight;
-      body.style.overscrollBehavior = prev.overscroll;
-      window.scrollTo(0, scrollY);
+      html.style.overflow = prev.htmlOverflow;
+      body.style.overflow = prev.bodyOverflow;
+      body.style.paddingRight = prev.bodyPaddingRight;
+      body.style.overscrollBehavior = prev.bodyOverscroll;
     };
   }, [open]);
 

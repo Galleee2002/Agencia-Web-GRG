@@ -8,14 +8,20 @@ export function Hero() {
     <section id="inicio" className={styles.hero} aria-label="Inicio">
       <HeroBeamsBackground />
       <div className={styles.inner}>
-        <h1 className={styles.title}>EXPERIENCIAS WEB DE ALTO NIVEL</h1>
+        <h1 className={styles.title}>
+          <span className={styles.titleWord}>Desarrollamos</span>
+          <span className={`${styles.titleWord} ${styles.titleWordAccent}`}>
+            Experiencias
+          </span>
+          <span className={styles.titleWord}>Digitales</span>
+        </h1>
         <p className={styles.description}>
-          Diseñamos y desarrollamos sitios rápidos, escalables y a medida, con una
-          identidad clara y una ejecución precisa. Menos ruido, más impacto — la
-          presencia digital que tu marca necesita.
+          Una presencia digital sólida, moderna y pensada para convertir visitas
+          en clientes.
         </p>
         <Link className={styles.cta} href="#contact">
-Empieza aquí        </Link>
+          Empieza aquí{" "}
+        </Link>
       </div>
     </section>
   );

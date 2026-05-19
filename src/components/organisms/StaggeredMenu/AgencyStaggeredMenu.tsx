@@ -1,9 +1,12 @@
 "use client";
 
 import { SITE_NAV_ITEMS } from "@/config/siteNavigation";
+import { useMenuOverlay } from "@/contexts/MenuOverlayContext";
 import StaggeredMenu from "./StaggeredMenu";
 
 export function AgencyStaggeredMenu() {
+  const { setMenuOpen } = useMenuOverlay();
+
   return (
     <StaggeredMenu
       isFixed
@@ -17,6 +20,8 @@ export function AgencyStaggeredMenu() {
       openMenuButtonColor="#ffffff"
       changeMenuColorOnOpen={false}
       ctaLabel="Contáctanos"
+      onMenuOpen={() => setMenuOpen(true)}
+      onMenuClose={() => setMenuOpen(false)}
     />
   );
 }

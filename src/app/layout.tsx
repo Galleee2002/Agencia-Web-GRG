@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Inter } from "next/font/google";
+import { Geist, Inter, Montserrat } from "next/font/google";
 import "./tailwind.css";
 import "./globals.scss";
+import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -9,6 +10,12 @@ const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-montserrat",
 });
 
 export const metadata: Metadata = {
@@ -31,11 +38,14 @@ export default function RootLayout({
         "h-full",
         "antialiased",
         geistSans.variable,
+        montserrat.variable,
         "font-sans",
         inter.variable,
       )}
     >
-      <body className="min-h-full min-w-0 flex flex-col">{children}</body>
+      <body className="min-h-full min-w-0 flex flex-col">
+        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+      </body>
     </html>
   );
 }
