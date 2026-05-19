@@ -31,21 +31,44 @@ import {
 } from "./projectsData";
 import styles from "./ProjectsSection.module.scss";
 
-/** Texto visible del h2; fragmentos acentuados usan el color del proyecto activo. */
-const PROJECTS_HEADING_FULL = "Tu idea, convertida en un proyecto real.";
+const PROJECTS_DISPLAY_FULL = "Convertimos tus ideas en proyectos exitosos";
 
-type HeadingSegment = {
-  key: string;
-  text: string;
-  accent: boolean;
-};
+type DisplayLinePart = { text: string; accent?: boolean };
 
-const PROJECTS_HEADING_SEGMENTS: HeadingSegment[] = [
-  { key: "accent-a", text: "Tu idea", accent: true },
-  { key: "mid", text: ", convertida en un ", accent: false },
-  { key: "accent-b", text: "proyecto real", accent: true },
-  { key: "end", text: ".", accent: false },
+type DisplayLine = { key: string; parts: DisplayLinePart[] };
+
+const PROJECTS_DISPLAY_LINES_MOBILE: DisplayLine[] = [
+  {
+    key: "m1",
+    parts: [{ text: "Convertimos tus " }, { text: "ideas", accent: true }],
+  },
+  {
+    key: "m2",
+    parts: [{ text: "en proyectos " }, { text: "exitosos", accent: true }],
+  },
 ];
+
+const PROJECTS_DISPLAY_LINES_DESKTOP: DisplayLine[] = [
+  { key: "l1", parts: [{ text: "Convertimos" }] },
+  { key: "l2", parts: [{ text: "tus " }, { text: "ideas", accent: true }] },
+  { key: "l3", parts: [{ text: "en proyectos" }] },
+  { key: "l4", parts: [{ text: "exitosos", accent: true }] },
+];
+
+function renderDisplayLines(lines: DisplayLine[]) {
+  return lines.map((line) => (
+    <span key={line.key} className={styles.displayLine}>
+      {line.parts.map((part, i) => (
+        <span
+          key={`${line.key}-${i}`}
+          className={clsx(part.accent && styles.displayAccent)}
+        >
+          {part.text}
+        </span>
+      ))}
+    </span>
+  ));
+}
 
 const GalleryImage = memo(function GalleryImage({
   src,
@@ -514,7 +537,7 @@ export function ProjectsSection() {
   const projects = portfolioProjects;
   const count = projects.length;
   const [activeIndex, setActiveIndex] = useState(0);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
   const sliderMainRef = useRef<HTMLDivElement>(null);
 
   useProjectsScrollPerf(sectionRef);
@@ -525,18 +548,15 @@ export function ProjectsSection() {
   );
 
   useLayoutEffect(() => {
-    const root = headingRef.current;
+    const root = introRef.current;
     if (!root) return;
 
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) return;
 
     const ctx = gsap.context(() => {
-      const split = root.querySelector<HTMLElement>("[data-title-split]");
-      if (!split) return;
-
-      gsap.from(split, {
-        y: 20,
+      gsap.from(root, {
+        y: 16,
         opacity: 0,
         duration: 0.55,
         ease: "power3.out",
@@ -603,61 +623,57 @@ export function ProjectsSection() {
       data-project-theme={active.themeId}
     >
       <div className={styles.shell}>
-        <header className={styles.header}>
-          <p className={styles.eyebrow}>Nuestros proyectos</p>
-          <h2
-            id={headingId}
-            ref={headingRef}
-            className={styles.title}
-            aria-label={PROJECTS_HEADING_FULL}
-          >
-            <span
-              className={styles.titleSplit}
-              data-title-split
-              aria-hidden="true"
+        <div className={styles.introGlow} aria-hidden>
+          <span className={styles.introGlowRing} />
+        </div>
+        <div className={styles.shellIntro}>
+          <header ref={introRef} className={styles.header} data-intro-display>
+            <p className={styles.introEyebrow}>Proyectos</p>
+            <h2
+              id={headingId}
+              className={styles.displayHeading}
+              aria-label={PROJECTS_DISPLAY_FULL}
             >
-              {PROJECTS_HEADING_SEGMENTS.map((segment) => (
-                <span
-                  key={segment.key}
-                  className={clsx(
-                    segment.accent ? styles.titleAccent : styles.titlePlain,
-                  )}
-                >
-                  {segment.text}
-                </span>
-              ))}
-            </span>
-          </h2>
-        </header>
+              <span className={styles.displayLinesMobile} aria-hidden>
+                {renderDisplayLines(PROJECTS_DISPLAY_LINES_MOBILE)}
+              </span>
+              <span className={styles.displayLinesDesktop} aria-hidden>
+                {renderDisplayLines(PROJECTS_DISPLAY_LINES_DESKTOP)}
+              </span>
+            </h2>
+          </header>
+        </div>
 
         <div
-          className={styles.sliderBleed}
+          className={styles.shellCarousel}
           role="region"
           aria-roledescription="carrusel"
           aria-label="Proyectos destacados"
         >
-          <div className={styles.slider}>
-            <button
-              type="button"
-              className={styles.arrow}
-              onClick={goPrev}
-              aria-label="Ver proyecto anterior"
-            >
-              <ChevronLeft size={26} strokeWidth={2} aria-hidden />
-            </button>
+          <div className={styles.sliderBleed}>
+            <div className={styles.slider}>
+              <button
+                type="button"
+                className={styles.arrow}
+                onClick={goPrev}
+                aria-label="Ver proyecto anterior"
+              >
+                <ChevronLeft size={26} strokeWidth={2} aria-hidden />
+              </button>
 
-            <div ref={sliderMainRef} className={styles.sliderMain}>
-              <ShowcaseCard project={active} headingId={baseId} />
+              <div ref={sliderMainRef} className={styles.sliderMain}>
+                <ShowcaseCard project={active} headingId={baseId} />
+              </div>
+
+              <button
+                type="button"
+                className={styles.arrow}
+                onClick={goNext}
+                aria-label="Ver proyecto siguiente"
+              >
+                <ChevronRight size={26} strokeWidth={2} aria-hidden />
+              </button>
             </div>
-
-            <button
-              type="button"
-              className={styles.arrow}
-              onClick={goNext}
-              aria-label="Ver proyecto siguiente"
-            >
-              <ChevronRight size={26} strokeWidth={2} aria-hidden />
-            </button>
           </div>
         </div>
 

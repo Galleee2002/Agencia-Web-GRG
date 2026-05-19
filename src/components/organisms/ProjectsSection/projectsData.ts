@@ -20,15 +20,18 @@ export function clientLabel(type: ProjectClientType): string {
   return type === "national" ? "Nacional" : "Internacional";
 }
 
-/** Subir al reemplazar capturas en `public/projects/` (invalida caché de `next/image`). */
-const PROJECT_IMAGE_CACHE_VERSION = "20260519b";
+/** Subir al reemplazar capturas en `public/projects/resize-imgs/` (invalida caché de `next/image`). */
+const PROJECT_IMAGE_CACHE_VERSION = "20260519c";
 
-function projectImage(path: string): string {
-  return `${path}?v=${PROJECT_IMAGE_CACHE_VERSION}`;
+const PROJECT_IMAGES_BASE = "/projects/resize-imgs";
+
+function projectImage(file: string): string {
+  const webpName = file.endsWith(".webp") ? file : `${file.replace(/\.png$/i, "")}.webp`;
+  return `${PROJECT_IMAGES_BASE}/${webpName}?v=${PROJECT_IMAGE_CACHE_VERSION}`;
 }
 
 /**
- * Proyectos de ejemplo. Imágenes bajo `public/` (p. ej. `public/projects/...`).
+ * Proyectos de ejemplo. Imágenes WebP bajo `public/projects/resize-imgs/`.
  * `themeId` (1–6) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
  */
 export const portfolioProjects: PortfolioProject[] = [
@@ -48,9 +51,9 @@ export const portfolioProjects: PortfolioProject[] = [
       "Responsive Design",
     ],
     images: [
-      projectImage("/projects/BVI1.png"),
-      projectImage("/projects/BVI2.png"),
-      projectImage("/projects/BVI3.png"),
+      projectImage("BVI1.webp"),
+      projectImage("BVI2.webp"),
+      projectImage("BVI3.webp"),
     ],
     href: "/proyectos/bvi-finance",
   },
@@ -63,9 +66,9 @@ export const portfolioProjects: PortfolioProject[] = [
     clientType: "national",
     technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Stripe"],
     images: [
-      projectImage("/projects/GARDEN1.png"),
-      projectImage("/projects/GARDEN2.png"),
-      projectImage("/projects/GARDEN3.png"),
+      projectImage("GARDEN1.webp"),
+      projectImage("GARDEN2.webp"),
+      projectImage("GARDEN3.webp"),
     ],
     href: "/proyectos/the-coral-garden",
   },
@@ -78,9 +81,9 @@ export const portfolioProjects: PortfolioProject[] = [
     clientType: "international",
     technologies: ["React", "D3.js", "Node.js", "Kafka", "AWS"],
     images: [
-      projectImage("/projects/gpni.png"),
-      projectImage("/projects/gpni2.png"),
-      projectImage("/projects/gpni3.png"),
+      projectImage("gpni.webp"),
+      projectImage("gpni2.webp"),
+      projectImage("gpni3.webp"),
     ],
     href: "/proyectos/gpni",
   },
@@ -93,9 +96,9 @@ export const portfolioProjects: PortfolioProject[] = [
     clientType: "international",
     technologies: ["Next.js", "React", "FHIR", "PostgreSQL", "Auth0"],
     images: [
-      projectImage("/projects/CIL1.png"),
-      projectImage("/projects/CIL2.png"),
-      projectImage("/projects/CIL3.png"),
+      projectImage("CIL1.webp"),
+      projectImage("CIL2.webp"),
+      projectImage("CIL3.webp"),
     ],
     href: "/proyectos/cil-labs",
   },
@@ -108,9 +111,9 @@ export const portfolioProjects: PortfolioProject[] = [
     clientType: "national",
     technologies: ["Next.js", "React", "tRPC", "Prisma", "Redis"],
     images: [
-      projectImage("/projects/SAPO1.png"),
-      projectImage("/projects/SAPO2.png"),
-      projectImage("/projects/SAPO3.png"),
+      projectImage("SAPO1.webp"),
+      projectImage("SAPO2.webp"),
+      projectImage("SAPO3.webp"),
     ],
     href: "/proyectos/sapito3d",
   },
@@ -123,9 +126,9 @@ export const portfolioProjects: PortfolioProject[] = [
     clientType: "national",
     technologies: ["React", "Vite", "WebSockets", "S3", "Tailwind CSS"],
     images: [
-      projectImage("/projects/FUERA1.png"),
-      projectImage("/projects/FUERA2.png"),
-      projectImage("/projects/FUERA3.png"),
+      projectImage("FUERA1.webp"),
+      projectImage("FUERA2.webp"),
+      projectImage("FUERA3.webp"),
     ],
     href: "/proyectos/fuera-de-contexto",
   },
