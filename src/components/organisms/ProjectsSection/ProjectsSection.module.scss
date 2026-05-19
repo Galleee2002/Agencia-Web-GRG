@@ -818,6 +818,15 @@ $grg-cyan-bright: #7ae0ff;
   overflow: hidden;
 }
 
+.lightboxMedia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
 .lightboxImg {
   display: block;
   width: auto;
@@ -834,6 +843,95 @@ $grg-cyan-bright: #7ae0ff;
   height: min(50vh, 400px);
   background: rgba(255, 255, 255, 0.06);
   border-radius: 12px;
+}
+
+@media (max-width: 899px) {
+  .lightboxRoot {
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .lightboxDialog {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lightboxInner {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding:
+      calc(max(12px, env(safe-area-inset-top)) + 52px)
+      max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .lightboxClose {
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    transform: none;
+  }
+
+  .lightboxFrame {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .lightboxStage {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+    border-radius: 10px;
+  }
+
+  .lightboxImg {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: min(72dvh, calc(100dvh - 9rem));
+    object-fit: contain;
+    border-radius: 10px;
+  }
+
+  .lightboxEmpty {
+    width: 100%;
+    height: min(60dvh, 480px);
+    max-height: min(72dvh, calc(100dvh - 9rem));
+  }
+
+  .lightboxNav {
+    width: 100%;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .lightboxNavPrev {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .lightboxNavNext {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 
 .detailsCard .featuredLabel {

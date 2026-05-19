@@ -103,6 +103,8 @@ const GALLERY_SLICES = 3;
 
 const SLIDE_OUT_DURATION = 0.34;
 const SLIDE_IN_DURATION = 0.5;
+const LIGHTBOX_FADE_OUT = 0.14;
+const LIGHTBOX_FADE_IN = 0.2;
 
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
@@ -125,8 +127,10 @@ const ShowcaseCard = memo(function ShowcaseCard({
   const [overlayHidden, setOverlayHidden] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [renderedLightboxIndex, setRenderedLightboxIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxMediaRef = useRef<HTMLDivElement>(null);
   const showcaseStageRef = useRef<HTMLDivElement>(null);
   const lightboxLabelId = useId();
 
@@ -138,6 +142,8 @@ const ShowcaseCard = memo(function ShowcaseCard({
     setDetailsCompact(false);
     setOverlayHidden(false);
     setLightboxOpen(false);
+    setLightboxIndex(0);
+    setRenderedLightboxIndex(0);
   }, [project.id]);
 
   useLayoutEffect(() => {
@@ -167,7 +173,9 @@ const ShowcaseCard = memo(function ShowcaseCard({
   }, [project.id]);
 
   const openLightbox = useCallback((index: number) => {
-    setLightboxIndex(((index % GALLERY_SLICES) + GALLERY_SLICES) % GALLERY_SLICES);
+    const next = ((index % GALLERY_SLICES) + GALLERY_SLICES) % GALLERY_SLICES;
+    setLightboxIndex(next);
+    setRenderedLightboxIndex(next);
     setLightboxOpen(true);
   }, []);
 
@@ -182,6 +190,47 @@ const ShowcaseCard = memo(function ShowcaseCard({
   const goLightboxNext = useCallback(() => {
     setLightboxIndex((i) => (i + 1) % GALLERY_SLICES);
   }, []);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const media = lightboxMediaRef.current;
+    if (!media) return;
+
+    if (lightboxIndex === renderedLightboxIndex) {
+      if (prefersReducedMotion()) {
+        gsap.set(media, { opacity: 1 });
+      }
+      return;
+    }
+
+    if (prefersReducedMotion()) {
+      setRenderedLightboxIndex(lightboxIndex);
+      gsap.set(media, { opacity: 1 });
+      return;
+    }
+
+    gsap.killTweensOf(media);
+    gsap
+      .timeline()
+      .to(media, { opacity: 0, duration: LIGHTBOX_FADE_OUT, ease: "power2.in" })
+      .add(() => {
+        setRenderedLightboxIndex(lightboxIndex);
+      })
+      .to(media, { opacity: 1, duration: LIGHTBOX_FADE_IN, ease: "power2.out" });
+  }, [lightboxIndex, lightboxOpen, renderedLightboxIndex]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const media = lightboxMediaRef.current;
+    if (!media || prefersReducedMotion()) return;
+
+    gsap.killTweensOf(media);
+    gsap.fromTo(
+      media,
+      { opacity: 0 },
+      { opacity: 1, duration: LIGHTBOX_FADE_IN, ease: "power2.out" },
+    );
+  }, [lightboxOpen]);
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -250,9 +299,9 @@ const ShowcaseCard = memo(function ShowcaseCard({
     [detailsCompact, expandDetails],
   );
 
-  const currentLightboxSrc = imageSlots[lightboxIndex] ?? "";
+  const currentLightboxSrc = imageSlots[renderedLightboxIndex] ?? "";
   const currentLightboxAlt = `${baseAlt} — ${
-    ["vista principal", "detalle 1", "detalle 2"][lightboxIndex] ?? "imagen"
+    ["vista principal", "detalle 1", "detalle 2"][renderedLightboxIndex] ?? "imagen"
   }`;
 
   const lightboxModal =
@@ -294,23 +343,26 @@ const ShowcaseCard = memo(function ShowcaseCard({
                 <ChevronLeft size={28} strokeWidth={2} aria-hidden />
               </button>
               <div className={styles.lightboxStage}>
-                {currentLightboxSrc ? (
-                  <Image
-                    src={currentLightboxSrc}
-                    alt={currentLightboxAlt}
-                    width={1448}
-                    height={1086}
-                    className={styles.lightboxImg}
-                    sizes="(max-width: 1200px) 92vw"
-                    priority
-                  />
-                ) : (
-                  <div
-                    className={styles.lightboxEmpty}
-                    role="img"
-                    aria-label={currentLightboxAlt}
-                  />
-                )}
+                <div ref={lightboxMediaRef} className={styles.lightboxMedia}>
+                  {currentLightboxSrc ? (
+                    <Image
+                      key={currentLightboxSrc}
+                      src={currentLightboxSrc}
+                      alt={currentLightboxAlt}
+                      width={1448}
+                      height={1086}
+                      className={styles.lightboxImg}
+                      sizes="(max-width: 1200px) 92vw"
+                      priority
+                    />
+                  ) : (
+                    <div
+                      className={styles.lightboxEmpty}
+                      role="img"
+                      aria-label={currentLightboxAlt}
+                    />
+                  )}
+                </div>
               </div>
               <button
                 type="button"

@@ -14,6 +14,9 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: "Agencia Web GMG",
   description: "Base project with Next.js, TypeScript, SCSS and Atomic Design.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({
