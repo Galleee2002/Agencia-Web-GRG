@@ -3,15 +3,15 @@
 import clsx from "clsx";
 import Image from "next/image";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Globe,
-  PanelLeftOpen,
   X,
 } from "lucide-react";
 import { gsap } from "gsap";
 import {
-  Fragment,
   memo,
   useCallback,
   useEffect,
@@ -31,36 +31,21 @@ import {
 } from "./projectsData";
 import styles from "./ProjectsSection.module.scss";
 
-/** Texto visible del h2; el troceo por carácter es solo visual (SplitText-style sin plugin Club). */
-const PROJECTS_HEADING_PREFIX = "Todo proyecto exitoso comienza con una ";
-const PROJECTS_HEADING_GRADIENT = "simple idea";
-const PROJECTS_HEADING_FULL = `${PROJECTS_HEADING_PREFIX}${PROJECTS_HEADING_GRADIENT}.`;
+/** Texto visible del h2; fragmentos acentuados usan el color del proyecto activo. */
+const PROJECTS_HEADING_FULL = "Tu idea, convertida en un proyecto real.";
 
-type HeadingChar = { char: string; gradient: boolean };
+type HeadingSegment = {
+  key: string;
+  text: string;
+  accent: boolean;
+};
 
-type HeadingWord = { key: string; chars: HeadingChar[] };
-
-function isGradientCharInWord(word: string, char: string): boolean {
-  if (word === "simple") {
-    return true;
-  }
-  if (word === "idea." || word === "idea") {
-    return char !== ".";
-  }
-  return false;
-}
-
-function buildHeadingWords(): HeadingWord[] {
-  const normalized = PROJECTS_HEADING_FULL.trimEnd();
-  const tokens = normalized.split(/\s+/);
-  return tokens.map((word, index) => ({
-    key: `w-${index}-${word}`,
-    chars: [...word].map((char) => ({
-      char,
-      gradient: isGradientCharInWord(word, char),
-    })),
-  }));
-}
+const PROJECTS_HEADING_SEGMENTS: HeadingSegment[] = [
+  { key: "accent-a", text: "Tu idea", accent: true },
+  { key: "mid", text: ", convertida en un ", accent: false },
+  { key: "accent-b", text: "proyecto real", accent: true },
+  { key: "end", text: ".", accent: false },
+];
 
 const GalleryImage = memo(function GalleryImage({
   src,
@@ -116,6 +101,14 @@ const GalleryImage = memo(function GalleryImage({
 
 const GALLERY_SLICES = 3;
 
+const SLIDE_OUT_DURATION = 0.34;
+const SLIDE_IN_DURATION = 0.5;
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 const ShowcaseCard = memo(function ShowcaseCard({
   project,
   headingId,
@@ -134,11 +127,44 @@ const ShowcaseCard = memo(function ShowcaseCard({
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const showcaseStageRef = useRef<HTMLDivElement>(null);
   const lightboxLabelId = useId();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setDetailsCompact(false);
+    setOverlayHidden(false);
+    setLightboxOpen(false);
+  }, [project.id]);
+
+  useLayoutEffect(() => {
+    const stage = showcaseStageRef.current;
+    if (!stage || prefersReducedMotion()) return;
+
+    const ctx = gsap.context(() => {
+      const targets = stage.querySelectorAll<HTMLElement>("[data-fade-in]");
+      if (!targets.length) return;
+      gsap.fromTo(
+        targets,
+        { opacity: 0, y: 14 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: SLIDE_IN_DURATION,
+          stagger: 0.08,
+          ease: "power3.out",
+          clearProps: "transform",
+        },
+      );
+    }, stage);
+
+    return () => {
+      ctx.revert();
+    };
+  }, [project.id]);
 
   const openLightbox = useCallback((index: number) => {
     setLightboxIndex(((index % GALLERY_SLICES) + GALLERY_SLICES) % GALLERY_SLICES);
@@ -192,11 +218,37 @@ const ShowcaseCard = memo(function ShowcaseCard({
     [detailsCompact, overlayHidden],
   );
 
-  const expandDetails = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const expandDetails = useCallback(() => {
     setDetailsCompact(false);
     setOverlayHidden(false);
   }, []);
+
+  const collapseDetails = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDetailsCompact(true);
+  }, []);
+
+  const handleDetailsCardClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (detailsCompact) {
+        expandDetails();
+      }
+    },
+    [detailsCompact, expandDetails],
+  );
+
+  const handleDetailsCardKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!detailsCompact) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        expandDetails();
+      }
+    },
+    [detailsCompact, expandDetails],
+  );
 
   const currentLightboxSrc = imageSlots[lightboxIndex] ?? "";
   const currentLightboxAlt = `${baseAlt} — ${
@@ -222,45 +274,54 @@ const ShowcaseCard = memo(function ShowcaseCard({
           <p id={lightboxLabelId} className={styles.visuallyHidden}>
             Galería de imágenes: {project.name}
           </p>
-          <button
-            ref={lightboxCloseRef}
-            type="button"
-            className={styles.lightboxClose}
-            aria-label="Cerrar"
-            onClick={closeLightbox}
-          >
-            <X size={22} strokeWidth={2} aria-hidden />
-          </button>
-          <button
-            type="button"
-            className={clsx(styles.lightboxNav, styles.lightboxNavPrev)}
-            aria-label="Imagen anterior"
-            onClick={goLightboxPrev}
-          >
-            <ChevronLeft size={28} strokeWidth={2} aria-hidden />
-          </button>
-          <div className={styles.lightboxStage}>
-            {currentLightboxSrc ? (
-              <Image
-                src={currentLightboxSrc}
-                alt={currentLightboxAlt}
-                fill
-                sizes="(max-width: 1200px) 85vw, 1040px"
-                className={styles.lightboxImg}
-                priority
-              />
-            ) : (
-              <div className={styles.lightboxEmpty} role="img" aria-label={currentLightboxAlt} />
-            )}
+          <div className={styles.lightboxInner}>
+            <button
+              ref={lightboxCloseRef}
+              type="button"
+              className={styles.lightboxClose}
+              aria-label="Cerrar"
+              onClick={closeLightbox}
+            >
+              <X size={22} strokeWidth={2} aria-hidden />
+            </button>
+            <div className={styles.lightboxFrame}>
+              <button
+                type="button"
+                className={clsx(styles.lightboxNav, styles.lightboxNavPrev)}
+                aria-label="Imagen anterior"
+                onClick={goLightboxPrev}
+              >
+                <ChevronLeft size={28} strokeWidth={2} aria-hidden />
+              </button>
+              <div className={styles.lightboxStage}>
+                {currentLightboxSrc ? (
+                  <Image
+                    src={currentLightboxSrc}
+                    alt={currentLightboxAlt}
+                    width={1448}
+                    height={1086}
+                    className={styles.lightboxImg}
+                    sizes="(max-width: 1200px) 92vw"
+                    priority
+                  />
+                ) : (
+                  <div
+                    className={styles.lightboxEmpty}
+                    role="img"
+                    aria-label={currentLightboxAlt}
+                  />
+                )}
+              </div>
+              <button
+                type="button"
+                className={clsx(styles.lightboxNav, styles.lightboxNavNext)}
+                aria-label="Imagen siguiente"
+                onClick={goLightboxNext}
+              >
+                <ChevronRight size={28} strokeWidth={2} aria-hidden />
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            className={clsx(styles.lightboxNav, styles.lightboxNavNext)}
-            aria-label="Imagen siguiente"
-            onClick={goLightboxNext}
-          >
-            <ChevronRight size={28} strokeWidth={2} aria-hidden />
-          </button>
         </div>
       </div>,
       document.body,
@@ -273,8 +334,12 @@ const ShowcaseCard = memo(function ShowcaseCard({
       aria-labelledby={titleId}
       data-overlay-hidden={overlayHidden ? "true" : undefined}
     >
-      <div className={styles.showcaseStage} onClick={handleStageClick}>
-        <div className={styles.showcaseMedia}>
+      <div
+        ref={showcaseStageRef}
+        className={styles.showcaseStage}
+        onClick={handleStageClick}
+      >
+        <div className={styles.showcaseMedia} data-fade-in>
           <div className={styles.gallery}>
           <GalleryImage
             src={a}
@@ -302,36 +367,29 @@ const ShowcaseCard = memo(function ShowcaseCard({
         <div className={styles.overlaySlot}>
           <div
             data-details-card
+            data-fade-in
             className={clsx(
               styles.detailsCard,
               detailsCompact && styles.detailsCardCompact,
             )}
-            onClick={(e) => e.stopPropagation()}
+            role={detailsCompact ? "button" : undefined}
+            tabIndex={detailsCompact ? 0 : undefined}
+            aria-expanded={!detailsCompact}
+            aria-label={detailsCompact ? "Mostrar detalles del proyecto" : undefined}
+            onClick={handleDetailsCardClick}
+            onKeyDown={handleDetailsCardKeyDown}
           >
             {detailsCompact ? (
               <div className={styles.detailsCompactBar}>
-                <button
-                  type="button"
-                  className={styles.expandDetailsBtn}
-                  onClick={expandDetails}
-                  aria-expanded={!detailsCompact}
-                  aria-controls={titleId}
-                  aria-label="Mostrar detalles del proyecto"
-                >
-                  <PanelLeftOpen size={22} strokeWidth={2} aria-hidden />
-                </button>
                 <h3 id={titleId} className={styles.projectNameCompact}>
                   {project.name}
                 </h3>
+                <span className={styles.detailsChevronIcon} aria-hidden>
+                  <ChevronUp size={22} strokeWidth={2} />
+                </span>
               </div>
             ) : (
               <>
-                <p className={styles.featuredLabel}>
-                  <span className={styles.featuredStar} aria-hidden>
-                    ★
-                  </span>{" "}
-                  Proyecto destacado
-                </p>
                 <h3 id={titleId} className={styles.projectName}>
                   {project.name}
                 </h3>
@@ -345,6 +403,16 @@ const ShowcaseCard = memo(function ShowcaseCard({
                   />
                   <span>Tipo de cliente: {clientLabel(project.clientType)}</span>
                 </p>
+                <button
+                  type="button"
+                  className={styles.collapseDetailsBtn}
+                  onClick={collapseDetails}
+                  aria-expanded
+                  aria-controls={titleId}
+                  aria-label="Ocultar detalles del proyecto"
+                >
+                  <ChevronDown size={22} strokeWidth={2} aria-hidden />
+                </button>
               </>
             )}
           </div>
@@ -395,7 +463,7 @@ export function ProjectsSection() {
   const count = projects.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const headingWords = useMemo(() => buildHeadingWords(), []);
+  const sliderMainRef = useRef<HTMLDivElement>(null);
 
   useProjectsScrollPerf(sectionRef);
 
@@ -430,12 +498,48 @@ export function ProjectsSection() {
 
   const headingId = "projects-heading";
 
+  const changeProject = useCallback(
+    (delta: -1 | 1) => {
+      const nextIndex = (activeIndex + delta + count) % count;
+      if (nextIndex === activeIndex) return;
+
+      const el = sliderMainRef.current;
+      if (!el || prefersReducedMotion()) {
+        setActiveIndex(nextIndex);
+        return;
+      }
+
+      gsap.killTweensOf(el);
+      gsap.to(el, {
+        opacity: 0,
+        y: 16,
+        duration: SLIDE_OUT_DURATION,
+        ease: "power2.in",
+        onComplete: () => {
+          setActiveIndex(nextIndex);
+          gsap.fromTo(
+            el,
+            { opacity: 0, y: -12 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: SLIDE_IN_DURATION,
+              ease: "power3.out",
+              clearProps: "transform",
+            },
+          );
+        },
+      });
+    },
+    [activeIndex, count],
+  );
+
   const goPrev = () => {
-    setActiveIndex((i) => (i - 1 + count) % count);
+    changeProject(-1);
   };
 
   const goNext = () => {
-    setActiveIndex((i) => (i + 1) % count);
+    changeProject(1);
   };
 
   return (
@@ -460,24 +564,15 @@ export function ProjectsSection() {
               data-title-split
               aria-hidden="true"
             >
-              {headingWords.map((word, wi) => (
-                <Fragment key={word.key}>
-                  {wi > 0 ? " " : null}
-                  <span className={styles.titleWord}>
-                    {word.chars.map((item, ci) => (
-                      <span
-                        key={ci}
-                        data-title-char
-                        className={clsx(
-                          styles.titleChar,
-                          item.gradient && styles.titleGradient,
-                        )}
-                      >
-                        {item.char}
-                      </span>
-                    ))}
-                  </span>
-                </Fragment>
+              {PROJECTS_HEADING_SEGMENTS.map((segment) => (
+                <span
+                  key={segment.key}
+                  className={clsx(
+                    segment.accent ? styles.titleAccent : styles.titlePlain,
+                  )}
+                >
+                  {segment.text}
+                </span>
               ))}
             </span>
           </h2>
@@ -499,7 +594,7 @@ export function ProjectsSection() {
               <ChevronLeft size={26} strokeWidth={2} aria-hidden />
             </button>
 
-            <div className={styles.sliderMain} key={active.id}>
+            <div ref={sliderMainRef} className={styles.sliderMain}>
               <ShowcaseCard project={active} headingId={baseId} />
             </div>
 
@@ -514,26 +609,6 @@ export function ProjectsSection() {
           </div>
         </div>
 
-        <footer
-          className={styles.pagination}
-          aria-live="polite"
-          data-progress-step={activeIndex + 1}
-        >
-          <span className={styles.paginationCurrent}>
-            {String(activeIndex + 1).padStart(2, "0")}
-          </span>
-          <div className={styles.progressTrack} aria-hidden>
-            <div
-              className={styles.progressFill}
-              style={{
-                width: `${((activeIndex + 1) / count) * 100}%`,
-              }}
-            />
-          </div>
-          <span className={styles.paginationTotal}>
-            {String(count).padStart(2, "0")}
-          </span>
-        </footer>
       </div>
     </section>
   );
