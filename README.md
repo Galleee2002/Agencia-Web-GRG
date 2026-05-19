@@ -1,6 +1,6 @@
 # 🌐 Agencia Web GRG
 
-Landing corporativa de **Agencia Web GMG**: sitio de una sola página con identidad oscura, animaciones fluidas y secciones pensadas para mostrar portfolio, equipo y contacto.
+Landing corporativa de **Agencia Web GRG**: sitio de una sola página con identidad oscura, animaciones fluidas y secciones pensadas para mostrar portfolio, equipo y contacto.
 
 Construido con **Next.js 16** (App Router), **React 19**, **TypeScript**, **SCSS Modules** y **Tailwind CSS 4**.
 
