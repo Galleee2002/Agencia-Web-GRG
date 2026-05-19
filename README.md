@@ -76,7 +76,7 @@ docs/
 
 ```bash
 git clone <url-del-repositorio>
-cd Agencia-Web-GMG
+cd Agencia-Web-GRG
 pnpm install
 ```
 
