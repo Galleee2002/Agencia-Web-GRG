@@ -623,9 +623,6 @@ export function ProjectsSection() {
       data-project-theme={active.themeId}
     >
       <div className={styles.shell}>
-        <div className={styles.introGlow} aria-hidden>
-          <span className={styles.introGlowRing} />
-        </div>
         <div className={styles.shellIntro}>
           <header ref={introRef} className={styles.header} data-intro-display>
             <p className={styles.introEyebrow}>Proyectos</p>

@@ -129,6 +129,7 @@ Tras sustituir capturas en `public/projects/`, actualiza la constante `PROJECT_I
 |-----------|-----------|
 | [`docs/RULES.md`](docs/RULES.md) | Principios SOLID, Atomic Design, TypeScript, React, Next.js, accesibilidad y checklist de calidad |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Paleta, tipografía, espaciado y reglas visuales (tema oscuro tipo producto premium) |
+| [`docs/PROMPT-CONTEXT.md`](docs/PROMPT-CONTEXT.md) | Brief de contexto para prompts (Cursor / ChatGPT): stack, estilos, arquitectura y restricciones |
 | [`AGENTS.md`](AGENTS.md) | Notas sobre **Next.js 16** en este repositorio (APIs y convenciones que pueden diferir de versiones anteriores) |
 
 > **Nota:** Este proyecto usa Next.js 16 con cambios respecto a versiones previas. Antes de implementar rutas, caché o APIs nuevas, consulta la documentación empaquetada en `node_modules/next/dist/docs/`.

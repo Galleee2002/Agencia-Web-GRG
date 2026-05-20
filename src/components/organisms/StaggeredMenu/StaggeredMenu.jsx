@@ -31,6 +31,7 @@ const StaggeredMenu = ({
   displayItemNumbering = true,
   className,
   logoUrl = '/logo.svg',
+  logoHref = '/#inicio',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
@@ -455,7 +456,11 @@ const StaggeredMenu = ({
   }, [isFixed]);
 
   const logoBlock = (
-    <div className="sm-logo" aria-label="Logo">
+    <a
+      className="sm-logo"
+      href={logoHref}
+      aria-label="Ir al inicio"
+    >
       <img
         src={logoUrl || '/logo.svg'}
         alt="Logo"
@@ -464,7 +469,7 @@ const StaggeredMenu = ({
         width={110}
         height={24}
       />
-    </div>
+    </a>
   );
 
   const headerContactCta =

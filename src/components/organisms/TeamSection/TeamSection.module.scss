@@ -1,7 +1,7 @@
 @use "sass:math";
 
 // Alineado con ProjectsSection: banda clara + acento Framer
-$void-black: #000000;
+$team-ink: #252525;
 $pure-white: #ffffff;
 // Gris cuerpo: un poco más oscuro que antes (#a6a6a6) para legibilidad sobre blanco
 $muted-silver: #6a6a6a;
@@ -14,7 +14,7 @@ $photo-radius: 14px;
 .section {
   position: relative;
   background: $pure-white;
-  color: $void-black;
+  color: $team-ink;
   padding-block: clamp(60px, 8vw, 120px) clamp(72px, 9vw, 120px);
   // Evita scroll horizontal por tipografía o sombras en viewports estrechos
   overflow-x: hidden;
@@ -42,7 +42,7 @@ $photo-radius: 14px;
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.06em;
-  color: $void-black;
+  color: $team-ink;
 }
 
 .headingStack {
@@ -71,11 +71,11 @@ $photo-radius: 14px;
 }
 
 .headingLead {
-  color: $void-black;
+  color: $team-ink;
 }
 
 .headingAccent {
-  color: $void-black;
+  color: $team-ink;
 }
 
 // Línea bajo el título: barrido desde “Quiénes” hacia ~fin de “somos”
@@ -183,7 +183,7 @@ $photo-radius: 14px;
   font-weight: 300;
   line-height: 0.9;
   letter-spacing: -0.05em;
-  color: rgba(0, 0, 0, 0.08);
+  color: rgba(37, 37, 37, 0.08);
   user-select: none;
 
   @media (max-width: 380px) {
@@ -203,7 +203,7 @@ $photo-radius: 14px;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.04em;
-  color: $void-black;
+  color: $team-ink;
 }
 
 // Acento de marca (alineado con línea del título y resto del sitio)
@@ -219,7 +219,7 @@ $photo-radius: 14px;
   line-height: 1.5;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: $void-black;
+  color: $team-ink;
 }
 
 .description {
@@ -234,7 +234,7 @@ $photo-radius: 14px;
 
 .descEm {
   text-decoration: underline;
-  text-decoration-color: rgba(0, 0, 0, 0.28);
+  text-decoration-color: rgba(37, 37, 37, 0.28);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }

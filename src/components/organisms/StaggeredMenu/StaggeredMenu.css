@@ -42,7 +42,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(0, 0, 0, 0.38);
+  background: rgba(37, 37, 37, 0.42);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.32s ease;
@@ -98,11 +98,11 @@
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 0.75rem;
-  min-height: calc(44px + 0.8rem);
+  min-height: 0;
   width: 100%;
   max-width: 100%;
   margin-inline: auto;
-  padding: 0.4rem 0;
+  padding: 0.5rem;
   pointer-events: auto;
   border-radius: 0;
   background: transparent;
@@ -121,21 +121,44 @@
 
 .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
   width: min(56rem, calc(100% - 1.5rem));
-  padding: 0.4rem 0.65rem;
+  padding: 0.5rem;
   border-radius: 100px;
-  background: rgba(9, 9, 9, 0.82);
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   box-shadow:
-    rgba(255, 255, 255, 0.06) 0 0.5px 0 0.5px inset,
-    rgba(0, 0, 0, 0.35) 0 12px 40px;
+    rgba(0, 0, 0, 0.06) 0 0.5px 0 0.5px inset,
+    rgba(0, 0, 0, 0.08) 0 12px 40px;
 }
 
-/* Evita un tercer blur de la barra compacta mientras el overlay está activo */
+/* Menú abierto: solo logo centrado en blanco, sin pill ni botones */
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-sticky-brand-inner,
 .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem;
+  background: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  background: rgba(9, 9, 9, 0.92);
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-brand-col--start,
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-brand-col--end {
+  display: none;
+}
+
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-brand-col--center {
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-logo-img {
+  filter: brightness(0) invert(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -180,11 +203,11 @@
   justify-self: start;
   min-width: 0;
   min-height: 44px;
-  height: 44px;
-  padding: 0 1rem;
+  height: auto;
+  padding: 0.6875rem;
   background: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(220, 220, 220, 0.28);
+  color: #252525;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 100px;
   line-height: 1;
   transition:
@@ -194,12 +217,13 @@
 }
 
 .sm-sticky-brand-inner .sm-header-left.sm-toggle {
-  color: #ffffff !important;
+  color: #252525 !important;
 }
 
-.sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(220, 220, 220, 0.58);
+@media (hover: hover) and (min-width: 810px) {
+  .sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
+    border-color: rgba(37, 37, 37, 0.55);
+  }
 }
 
 .sm-sticky-brand-inner .sm-header-left.sm-toggle:focus-visible {
@@ -299,15 +323,19 @@
 }
 
 .sm-sticky-brand-inner .sm-header-cta {
-  color: #ffffff;
-  border-color: rgba(220, 220, 220, 0.28);
+  min-height: 44px;
+  height: auto;
+  padding: 0.6875rem;
+  color: #252525;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
-.sm-sticky-brand-inner .sm-header-cta:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(220, 220, 220, 0.58);
-  color: #ffffff;
-  transform: none;
+@media (hover: hover) and (min-width: 810px) {
+  .sm-sticky-brand-inner .sm-header-cta:hover {
+    border-color: rgba(37, 37, 37, 0.55);
+    color: #252525;
+    transform: none;
+  }
 }
 
 .sm-sticky-brand-inner .sm-header-cta:focus-visible {
@@ -360,6 +388,15 @@
   justify-self: center;
   grid-column: 2;
   user-select: none;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sm-logo:focus-visible {
+  outline: 2px solid var(--sm-accent, #0099ff);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .sm-sticky-brand-inner .sm-brand-col--center .sm-logo {
@@ -655,7 +692,7 @@
 
 .sm-panel-item {
   position: relative;
-  color: #000;
+  color: #252525;
   font-weight: 600;
   font-size: 3.5rem;
   cursor: pointer;
@@ -723,10 +760,6 @@
     right: 0;
   }
 
-  .staggered-menu-wrapper[data-open] .sm-logo-img,
-  .sm-sticky-brand-host[data-open] .sm-logo-img {
-    filter: invert(100%);
-  }
 }
 
 /* Móvil: logo en pill arriba; dock inferior (iconos, sin fondo de barra) */
@@ -748,7 +781,7 @@
     max-width: calc(100% - 1.5rem);
     min-height: 0;
     margin-inline: auto;
-    padding: 0.4rem 0.95rem;
+    padding: 0.5rem;
     border-radius: 100px;
     background: transparent;
     -webkit-backdrop-filter: none;
@@ -759,22 +792,21 @@
   .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
     width: fit-content;
     max-width: calc(100% - 1.5rem);
-    background: rgba(9, 9, 9, 0.82);
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     box-shadow:
-      rgba(255, 255, 255, 0.06) 0 0.5px 0 0.5px inset,
-      rgba(0, 0, 0, 0.35) 0 12px 40px;
-  }
-
-  .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
-    background: rgba(9, 9, 9, 0.92);
+      rgba(0, 0, 0, 0.06) 0 0.5px 0 0.5px inset,
+      rgba(0, 0, 0, 0.08) 0 12px 40px;
   }
 
   .staggered-menu-wrapper.fixed-wrapper .sm-brand-col--center {
     flex: 0 0 auto;
+  }
+
+  /* Panel a pantalla completa: logo negro legible sobre fondo blanco */
+  .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-logo-img {
+    filter: none;
   }
 }
 
@@ -970,10 +1002,5 @@
     width: 100%;
     left: 0;
     right: 0;
-  }
-
-  .staggered-menu-wrapper[data-open] .sm-logo-img,
-  .sm-sticky-brand-host[data-open] .sm-logo-img {
-    filter: invert(100%);
   }
 }
