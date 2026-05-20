@@ -11,13 +11,13 @@ export function AgencyStaggeredMenu() {
     <StaggeredMenu
       isFixed
       position="left"
-      logoUrl="/logo.svg"
-      colors={["#090909", "#000000"]}
+      logoUrl="/logo-negro.svg"
+      colors={["#252525"]}
       accentColor="#0099ff"
       items={SITE_NAV_ITEMS}
       displaySocials={false}
-      menuButtonColor="#ffffff"
-      openMenuButtonColor="#ffffff"
+      menuButtonColor="#252525"
+      openMenuButtonColor="#252525"
       changeMenuColorOnOpen={false}
       ctaLabel="Contáctanos"
       onMenuOpen={() => setMenuOpen(true)}

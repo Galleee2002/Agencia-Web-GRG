@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
         pathname: "/projects/**",
       },
       { pathname: "/team/**", search: "" },
+      { pathname: "/work-with-us/**", search: "" },
       { pathname: "/logo.svg", search: "" },
     ],
   },

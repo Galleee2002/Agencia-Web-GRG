@@ -5,6 +5,7 @@ import {
   ProjectsSection,
   SiteFooterReveal,
   TeamSection,
+  WorkWithUsSection,
 } from "@/components/organisms";
 import { HomeHeroStack } from "./HomeHeroStack";
 import styles from "./HomeTemplate.module.scss";
@@ -18,6 +19,7 @@ export function HomeTemplate() {
           <Hero />
         </div>
       </HomeHeroStack>
+      <WorkWithUsSection />
       <ProjectsSection />
       <TeamSection />
       <ContactSection />

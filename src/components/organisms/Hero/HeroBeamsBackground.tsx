@@ -11,11 +11,11 @@ export function HeroBeamsBackground() {
   return (
     <div className={styles.heroBackdrop} aria-hidden>
       <Plasma
-        color="#0099ff"
+        color="#5a5a5a"
         speed={0.6}
         direction="reverse"
         scale={0.72}
-        opacity={0.8}
+        opacity={0.44}
         mouseInteractive
         paused={isMenuOpen}
       />

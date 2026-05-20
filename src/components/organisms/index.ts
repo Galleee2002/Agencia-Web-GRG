@@ -1,4 +1,5 @@
 export * from "./Hero/Hero";
+export * from "./WorkWithUsSection";
 export * from "./ProjectsSection/ProjectsSection";
 export * from "./SiteFooter/SiteFooterReveal";
 export * from "./TeamSection/TeamSection";

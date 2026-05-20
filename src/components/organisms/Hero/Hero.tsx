@@ -19,7 +19,7 @@ export function Hero() {
           Una presencia digital sólida, moderna y pensada para convertir visitas
           en clientes.
         </p>
-        <Link className={styles.cta} href="#contact">
+        <Link className={styles.cta} href="#trabajar-con-nosotros">
           Empieza aquí{" "}
         </Link>
       </div>

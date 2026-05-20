@@ -37,6 +37,21 @@ function projectImage(file: string): string {
 export const portfolioProjects: PortfolioProject[] = [
   {
     id: 1,
+    themeId: 6,
+    name: "Fuera De Contexto",
+    description:
+      "Ecommerce desarrollado para una marca argentina de indumentaria orientada a la venta online de ropa. La plataforma incorpora catálogo de productos, base de datos, servidor, carrito de compras y pagos online, ofreciendo una experiencia clara para clientes y administradores.",
+    clientType: "national",
+    technologies: ["React", "Vite", "WebSockets", "S3", "Tailwind CSS"],
+    images: [
+      projectImage("FUERA1.webp"),
+      projectImage("FUERA2.webp"),
+      projectImage("FUERA3.webp"),
+    ],
+    href: "/proyectos/fuera-de-contexto",
+  },
+  {
+    id: 2,
     themeId: 1,
     name: "BVI Finance",
     description:
@@ -58,7 +73,7 @@ export const portfolioProjects: PortfolioProject[] = [
     href: "/proyectos/bvi-finance",
   },
   {
-    id: 2,
+    id: 3,
     themeId: 2,
     name: "The Coral Garden",
     description:
@@ -71,21 +86,6 @@ export const portfolioProjects: PortfolioProject[] = [
       projectImage("GARDEN3.webp"),
     ],
     href: "/proyectos/the-coral-garden",
-  },
-  {
-    id: 3,
-    themeId: 3,
-    name: "GPNi",
-    description:
-      "Plataforma educativa internacional desarrollada para un equipo con presencia en China, Japón y Estados Unidos. El sistema centraliza cursos, webinars, seminarios y contenido sobre nutrición, vida fitness y formación profesional, ofreciendo una experiencia organizada para usuarios y administradores.",
-    clientType: "international",
-    technologies: ["React", "D3.js", "Node.js", "Kafka", "AWS"],
-    images: [
-      projectImage("gpni.webp"),
-      projectImage("gpni2.webp"),
-      projectImage("gpni3.webp"),
-    ],
-    href: "/proyectos/gpni",
   },
   {
     id: 4,
@@ -104,6 +104,21 @@ export const portfolioProjects: PortfolioProject[] = [
   },
   {
     id: 5,
+    themeId: 3,
+    name: "GPNi",
+    description:
+      "Plataforma educativa internacional desarrollada para un equipo con presencia en China, Japón y Estados Unidos. El sistema centraliza cursos, webinars, seminarios y contenido sobre nutrición, vida fitness y formación profesional, ofreciendo una experiencia organizada para usuarios y administradores.",
+    clientType: "international",
+    technologies: ["React", "D3.js", "Node.js", "Kafka", "AWS"],
+    images: [
+      projectImage("gpni.webp"),
+      projectImage("gpni2.webp"),
+      projectImage("gpni3.webp"),
+    ],
+    href: "/proyectos/gpni",
+  },
+  {
+    id: 6,
     themeId: 5,
     name: "El Sapito 3D",
     description:
@@ -116,20 +131,5 @@ export const portfolioProjects: PortfolioProject[] = [
       projectImage("SAPO3.webp"),
     ],
     href: "/proyectos/sapito3d",
-  },
-  {
-    id: 6,
-    themeId: 6,
-    name: "Fuera De Contexto",
-    description:
-      "Ecommerce desarrollado para una marca argentina de indumentaria orientada a la venta online de ropa. La plataforma incorpora catálogo de productos, base de datos, servidor, carrito de compras y pagos online, ofreciendo una experiencia clara para clientes y administradores.",
-    clientType: "national",
-    technologies: ["React", "Vite", "WebSockets", "S3", "Tailwind CSS"],
-    images: [
-      projectImage("FUERA1.webp"),
-      projectImage("FUERA2.webp"),
-      projectImage("FUERA3.webp"),
-    ],
-    href: "/proyectos/fuera-de-contexto",
   },
 ];
