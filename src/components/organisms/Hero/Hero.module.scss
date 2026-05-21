@@ -3,6 +3,13 @@ $hero-ink: #252525;
 $pure-white: #ffffff;
 $muted-silver: #6a6a6a;
 $framer-blue: #0099ff;
+$accent-paint-delay: 3s;
+$accent-paint-duration: 1.35s;
+// Inicio del barrido del CTA: casi al final del de «Experiencias», sin esperar al 100%
+$cta-fill-start-lead: 0.55s;
+$cta-hero-delay: $accent-paint-delay + $accent-paint-duration - $cta-fill-start-lead;
+$cta-fill-duration: 0.35s;
+$cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 .hero {
   position: relative;
@@ -96,6 +103,23 @@ $framer-blue: #0099ff;
   }
 }
 
+// Barrido azul en capa ::before (hover negro no compite con animation-fill)
+@keyframes ctaFillScale {
+  0% {
+    transform: scaleX(0);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes ctaBorderFilled {
+  to {
+    border-color: $framer-blue;
+  }
+}
+
 @keyframes titleWordAccentPaint {
   0% {
     background-position: 100% 0;
@@ -125,7 +149,7 @@ $framer-blue: #0099ff;
     }
   }
 
-  // Tras el CTA (2.35s delay + 0.65s duración): barrido azul desde la E
+  // Tras el CTA (2.35s delay + 0.65s duración): barrido azul en «Experiencias»
   .titleWord.titleWordAccent {
     background-image: linear-gradient(
       90deg,
@@ -154,11 +178,18 @@ $framer-blue: #0099ff;
     animation-delay: 1.65s;
   }
 
-  // Tras el párrafo (1.65s delay + 0.7s duración)
+  // Tras el párrafo (1.65s delay + 0.7s duración): entrada del CTA en negro
   .cta {
     opacity: 0;
-    animation: ctaSlideUp 0.65s ease forwards;
-    animation-delay: 2.35s;
+    animation:
+      ctaSlideUp 0.65s ease forwards,
+      ctaBorderFilled 0s linear forwards;
+    animation-delay: 2.35s, calc($cta-hero-delay + $cta-fill-duration);
+
+    &::before {
+      animation: ctaFillScale $cta-fill-duration $cta-fill-ease forwards;
+      animation-delay: $cta-hero-delay;
+    }
   }
 }
 
@@ -211,11 +242,11 @@ $framer-blue: #0099ff;
     "ss07" on;
 }
 
-// CTA pill sobre fondo claro — acento alineado con TeamSection .nameAccent ($framer-blue)
-$cta-fill-duration: 0.42s;
-$cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
-
+// CTA pill — fondo negro + capa azul (::before) alineada con .nameAccent
 .cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   margin-top: clamp(24px, 4vw, 36px);
   display: inline-flex;
   align-items: center;
@@ -223,16 +254,7 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   min-height: 44px;
   padding: 10px clamp(20px, 3vw, 28px);
   border-radius: 100px;
-  background-image: linear-gradient(
-    90deg,
-    $framer-blue 0%,
-    $framer-blue 50%,
-    $hero-ink 50%,
-    $hero-ink 100%
-  );
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  background-repeat: no-repeat;
+  background-color: $hero-ink;
   color: $pure-white;
   border: 1px solid $hero-ink;
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
@@ -248,26 +270,44 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   text-decoration: none;
   box-shadow: rgba(0, 0, 0, 0.1) 0 10px 28px;
   transition:
-    background-position $cta-fill-duration $cta-fill-ease,
+    transform 0.2s ease,
     border-color $cta-fill-duration $cta-fill-ease,
     box-shadow 0.2s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: $framer-blue;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform $cta-fill-duration $cta-fill-ease;
+    z-index: 0;
+    pointer-events: none;
+  }
 }
 
-.cta:hover {
-  background-position: 0% 0;
-  border-color: $framer-blue;
-  box-shadow: rgba(0, 153, 255, 0.22) 0 12px 32px;
+@media (min-width: 810px) {
+  .cta:hover {
+    border-color: $hero-ink;
+    box-shadow: rgba(0, 0, 0, 0.14) 0 12px 32px;
+
+    &::before {
+      transform: scaleX(0);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cta {
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
-  }
+  @media (min-width: 810px) {
+    .cta:hover {
+      border-color: $hero-ink;
 
-  .cta:hover {
-    background-position: 0% 0;
+      &::before {
+        transform: scaleX(0);
+      }
+    }
   }
 }
 
@@ -282,6 +322,13 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   .cta {
     width: 100%;
     max-width: 20rem;
+    background: $hero-ink;
+    background-image: none;
+  }
+
+  .cta:hover {
+    transform: scale(0.985);
+    box-shadow: rgba(0, 0, 0, 0.14) 0 12px 32px;
   }
 }
 
