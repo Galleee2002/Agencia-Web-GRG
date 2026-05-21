@@ -6,7 +6,13 @@ export type SiteNavItem = {
 
 export const SITE_NAV_ITEMS: SiteNavItem[] = [
   { label: "Inicio", link: "/#inicio", ariaLabel: "Ir al inicio" },
+  {
+    label: "Proceso",
+    link: "/#trabajar-con-nosotros",
+    ariaLabel: "Ir al proceso de trabajo",
+  },
   { label: "Proyectos", link: "/#proyectos", ariaLabel: "Ir a proyectos" },
+  { label: "Nosotros", link: "/#equipo", ariaLabel: "Ir a nosotros" },
   { label: "Contacto", link: "/#contact", ariaLabel: "Ir a contacto" },
 ];
 
