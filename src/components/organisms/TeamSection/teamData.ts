@@ -9,6 +9,16 @@ export type TeamMemberNameSegment = {
   accent?: boolean;
 };
 
+/** Invalida caché de `next/image` al reemplazar ilustraciones en `public/team/`. */
+const TEAM_IMAGE_CACHE_VERSION = "20260521";
+
+function teamIllustration(file: string): string {
+  const webpName = file.endsWith(".webp")
+    ? file
+    : `${file.replace(/\.(png|jpe?g|svg)$/i, "")}.webp`;
+  return `/team/${webpName}?v=${TEAM_IMAGE_CACHE_VERSION}`;
+}
+
 export type TeamMember = {
   name: string;
   /** Si se define, sustituye la representación plana de `name` (p. ej. letras destacadas). */
@@ -17,6 +27,8 @@ export type TeamMember = {
   description: readonly DescriptionPart[];
   imageSrc: string;
   imageAlt: string;
+  imageWidth: number;
+  imageHeight: number;
 };
 
 export const teamMembers: readonly TeamMember[] = [
@@ -35,8 +47,10 @@ export const teamMembers: readonly TeamMember[] = [
         text: ", rendimiento y experiencias que convierten. Combina criterio de producto con ejecución técnica impecable.",
       },
     ],
-    imageSrc: "/team/integrante-1-photo.jpg",
-    imageAlt: "Retrato de Gael Garcia",
+    imageSrc: teamIllustration("gael-ilustracion.webp"),
+    imageAlt: "Ilustración de Gael Garcia",
+    imageWidth: 1086,
+    imageHeight: 1448,
   },
   {
     name: "Manuel Rodriguez Garcia",
@@ -57,7 +71,9 @@ export const teamMembers: readonly TeamMember[] = [
         text: " alineados a objetivos de negocio, sin perder de vista el detalle visual.",
       },
     ],
-    imageSrc: "/team/miembro-2.svg",
-    imageAlt: "Retrato de Manuel Rodriguez Garcia",
+    imageSrc: teamIllustration("manuel-ilustracion.webp"),
+    imageAlt: "Ilustración de Manuel Rodriguez Garcia",
+    imageWidth: 1086,
+    imageHeight: 1448,
   },
 ] as const;

@@ -6,12 +6,7 @@ import {
   useMotionValue,
   useTransform,
 } from "motion/react";
-import {
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  type RefObject,
-} from "react";
+import { useCallback, useLayoutEffect, useRef, type RefObject } from "react";
 
 import { ContactForm } from "./ContactForm";
 import { ContactIntro } from "./ContactIntro";

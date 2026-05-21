@@ -235,7 +235,9 @@ $form-reveal-offset-item: -28px;
   margin-inline-start: 0.35em;
   font-weight: 400;
   color: $ink-muted;
-  transition: color 0.25s $form-reveal-ease, opacity 0.25s $form-reveal-ease;
+  transition:
+    color 0.25s $form-reveal-ease,
+    opacity 0.25s $form-reveal-ease;
 }
 
 .inputWrap {

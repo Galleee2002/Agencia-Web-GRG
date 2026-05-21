@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         // Capturas del portfolio (`?v=` para invalidar caché al reemplazar assets).
         pathname: "/projects/**",
       },
-      { pathname: "/team/**", search: "" },
+      { pathname: "/team/**" },
       { pathname: "/work-with-us/**", search: "" },
       { pathname: "/logo.svg", search: "" },
     ],

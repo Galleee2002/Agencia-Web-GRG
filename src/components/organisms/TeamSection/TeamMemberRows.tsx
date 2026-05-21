@@ -100,17 +100,19 @@ export function TeamMemberRows({ members }: Props) {
             </div>
           </div>
 
-          <div className={styles.media}>
+          <figure className={styles.media}>
             <Image
-              className={styles.photo}
+              className={styles.illustration}
               src={member.imageSrc}
               alt={member.imageAlt}
-              fill
-              sizes="(min-width: 809px) 300px, min(72vw, 300px)"
-              unoptimized={member.imageSrc.endsWith(".svg")}
-              priority={false}
+              width={member.imageWidth}
+              height={member.imageHeight}
+              sizes="(min-width: 809px) min(38vw, 420px), min(85vw, 320px)"
+              quality={72}
+              loading="lazy"
+              decoding="async"
             />
-          </div>
+          </figure>
         </article>
       ))}
     </div>

@@ -1,5 +1,3 @@
-@use "sass:math";
-
 // Alineado con ProjectsSection: banda clara + acento Framer
 $team-ink: #252525;
 $pure-white: #ffffff;
@@ -7,9 +5,7 @@ $pure-white: #ffffff;
 $muted-silver: #6a6a6a;
 $framer-blue: #0099ff;
 $team-breakpoint: 809px;
-$photo-width: 300px;
-$photo-aspect: math.div(4, 5);
-$photo-radius: 14px;
+$illustration-max: 420px;
 
 .section {
   position: relative;
@@ -133,7 +129,7 @@ $photo-radius: 14px;
     transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
 
   @media (min-width: $team-breakpoint) {
-    grid-template-columns: 1fr min(36%, #{$photo-width});
+    grid-template-columns: 1fr min(38%, #{$illustration-max});
     grid-template-areas: "copy media";
     gap: clamp(32px, 5vw, 56px);
   }
@@ -148,7 +144,7 @@ $photo-radius: 14px;
   transform: translate3d(8px, 16px, 0);
 
   @media (min-width: $team-breakpoint) {
-    grid-template-columns: min(36%, #{$photo-width}) 1fr;
+    grid-template-columns: min(38%, #{$illustration-max}) 1fr;
     grid-template-areas: "media copy";
   }
 }
@@ -241,20 +237,10 @@ $photo-radius: 14px;
 
 .media {
   grid-area: media;
-  position: relative;
-  width: min(100%, #{$photo-width});
-  max-width: $photo-width;
+  margin: 0;
+  width: min(100%, clamp(240px, 85vw, #{$illustration-max}));
+  max-width: $illustration-max;
   margin-inline: auto;
-  aspect-ratio: $photo-aspect;
-  border-radius: $photo-radius;
-  overflow: hidden;
-  box-shadow:
-    rgba(0, 0, 0, 0.06) 0 0 0 1px inset,
-    rgba(0, 0, 0, 0.12) 0 14px 36px;
-
-  @media (max-width: ($team-breakpoint - 1px)) {
-    width: min(100%, clamp(200px, 72vw, #{$photo-width}));
-  }
 
   @media (min-width: $team-breakpoint) {
     width: 100%;
@@ -269,6 +255,11 @@ $photo-radius: 14px;
   }
 }
 
-.photo {
-  object-fit: cover;
+.illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(72vh, 560px);
+  object-fit: contain;
+  object-position: center;
 }
