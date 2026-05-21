@@ -12,6 +12,12 @@ $cta-fill-duration: 0.65s;
 $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 .hero {
+  --hero-title-ink: #{$hero-ink};
+  --hero-cta-surface: var(--site-cta-surface);
+  --hero-cta-ink: var(--site-cta-ink);
+  --hero-cta-ink-unfilled: #{$hero-ink};
+  --hero-description-ink: #{$muted-silver};
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -20,8 +26,20 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   padding: 0;
   min-height: 100vh;
   min-height: 100dvh;
-  background: $pure-white;
-  color: $hero-ink;
+  background: var(--site-hero-bg);
+  color: var(--hero-title-ink);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+:global(html.dark) .hero {
+  --hero-title-ink: var(--site-frost-surface);
+  --hero-cta-surface: var(--site-cta-surface);
+  --hero-cta-ink: var(--site-cta-ink);
+  --hero-cta-ink-unfilled: var(--site-cta-ink);
+  --hero-description-ink: var(--site-ink-graphite);
+  color: var(--site-frost-surface);
 }
 
 .inner {
@@ -55,13 +73,14 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   font-weight: 700;
   line-height: 0.88;
   letter-spacing: -0.05em;
-  color: $hero-ink;
+  color: var(--hero-title-ink);
   text-transform: uppercase;
   text-wrap: balance;
 }
 
 .titleWord {
   display: block;
+  color: inherit;
   opacity: 1;
 }
 
@@ -107,12 +126,14 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
 @keyframes ctaFillPaint {
   0% {
     background-position: 100% 0;
-    border-color: $hero-ink;
+    border-color: var(--hero-cta-surface);
+    color: var(--hero-cta-ink-unfilled);
   }
 
   100% {
     background-position: 0% 0;
     border-color: $framer-blue;
+    color: #{$pure-white};
   }
 }
 
@@ -151,8 +172,8 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
       90deg,
       $framer-blue 0%,
       $framer-blue 50%,
-      $hero-ink 50%,
-      $hero-ink 100%
+      var(--hero-title-ink) 50%,
+      var(--hero-title-ink) 100%
     );
     background-size: 200% 100%;
     background-position: 100% 0;
@@ -174,8 +195,9 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     animation-delay: 1.65s;
   }
 
-  // Tras el párrafo (1.65s delay + 0.7s duración): entrada del CTA en negro
+  // Tras el párrafo (1.65s delay + 0.7s duración): entrada del CTA; fill + ink en sincronía
   .cta {
+    color: var(--hero-cta-ink-unfilled);
     opacity: 0;
     animation:
       ctaSlideUp 0.65s ease forwards,
@@ -200,6 +222,9 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     opacity: 1;
     animation: none;
     transform: none;
+    background-position: 0% 0;
+    border-color: $framer-blue;
+    color: #{$pure-white};
   }
 
   .titleWord.titleWordAccent {
@@ -223,7 +248,7 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: -0.01px;
-  color: $muted-silver;
+  color: var(--hero-description-ink);
   font-feature-settings:
     "cv01" on,
     "cv05" on,
@@ -246,14 +271,14 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     90deg,
     $framer-blue 0%,
     $framer-blue 50%,
-    $hero-ink 50%,
-    $hero-ink 100%
+    var(--hero-cta-surface) 50%,
+    var(--hero-cta-surface) 100%
   );
   background-size: 200% 100%;
   background-position: 100% 0;
   background-repeat: no-repeat;
-  color: $pure-white;
-  border: 1px solid $hero-ink;
+  color: var(--hero-cta-ink);
+  border: 1px solid var(--hero-cta-surface);
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: 15px;
   font-weight: 500;
@@ -270,13 +295,15 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     transform 0.2s ease,
     background-position $cta-fill-duration $cta-fill-ease,
     border-color $cta-fill-duration $cta-fill-ease,
+    color $cta-fill-duration $cta-fill-ease,
     box-shadow 0.2s ease;
 }
 
 @media (min-width: 810px) {
   .cta:hover {
     background-position: 100% 0;
-    border-color: $hero-ink;
+    border-color: var(--hero-cta-surface);
+    color: var(--hero-cta-ink-unfilled);
     box-shadow: rgba(0, 0, 0, 0.14) 0 12px 32px;
   }
 }
@@ -285,7 +312,8 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   @media (min-width: 810px) {
     .cta:hover {
       background-position: 100% 0;
-      border-color: $hero-ink;
+      border-color: var(--hero-cta-surface);
+      color: var(--hero-cta-ink-unfilled);
     }
   }
 }
@@ -301,7 +329,7 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   .cta {
     width: 100%;
     max-width: 20rem;
-    background: $hero-ink;
+    background: var(--hero-cta-surface);
     background-image: none;
   }
 

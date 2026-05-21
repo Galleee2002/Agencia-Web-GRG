@@ -9,6 +9,8 @@ import {
   useSiteLegalLinks,
   useSiteNavItems,
 } from "@/components/providers/I18nProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import { siteLogoForTheme } from "@/config/siteAssets";
 import { SITE_SOCIAL_LINKS } from "@/config/siteNavigation";
 
 import styles from "./SiteFooter.module.scss";
@@ -23,6 +25,7 @@ function socialIconForLabel(label: string) {
 
 export function SiteFooterContent() {
   const { t } = useI18n();
+  const { theme } = useTheme();
   const navItems = useSiteNavItems();
   const legalLinks = useSiteLegalLinks();
   const companyName = t("footer.companyName");
@@ -40,7 +43,7 @@ export function SiteFooterContent() {
           >
             <Image
               className={styles.logo}
-              src="/logo-negro.svg"
+              src={siteLogoForTheme(theme)}
               alt=""
               width={120}
               height={36}

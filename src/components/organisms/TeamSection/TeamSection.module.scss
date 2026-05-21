@@ -9,8 +9,8 @@ $illustration-max: 336px; // 80% de 420px
 
 .section {
   position: relative;
-  background: $pure-white;
-  color: $team-ink;
+  background: var(--site-surface);
+  color: var(--site-ink);
   padding-block: clamp(60px, 8vw, 120px) clamp(72px, 9vw, 120px);
   // Evita scroll horizontal por tipografía o sombras en viewports estrechos
   overflow-x: hidden;
@@ -226,6 +226,12 @@ $illustration-max: 336px; // 80% de 420px
   font-weight: 400;
   line-height: 1.6;
   color: $muted-silver;
+}
+
+:global(html.dark) .section {
+  .description {
+    color: var(--site-ink-graphite);
+  }
 }
 
 .descEm {

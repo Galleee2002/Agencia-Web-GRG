@@ -294,7 +294,7 @@ const StaggeredMenu = ({
   const animateColor = useCallback(
     opening => {
       const btn = toggleBtnRef.current;
-      if (!btn) return;
+      if (!btn || mobileBottomNavRef.current) return;
       colorTweenRef.current?.kill();
       if (changeMenuColorOnOpen) {
         const targetColor = opening ? openMenuButtonColor : menuButtonColor;
@@ -312,15 +312,19 @@ const StaggeredMenu = ({
   );
 
   React.useEffect(() => {
-    if (toggleBtnRef.current) {
-      if (changeMenuColorOnOpen) {
-        const targetColor = openRef.current ? openMenuButtonColor : menuButtonColor;
-        gsap.set(toggleBtnRef.current, { color: targetColor });
-      } else {
-        gsap.set(toggleBtnRef.current, { color: menuButtonColor });
-      }
+    const btn = toggleBtnRef.current;
+    if (!btn) return;
+    if (mobileBottomNav) {
+      gsap.set(btn, { clearProps: 'color' });
+      return;
     }
-  }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
+    if (changeMenuColorOnOpen) {
+      const targetColor = openRef.current ? openMenuButtonColor : menuButtonColor;
+      gsap.set(btn, { color: targetColor });
+    } else {
+      gsap.set(btn, { color: menuButtonColor });
+    }
+  }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor, mobileBottomNav]);
 
   const animateText = useCallback(opening => {
     if (isFixed) return;
@@ -591,7 +595,6 @@ const StaggeredMenu = ({
           aria-label="Acciones principales"
         >
           {menuMobileDockToggle}
-          {headerContactCta}
         </nav>
       ) : null}
     </>

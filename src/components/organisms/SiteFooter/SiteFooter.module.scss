@@ -9,7 +9,7 @@ $footer-breakpoint: 809px;
   position: relative;
   box-sizing: border-box;
   background-color: var(--background);
-  color: $void-black;
+  color: var(--site-ink-strong);
   padding-block: clamp(40px, 6vw, 72px) clamp(32px, 5vw, 48px);
   overflow-x: clip;
 }
@@ -207,5 +207,23 @@ $footer-breakpoint: 809px;
     outline: 2px solid $framer-blue;
     outline-offset: 3px;
     border-radius: 2px;
+  }
+}
+
+:global(html.dark) .wrap {
+  .description,
+  .linksTitle,
+  .navLink,
+  .socialLink,
+  .legalLink {
+    color: var(--site-ink-strong);
+  }
+
+  .copyright {
+    color: var(--site-ink-muted);
+  }
+
+  .divider {
+    background: var(--site-hairline);
   }
 }

@@ -10,17 +10,18 @@ import {
 } from "react";
 
 import { useI18n } from "@/components/providers/I18nProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import type { Locale } from "@/i18n/types";
 
 import styles from "./FloatingSettings.module.scss";
 
 export function FloatingSettings() {
   const { locale, setLocale, t } = useI18n();
+  const { theme, setTheme } = useTheme();
   const menuId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  // TODO: Connect Sun/Moon toggle to real theme switching (dark class / CSS variables).
-  const [themePlaceholderDark, setThemePlaceholderDark] = useState(false);
+  const isDark = theme === "dark";
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -45,8 +46,8 @@ export function FloatingSettings() {
     };
   }, [close, open]);
 
-  const selectLocale = (next: Locale) => {
-    setLocale(next);
+  const toggleLocale = (option: Locale) => {
+    setLocale(locale === option ? (option === "es" ? "en" : "es") : option);
   };
 
   return (
@@ -65,13 +66,15 @@ export function FloatingSettings() {
             className={styles.toggleGroup}
             role="group"
             aria-label={t("settings.language")}
+            data-active-index={locale === "es" ? "0" : "1"}
           >
+            <span className={styles.toggleThumb} aria-hidden />
             <button
               type="button"
               className={styles.toggleOption}
               data-active={locale === "es" ? "true" : "false"}
               aria-pressed={locale === "es"}
-              onClick={() => selectLocale("es")}
+              onClick={() => toggleLocale("es")}
             >
               ES
             </button>
@@ -80,7 +83,7 @@ export function FloatingSettings() {
               className={styles.toggleOption}
               data-active={locale === "en" ? "true" : "false"}
               aria-pressed={locale === "en"}
-              onClick={() => selectLocale("en")}
+              onClick={() => toggleLocale("en")}
             >
               EN
             </button>
@@ -93,24 +96,26 @@ export function FloatingSettings() {
             className={styles.toggleGroup}
             role="group"
             aria-label={t("settings.theme")}
+            data-active-index={isDark ? "1" : "0"}
           >
+            <span className={styles.toggleThumb} aria-hidden />
             <button
               type="button"
               className={styles.toggleOption}
-              data-active={!themePlaceholderDark ? "true" : "false"}
-              aria-pressed={!themePlaceholderDark}
+              data-active={!isDark ? "true" : "false"}
+              aria-pressed={!isDark}
               aria-label={t("settings.themeLight")}
-              onClick={() => setThemePlaceholderDark(false)}
+              onClick={() => setTheme("light")}
             >
               <Sun size={16} strokeWidth={1.75} aria-hidden />
             </button>
             <button
               type="button"
               className={styles.toggleOption}
-              data-active={themePlaceholderDark ? "true" : "false"}
-              aria-pressed={themePlaceholderDark}
+              data-active={isDark ? "true" : "false"}
+              aria-pressed={isDark}
               aria-label={t("settings.themeDark")}
-              onClick={() => setThemePlaceholderDark(true)}
+              onClick={() => setTheme("dark")}
             >
               <Moon size={16} strokeWidth={1.75} aria-hidden />
             </button>

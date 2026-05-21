@@ -7,8 +7,8 @@ $pure-white: #ffffff;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  background: $pure-white;
-  color: $ink;
+  background: var(--site-surface);
+  color: var(--site-ink);
   scroll-margin-top: var(--site-sticky-nav-offset);
   overflow-x: clip;
   isolation: isolate;
@@ -60,6 +60,12 @@ $pure-white: #ffffff;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: $muted;
+}
+
+:global(html.dark) .section {
+  .eyebrow {
+    color: var(--site-ink-graphite);
+  }
 }
 
 .stepsStack {

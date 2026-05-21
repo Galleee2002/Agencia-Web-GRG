@@ -67,6 +67,39 @@ $grg-cyan-bright: #7ae0ff;
   --projects-card-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
 }
 
+:global(html.dark) .section {
+  color: var(--site-ink);
+  --p-surface: #252525;
+  --p-spot1: rgba(0, 153, 255, 0.14);
+  --p-spot2: rgba(0, 80, 140, 0.22);
+  --p-title-accent: #7ae0ff;
+  --projects-glass-bg: rgba(22, 26, 34, 0.92);
+  --projects-card-bg: rgba(28, 32, 42, 0.97);
+  --projects-border: rgba(255, 255, 255, 0.1);
+  --projects-elevated-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --projects-card-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  --projects-detail-title: #ffffff;
+
+  .detailsCard .projectName,
+  .projectNameCompact {
+    color: var(--projects-detail-title);
+  }
+
+  .detailsCard .projectDescription,
+  .detailsCard .clientLine {
+    color: var(--site-ink-graphite);
+  }
+
+  .detailsCard .clientIcon {
+    color: var(--site-ink-graphite);
+  }
+
+  .detailsChevronIcon,
+  .collapseDetailsBtn {
+    color: color-mix(in srgb, var(--site-ink-graphite) 82%, transparent);
+  }
+}
+
 .section::before {
   content: "";
   position: absolute;

@@ -1,0 +1,67 @@
+/* Tokens compartidos entre secciones; html.dark los redefine. */
+:root {
+  --site-canvas: #f7f9fc;
+  --site-surface: #ffffff;
+  --site-ink: #252525;
+  --site-ink-strong: #000000;
+  --site-ink-muted: #5c5c5c;
+  --site-ink-muted-alt: #6a6a6a;
+  --site-ink-graphite: var(--site-ink-muted-alt);
+  --site-hairline: rgba(0, 0, 0, 0.06);
+  --site-hairline-strong: rgba(0, 0, 0, 0.1);
+  --site-chip-bg: rgba(0, 0, 0, 0.06);
+  --site-input-bg: #ffffff;
+  --site-input-border: rgba(0, 0, 0, 0.2);
+  --site-input-placeholder: rgba(0, 0, 0, 0.45);
+  --site-nav-ink: #252525;
+  --site-nav-pill-bg: rgba(255, 255, 255, 0.92);
+  --site-nav-pill-shadow: rgba(0, 0, 0, 0.08);
+  /* Blancos/ink de modo claro; valores fijos (no usar var(--site-surface): en html.dark se redefinen) */
+  --site-frost-surface: #ffffff;
+  --site-frost-ink: #252525;
+  /* CTA Hero («Empieza aquí») — pill sólido en móvil */
+  --site-cta-surface: #252525;
+  --site-cta-ink: #ffffff;
+  /* Hero en banda clara */
+  --site-hero-bg: #ffffff;
+  --site-menu-panel-bg: #ffffff;
+  --site-menu-panel-frost: rgba(255, 255, 255, 0.92);
+  --site-menu-panel-ink: #252525;
+  --site-menu-panel-edge: rgba(0, 0, 0, 0.06);
+  --site-menu-panel-scrim: rgba(15, 23, 42, 0.22);
+  --site-menu-panel-shadow: rgba(15, 23, 42, 0.1);
+  --site-menu-prelayer-1: #f3f6fb;
+  --site-menu-prelayer-2: #e8edf4;
+}
+
+html.dark {
+  color-scheme: dark;
+  /* Mismo fondo que hero y menú en todo el sitio */
+  --site-canvas: #252525;
+  --site-surface: #252525;
+  --site-ink: #e8eaef;
+  --site-ink-strong: #f5f6f8;
+  --site-ink-muted: #9aa3b2;
+  --site-ink-muted-alt: #8b95a8;
+  --site-ink-graphite: #b8bfc9;
+  --site-hairline: rgba(255, 255, 255, 0.08);
+  --site-hairline-strong: rgba(255, 255, 255, 0.12);
+  --site-chip-bg: rgba(255, 255, 255, 0.08);
+  --site-input-bg: #1c2029;
+  --site-input-border: rgba(255, 255, 255, 0.18);
+  --site-input-placeholder: rgba(255, 255, 255, 0.4);
+  --site-nav-ink: #e8eaef;
+  --site-nav-pill-bg: #252525;
+  --site-nav-pill-shadow: rgba(0, 0, 0, 0.45);
+  --site-cta-surface: #ffffff;
+  --site-cta-ink: #252525;
+  --site-hero-bg: #252525;
+  --site-menu-panel-bg: #252525;
+  --site-menu-panel-frost: rgba(37, 37, 37, 0.94);
+  --site-menu-panel-ink: #f5f6f8;
+  --site-menu-panel-edge: rgba(255, 255, 255, 0.08);
+  --site-menu-panel-scrim: rgba(0, 0, 0, 0.5);
+  --site-menu-panel-shadow: rgba(0, 0, 0, 0.35);
+  --site-menu-prelayer-1: #1e1e22;
+  --site-menu-prelayer-2: #252525;
+}

@@ -1,6 +1,8 @@
+@use "../styles/site-theme";
+
 :root {
-  --background: #f7f9fc;
-  --foreground: #101828;
+  --background: var(--site-canvas);
+  --foreground: var(--site-ink-strong);
   /* Altura útil de .sm-sticky-brand-host + .sm-sticky-brand-inner (StaggeredMenu). */
   --site-sticky-nav-offset: calc(
     max(1.25rem, env(safe-area-inset-top, 0px)) + 44px + 1.6rem
@@ -28,4 +30,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, sans-serif;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }

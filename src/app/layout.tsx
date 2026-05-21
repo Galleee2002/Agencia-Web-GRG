@@ -3,6 +3,7 @@ import { Geist, Inter, Montserrat } from "next/font/google";
 import "./tailwind.css";
 import "./globals.scss";
 import { AppProviders } from "@/components/providers/AppProviders";
+import { ThemeScript } from "@/components/providers/ThemeScript";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      suppressHydrationWarning
       className={cn(
         "h-full",
         "antialiased",
@@ -44,6 +46,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full min-w-0 flex flex-col">
+        <ThemeScript />
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

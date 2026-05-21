@@ -10,8 +10,8 @@ $contact-breakpoint: 809px;
 
 .section {
   position: relative;
-  background: $pure-white;
-  color: $void-black;
+  background: var(--site-surface);
+  color: var(--site-ink-strong);
   padding-block: clamp(60px, 8vw, 120px);
   overflow-x: hidden;
   scroll-margin-top: 5rem;
@@ -258,6 +258,11 @@ $form-reveal-offset-item: -28px;
   flex-shrink: 0;
   color: $ink-muted;
   pointer-events: none;
+  transition: color 0.22s $form-reveal-ease;
+}
+
+.inputWrap:has(:focus-within) .inputIcon {
+  color: $framer-blue;
 }
 
 .textareaIcon {
@@ -272,8 +277,8 @@ $form-reveal-offset-item: -28px;
   width: 100%;
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: 0.9375rem;
-  color: $void-black;
-  background: $pure-white;
+  color: var(--site-ink-strong);
+  background: var(--site-input-bg);
   border: 1px solid $hairline-strong;
   border-radius: 10px;
   transition:
@@ -648,6 +653,104 @@ $form-reveal-offset-item: -28px;
   &:focus-visible {
     outline: 2px solid $framer-blue;
     outline-offset: 2px;
+  }
+}
+
+:global(html.dark) .section {
+  .sublead {
+    color: var(--site-ink-graphite);
+  }
+
+  .heading {
+    color: var(--site-ink-strong);
+  }
+
+  .headingAccent {
+    color: $framer-blue;
+  }
+
+  .label {
+    color: var(--site-ink-strong);
+  }
+
+  .field:has(:hover, :focus-within) .optional {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .optional {
+    color: var(--site-ink-muted);
+  }
+
+  .inputIcon {
+    color: var(--site-frost-ink);
+  }
+
+  .inputWrap:has(:focus-within) .inputIcon {
+    color: $framer-blue;
+  }
+
+  .input,
+  .textarea {
+    color: var(--site-frost-ink);
+    background: var(--site-frost-surface);
+    border-color: rgba(0, 0, 0, 0.1);
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    &:hover:not(:focus):not(:focus-visible) {
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    &:focus,
+    &:focus-visible {
+      border-color: $framer-blue;
+      box-shadow: 0 0 0 3px $blue-glow;
+    }
+  }
+
+  .customSelectTrigger {
+    background: var(--site-frost-surface);
+    color: var(--site-frost-ink);
+    border-color: rgba(0, 0, 0, 0.1);
+
+    &[data-placeholder="true"] .customSelectValue {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    &:hover:not(:focus-visible) {
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    &:focus-visible {
+      background-color: var(--site-frost-surface);
+      border-color: $framer-blue;
+      box-shadow: 0 0 0 3px $blue-glow;
+    }
+  }
+
+  .customSelect[data-open="true"] .customSelectTrigger {
+    background-color: var(--site-frost-surface);
+    border-color: $framer-blue;
+    box-shadow: 0 0 0 3px $blue-glow;
+  }
+
+  .customSelectChevron {
+    color: var(--site-frost-ink);
+  }
+
+  .submit {
+    background: var(--site-cta-surface);
+    color: var(--site-cta-ink);
+
+    svg {
+      color: var(--site-cta-ink);
+    }
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+    }
   }
 }
 
