@@ -25,35 +25,15 @@ import {
 import { createPortal } from "react-dom";
 
 import {
-  clientLabel,
-  portfolioProjects,
-  type PortfolioProject,
-} from "./projectsData";
+  useClientLabel,
+  useI18n,
+  usePortfolioProjects,
+  useProjectsDisplayLines,
+} from "@/components/providers/I18nProvider";
+import { useIsClient } from "@/hooks/useIsClient";
+import type { DisplayLine } from "@/i18n/content";
+import type { PortfolioProject } from "./projectsData";
 import styles from "./ProjectsSection.module.scss";
-
-const PROJECTS_DISPLAY_FULL = "Convertimos tus ideas en proyectos exitosos";
-
-type DisplayLinePart = { text: string; accent?: boolean };
-
-type DisplayLine = { key: string; parts: DisplayLinePart[] };
-
-const PROJECTS_DISPLAY_LINES_MOBILE: DisplayLine[] = [
-  {
-    key: "m1",
-    parts: [{ text: "Convertimos tus " }, { text: "ideas", accent: true }],
-  },
-  {
-    key: "m2",
-    parts: [{ text: "en proyectos " }, { text: "exitosos", accent: true }],
-  },
-];
-
-const PROJECTS_DISPLAY_LINES_DESKTOP: DisplayLine[] = [
-  { key: "l1", parts: [{ text: "Convertimos" }] },
-  { key: "l2", parts: [{ text: "tus " }, { text: "ideas", accent: true }] },
-  { key: "l3", parts: [{ text: "en proyectos" }] },
-  { key: "l4", parts: [{ text: "exitosos", accent: true }] },
-];
 
 function renderDisplayLines(lines: DisplayLine[]) {
   return lines.map((line) => (
@@ -81,6 +61,7 @@ const GalleryImage = memo(function GalleryImage({
   className?: string;
   onOpenLightbox?: () => void;
 }) {
+  const { t } = useI18n();
   if (!src) {
     return (
       <div
@@ -106,7 +87,7 @@ const GalleryImage = memo(function GalleryImage({
           onOpenLightbox?.();
         }
       }}
-      aria-label={`Ampliar: ${alt}`}
+      aria-label={t("projects.enlarge", { alt })}
     >
       <Image
         src={src}
@@ -141,9 +122,16 @@ const ShowcaseCard = memo(function ShowcaseCard({
   project: PortfolioProject;
   headingId: string;
 }) {
+  const { t } = useI18n();
+  const getClientLabel = useClientLabel();
   const titleId = `${headingId}-project-${project.id}`;
   const [a, b, c] = project.images;
-  const baseAlt = `Captura del proyecto ${project.name}`;
+  const baseAlt = t("projects.screenshotAlt", { name: project.name });
+  const viewLabels = [
+    t("projects.viewMain"),
+    t("projects.detail1"),
+    t("projects.detail2"),
+  ] as const;
   const imageSlots = useMemo(() => [a, b, c], [a, b, c]);
 
   const [detailsCompact, setDetailsCompact] = useState(false);
@@ -151,23 +139,14 @@ const ShowcaseCard = memo(function ShowcaseCard({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [renderedLightboxIndex, setRenderedLightboxIndex] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const [loadedLightboxSrc, setLoadedLightboxSrc] = useState<string | null>(
+    null,
+  );
+  const mounted = useIsClient();
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxMediaRef = useRef<HTMLDivElement>(null);
   const showcaseStageRef = useRef<HTMLDivElement>(null);
   const lightboxLabelId = useId();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    setDetailsCompact(false);
-    setOverlayHidden(false);
-    setLightboxOpen(false);
-    setLightboxIndex(0);
-    setRenderedLightboxIndex(0);
-  }, [project.id]);
 
   useLayoutEffect(() => {
     const stage = showcaseStageRef.current;
@@ -199,6 +178,7 @@ const ShowcaseCard = memo(function ShowcaseCard({
     const next = ((index % GALLERY_SLICES) + GALLERY_SLICES) % GALLERY_SLICES;
     setLightboxIndex(next);
     setRenderedLightboxIndex(next);
+    setLoadedLightboxSrc(null);
     setLightboxOpen(true);
   }, []);
 
@@ -227,9 +207,11 @@ const ShowcaseCard = memo(function ShowcaseCard({
     }
 
     if (prefersReducedMotion()) {
-      setRenderedLightboxIndex(lightboxIndex);
-      gsap.set(media, { opacity: 1 });
-      return;
+      const frame = requestAnimationFrame(() => {
+        setRenderedLightboxIndex(lightboxIndex);
+        gsap.set(media, { opacity: 1 });
+      });
+      return () => cancelAnimationFrame(frame);
     }
 
     gsap.killTweensOf(media);
@@ -324,8 +306,11 @@ const ShowcaseCard = memo(function ShowcaseCard({
 
   const currentLightboxSrc = imageSlots[renderedLightboxIndex] ?? "";
   const currentLightboxAlt = `${baseAlt} — ${
-    ["vista principal", "detalle 1", "detalle 2"][renderedLightboxIndex] ?? "imagen"
+    viewLabels[renderedLightboxIndex] ?? t("projects.imageFallback")
   }`;
+  const lightboxImgLoaded = Boolean(
+    currentLightboxSrc && loadedLightboxSrc === currentLightboxSrc,
+  );
 
   const lightboxModal =
     mounted && lightboxOpen
@@ -334,7 +319,7 @@ const ShowcaseCard = memo(function ShowcaseCard({
         <button
           type="button"
           className={styles.lightboxBackdrop}
-          aria-label="Cerrar galería"
+          aria-label={t("projects.closeGallery")}
           onClick={closeLightbox}
         />
         <div
@@ -344,14 +329,14 @@ const ShowcaseCard = memo(function ShowcaseCard({
           aria-labelledby={lightboxLabelId}
         >
           <p id={lightboxLabelId} className={styles.visuallyHidden}>
-            Galería de imágenes: {project.name}
+            {t("projects.lightboxGalleryLabel", { name: project.name })}
           </p>
           <div className={styles.lightboxInner}>
             <button
               ref={lightboxCloseRef}
               type="button"
               className={styles.lightboxClose}
-              aria-label="Cerrar"
+              aria-label={t("projects.close")}
               onClick={closeLightbox}
             >
               <X size={22} strokeWidth={2} aria-hidden />
@@ -360,7 +345,7 @@ const ShowcaseCard = memo(function ShowcaseCard({
               <button
                 type="button"
                 className={clsx(styles.lightboxNav, styles.lightboxNavPrev)}
-                aria-label="Imagen anterior"
+                aria-label={t("projects.prevImage")}
                 onClick={goLightboxPrev}
               >
                 <ChevronLeft size={28} strokeWidth={2} aria-hidden />
@@ -368,29 +353,47 @@ const ShowcaseCard = memo(function ShowcaseCard({
               <div className={styles.lightboxStage}>
                 <div ref={lightboxMediaRef} className={styles.lightboxMedia}>
                   {currentLightboxSrc ? (
-                    <Image
-                      key={currentLightboxSrc}
-                      src={currentLightboxSrc}
-                      alt={currentLightboxAlt}
-                      width={1100}
-                      height={825}
-                      className={styles.lightboxImg}
-                      sizes="(max-width: 1200px) 92vw"
-                      priority
-                    />
+                    <div className={styles.lightboxImgSlot}>
+                      {!lightboxImgLoaded ? (
+                        <span
+                          className={styles.lightboxShimmer}
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                      <Image
+                        key={currentLightboxSrc}
+                        src={currentLightboxSrc}
+                        alt={currentLightboxAlt}
+                        width={1100}
+                        height={825}
+                        className={clsx(
+                          styles.lightboxImg,
+                          !lightboxImgLoaded && styles.lightboxImgLoading,
+                        )}
+                        sizes="(max-width: 1200px) 92vw"
+                        priority
+                        onLoad={() => setLoadedLightboxSrc(currentLightboxSrc)}
+                      />
+                    </div>
                   ) : (
-                    <div
-                      className={styles.lightboxEmpty}
-                      role="img"
-                      aria-label={currentLightboxAlt}
-                    />
+                    <div className={styles.lightboxImgSlot}>
+                      <span
+                        className={styles.lightboxShimmer}
+                        aria-hidden="true"
+                      />
+                      <div
+                        className={styles.lightboxEmpty}
+                        role="img"
+                        aria-label={currentLightboxAlt}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
               <button
                 type="button"
                 className={clsx(styles.lightboxNav, styles.lightboxNavNext)}
-                aria-label="Imagen siguiente"
+                aria-label={t("projects.nextImage")}
                 onClick={goLightboxNext}
               >
                 <ChevronRight size={28} strokeWidth={2} aria-hidden />
@@ -418,20 +421,20 @@ const ShowcaseCard = memo(function ShowcaseCard({
           <div className={styles.gallery}>
           <GalleryImage
             src={a}
-            alt={`${baseAlt} — vista principal`}
+            alt={`${baseAlt} — ${viewLabels[0]}`}
             className={styles.galleryMain}
             onOpenLightbox={() => openLightbox(0)}
           />
           <div className={styles.galleryStack}>
             <GalleryImage
               src={b}
-              alt={`${baseAlt} — detalle 1`}
+              alt={`${baseAlt} — ${viewLabels[1]}`}
               className={styles.gallerySecondary}
               onOpenLightbox={() => openLightbox(1)}
             />
             <GalleryImage
               src={c}
-              alt={`${baseAlt} — detalle 2`}
+              alt={`${baseAlt} — ${viewLabels[2]}`}
               className={styles.gallerySecondary}
               onOpenLightbox={() => openLightbox(2)}
             />
@@ -450,7 +453,9 @@ const ShowcaseCard = memo(function ShowcaseCard({
             role={detailsCompact ? "button" : undefined}
             tabIndex={detailsCompact ? 0 : undefined}
             aria-expanded={!detailsCompact}
-            aria-label={detailsCompact ? "Mostrar detalles del proyecto" : undefined}
+            aria-label={
+              detailsCompact ? t("projects.showDetails") : undefined
+            }
             onClick={handleDetailsCardClick}
             onKeyDown={handleDetailsCardKeyDown}
           >
@@ -476,7 +481,11 @@ const ShowcaseCard = memo(function ShowcaseCard({
                     strokeWidth={1.75}
                     aria-hidden
                   />
-                  <span>Tipo de cliente: {clientLabel(project.clientType)}</span>
+                  <span>
+                    {t("projects.clientType", {
+                      type: getClientLabel(project.clientType),
+                    })}
+                  </span>
                 </p>
                 <button
                   type="button"
@@ -484,7 +493,7 @@ const ShowcaseCard = memo(function ShowcaseCard({
                   onClick={collapseDetails}
                   aria-expanded
                   aria-controls={titleId}
-                  aria-label="Ocultar detalles del proyecto"
+                  aria-label={t("projects.hideDetails")}
                 >
                   <ChevronDown size={22} strokeWidth={2} aria-hidden />
                 </button>
@@ -534,7 +543,9 @@ function useProjectsScrollPerf(sectionRef: RefObject<HTMLElement | null>) {
 export function ProjectsSection() {
   const baseId = useId().replace(/:/g, "");
   const sectionRef = useRef<HTMLElement>(null);
-  const projects = portfolioProjects;
+  const { t } = useI18n();
+  const projects = usePortfolioProjects();
+  const displayLines = useProjectsDisplayLines();
   const count = projects.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const introRef = useRef<HTMLDivElement>(null);
@@ -625,17 +636,17 @@ export function ProjectsSection() {
       <div className={styles.shell}>
         <div className={styles.shellIntro}>
           <header ref={introRef} className={styles.header} data-intro-display>
-            <p className={styles.introEyebrow}>Proyectos</p>
+            <p className={styles.introEyebrow}>{t("projects.eyebrow")}</p>
             <h2
               id={headingId}
               className={styles.displayHeading}
-              aria-label={PROJECTS_DISPLAY_FULL}
+              aria-label={displayLines.full}
             >
               <span className={styles.displayLinesMobile} aria-hidden>
-                {renderDisplayLines(PROJECTS_DISPLAY_LINES_MOBILE)}
+                {renderDisplayLines(displayLines.mobile)}
               </span>
               <span className={styles.displayLinesDesktop} aria-hidden>
-                {renderDisplayLines(PROJECTS_DISPLAY_LINES_DESKTOP)}
+                {renderDisplayLines(displayLines.desktop)}
               </span>
             </h2>
           </header>
@@ -644,8 +655,8 @@ export function ProjectsSection() {
         <div
           className={styles.shellCarousel}
           role="region"
-          aria-roledescription="carrusel"
-          aria-label="Proyectos destacados"
+          aria-roledescription={t("projects.carouselRole")}
+          aria-label={t("projects.carouselLabel")}
         >
           <div className={styles.sliderBleed}>
             <div className={styles.slider}>
@@ -653,20 +664,24 @@ export function ProjectsSection() {
                 type="button"
                 className={styles.arrow}
                 onClick={goPrev}
-                aria-label="Ver proyecto anterior"
+                aria-label={t("projects.prevProject")}
               >
                 <ChevronLeft size={26} strokeWidth={2} aria-hidden />
               </button>
 
               <div ref={sliderMainRef} className={styles.sliderMain}>
-                <ShowcaseCard project={active} headingId={baseId} />
+                <ShowcaseCard
+                  key={active.id}
+                  project={active}
+                  headingId={baseId}
+                />
               </div>
 
               <button
                 type="button"
                 className={styles.arrow}
                 onClick={goNext}
-                aria-label="Ver proyecto siguiente"
+                aria-label={t("projects.nextProject")}
               >
                 <ChevronRight size={26} strokeWidth={2} aria-hidden />
               </button>

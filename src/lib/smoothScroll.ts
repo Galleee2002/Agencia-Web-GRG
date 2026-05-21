@@ -1,6 +1,12 @@
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
+import {
+  resumeWorkWithUsScrollPinForNav,
+  shouldBypassWorkWithUsPinForNavScroll,
+  suspendWorkWithUsScrollPinForNav,
+} from "@/lib/workWithUsScrollPin";
+
 gsap.registerPlugin(ScrollToPlugin);
 
 let activeScrollTween: gsap.core.Tween | null = null;
@@ -70,10 +76,23 @@ export function smoothScrollToElement(
 
   activeScrollTween?.kill();
 
-  if (duration === 0) {
-    const y = el.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top: y, behavior: "auto" });
+  const fromY = window.scrollY;
+  const targetY = el.getBoundingClientRect().top + window.scrollY - offset;
+  const bypassPin = shouldBypassWorkWithUsPinForNavScroll(fromY, targetY);
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    if (bypassPin) resumeWorkWithUsScrollPinForNav();
     options?.onComplete?.();
+  };
+
+  if (bypassPin) suspendWorkWithUsScrollPinForNav();
+
+  if (duration === 0) {
+    window.scrollTo({ top: targetY, behavior: "auto" });
+    finish();
     return;
   }
 
@@ -84,7 +103,11 @@ export function smoothScrollToElement(
     overwrite: "auto",
     onComplete: () => {
       activeScrollTween = null;
-      options?.onComplete?.();
+      finish();
+    },
+    onInterrupt: () => {
+      activeScrollTween = null;
+      finish();
     },
   });
 }
@@ -97,9 +120,22 @@ export function smoothScrollToHash(
 
   if (!id) {
     activeScrollTween?.kill();
+
+    const fromY = window.scrollY;
+    const bypassPin = shouldBypassWorkWithUsPinForNavScroll(fromY, 0);
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (bypassPin) resumeWorkWithUsScrollPinForNav();
+      options?.onComplete?.();
+    };
+
+    if (bypassPin) suspendWorkWithUsScrollPinForNav();
+
     if (prefersReducedMotion()) {
       window.scrollTo({ top: 0, behavior: "auto" });
-      options?.onComplete?.();
+      finish();
     } else {
       activeScrollTween = gsap.to(window, {
         duration: options?.duration ?? DEFAULT_DURATION,
@@ -108,7 +144,11 @@ export function smoothScrollToHash(
         overwrite: "auto",
         onComplete: () => {
           activeScrollTween = null;
-          options?.onComplete?.();
+          finish();
+        },
+        onInterrupt: () => {
+          activeScrollTween = null;
+          finish();
         },
       });
     }
@@ -125,4 +165,5 @@ export function smoothScrollToHash(
 export function cancelSmoothScroll(): void {
   activeScrollTween?.kill();
   activeScrollTween = null;
+  resumeWorkWithUsScrollPinForNav();
 }

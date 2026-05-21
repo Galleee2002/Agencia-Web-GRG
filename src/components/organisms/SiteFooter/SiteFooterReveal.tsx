@@ -3,12 +3,15 @@
 import { motion, useReducedMotion, useTransform } from "motion/react";
 import { useRef, useState, useEffect } from "react";
 
+import { useI18n } from "@/components/providers/I18nProvider";
+
 import { SiteFooterContent } from "./SiteFooterContent";
 import footerStyles from "./SiteFooter.module.scss";
 import styles from "./SiteFooterReveal.module.scss";
 import { useFooterCurtainProgress } from "./useFooterCurtainProgress";
 
 export function SiteFooterReveal() {
+  const { t } = useI18n();
   const revealZoneRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const animateScroll = reduceMotion !== true;
@@ -25,10 +28,7 @@ export function SiteFooterReveal() {
   const [zoneReady, setZoneReady] = useState(!animateScroll);
 
   useEffect(() => {
-    if (!animateScroll) {
-      setZoneReady(true);
-      return;
-    }
+    if (!animateScroll) return;
 
     const unsubscribe = progress.on("change", (value) => {
       setZoneReady(value > 0.02);
@@ -42,7 +42,7 @@ export function SiteFooterReveal() {
       <footer
         className={footerStyles.wrap}
         id="pie"
-        aria-label="Pie de página"
+        aria-label={t("footer.ariaLabel")}
       >
         <SiteFooterContent />
       </footer>
@@ -58,7 +58,7 @@ export function SiteFooterReveal() {
       <footer
         className={`${footerStyles.wrap} ${styles.curtainShell}`}
         id="pie"
-        aria-label="Pie de página"
+        aria-label={t("footer.ariaLabel")}
       >
         <motion.div className={styles.footerBody} style={{ y: footerY }}>
           <SiteFooterContent />

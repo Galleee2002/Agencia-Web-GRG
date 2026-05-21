@@ -1,20 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, Mail } from "lucide-react";
 
 import {
-  SITE_LEGAL_LINKS,
-  SITE_NAV_ITEMS,
-  SITE_SOCIAL_LINKS,
-} from "@/config/siteNavigation";
+  useI18n,
+  useSiteLegalLinks,
+  useSiteNavItems,
+} from "@/components/providers/I18nProvider";
+import { SITE_SOCIAL_LINKS } from "@/config/siteNavigation";
 
 import styles from "./SiteFooter.module.scss";
-
-const COMPANY_NAME = "Agencia Web GMG";
-
-const DESCRIPTION =
-  "Somos tu socio digital de confianza: diseño y desarrollo web con criterio, " +
-  "rendimiento y una identidad clara para que tu marca destaque con solvencia.";
 
 const QUICK_LINKS_ID = "footer-quick-links-heading";
 
@@ -25,6 +22,10 @@ function socialIconForLabel(label: string) {
 }
 
 export function SiteFooterContent() {
+  const { t } = useI18n();
+  const navItems = useSiteNavItems();
+  const legalLinks = useSiteLegalLinks();
+  const companyName = t("footer.companyName");
   const year = new Date().getFullYear();
   const showSocials = SITE_SOCIAL_LINKS.length > 0;
 
@@ -35,7 +36,7 @@ export function SiteFooterContent() {
           <Link
             href="/#inicio"
             className={styles.logoLink}
-            aria-label={`${COMPANY_NAME}, ir al inicio`}
+            aria-label={t("footer.logoAria", { company: companyName })}
           >
             <Image
               className={styles.logo}
@@ -47,7 +48,7 @@ export function SiteFooterContent() {
               style={{ width: "auto" }}
             />
           </Link>
-          <p className={styles.description}>{DESCRIPTION}</p>
+          <p className={styles.description}>{t("footer.description")}</p>
           {showSocials ? (
             <div className={styles.socials}>
               {SITE_SOCIAL_LINKS.map((item) => {
@@ -71,10 +72,10 @@ export function SiteFooterContent() {
 
         <nav className={styles.links} aria-labelledby={QUICK_LINKS_ID}>
           <h2 className={styles.linksTitle} id={QUICK_LINKS_ID}>
-            Enlaces rápidos
+            {t("footer.quickLinks")}
           </h2>
           <ul className={styles.linksList}>
-            {SITE_NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <li key={item.link}>
                 <Link
                   href={item.link}
@@ -93,10 +94,10 @@ export function SiteFooterContent() {
 
       <div className={styles.bottom}>
         <p className={styles.copyright}>
-          © {year} {COMPANY_NAME}. Todos los derechos reservados.
+          {t("footer.copyright", { year, company: companyName })}
         </p>
         <ul className={styles.legal}>
-          {SITE_LEGAL_LINKS.map((item) => (
+          {legalLinks.map((item) => (
             <li key={item.label}>
               <a href={item.href} className={styles.legalLink}>
                 {item.label}

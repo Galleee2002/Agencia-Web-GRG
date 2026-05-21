@@ -102,12 +102,13 @@ export function TeamMemberRows({ members }: Props) {
 
           <figure className={styles.media}>
             <Image
+              key={member.imageSrc}
               className={styles.illustration}
               src={member.imageSrc}
               alt={member.imageAlt}
               width={member.imageWidth}
               height={member.imageHeight}
-              sizes="(min-width: 809px) min(38vw, 420px), min(85vw, 320px)"
+              sizes="(min-width: 809px) min(38vw, 336px), min(68vw, 256px)"
               quality={72}
               loading="lazy"
               decoding="async"

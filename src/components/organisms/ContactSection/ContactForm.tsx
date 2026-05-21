@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Building2, Mail, MessageSquare, Send, User } from "lucide-react";
 
-import {
-  BUDGET_OPTIONS,
-  SERVICE_OPTIONS,
-  TIMELINE_OPTIONS,
-} from "./contactFormData";
+import { useI18n, useServiceOptions } from "@/components/providers/I18nProvider";
+
+import { ServiceSelect } from "./ServiceSelect";
 import styles from "./ContactSection.module.scss";
+
+const INPUT_ICON_STROKE = 1.75;
 
 type FormStatus = "idle" | "submitting" | "success";
 
@@ -18,11 +18,9 @@ const INITIAL_FORM = {
   company: "",
   service: "",
   project: "",
-  budget: "",
-  timeline: "",
 };
 
-const FORM_ROW_COUNT = 8;
+const FORM_ROW_COUNT = 6;
 
 type FormRevealRowProps = {
   index: number;
@@ -50,10 +48,17 @@ function FormRevealRow({
 }
 
 export function ContactForm() {
+  const { t } = useI18n();
+  const serviceOptions = useServiceOptions();
   const formId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const [isCardVisible, setIsCardVisible] = useState(false);
+  const projectTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isCardVisible, setIsCardVisible] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const [visibleRows, setVisibleRows] = useState<Set<number>>(() => new Set());
   const [status, setStatus] = useState<FormStatus>("idle");
   const [form, setForm] = useState(INITIAL_FORM);
@@ -65,7 +70,6 @@ export function ContactForm() {
     if (!el) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setIsCardVisible(true);
       return;
     }
 
@@ -87,14 +91,16 @@ export function ContactForm() {
     const form = formRef.current;
     if (!form) return;
 
-    setVisibleRows(new Set());
-
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisibleRows(
-        new Set(Array.from({ length: FORM_ROW_COUNT }, (_, i) => i)),
-      );
-      return;
+      const frame = requestAnimationFrame(() => {
+        setVisibleRows(
+          new Set(Array.from({ length: FORM_ROW_COUNT }, (_, i) => i)),
+        );
+      });
+      return () => cancelAnimationFrame(frame);
     }
+
+    const frame = requestAnimationFrame(() => setVisibleRows(new Set()));
 
     const rows = form.querySelectorAll<HTMLElement>("[data-reveal-row]");
     if (!rows.length) return;
@@ -129,12 +135,36 @@ export function ContactForm() {
 
     rows.forEach((row) => rowObserver.observe(row));
 
-    return () => rowObserver.disconnect();
+    return () => {
+      cancelAnimationFrame(frame);
+      rowObserver.disconnect();
+    };
   }, [status]);
 
   const handleChange = (field: keyof typeof INITIAL_FORM, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+
+  const syncProjectTextareaHeight = useCallback(() => {
+    const el = projectTextareaRef.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  useLayoutEffect(() => {
+    if (status !== "idle") return;
+    syncProjectTextareaHeight();
+  }, [form.project, status, syncProjectTextareaHeight]);
+
+  useEffect(() => {
+    const el = projectTextareaRef.current;
+    if (!el || status !== "idle") return;
+
+    const observer = new ResizeObserver(() => syncProjectTextareaHeight());
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [status, syncProjectTextareaHeight]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -162,16 +192,14 @@ export function ContactForm() {
     >
       {status === "success" ? (
         <div className={styles.success} role="status">
-          <p className={styles.successTitle}>¡Mensaje enviado!</p>
-          <p className={styles.successText}>
-            Te contactaremos pronto. Revisamos cada solicitud con atención.
-          </p>
+          <p className={styles.successTitle}>{t("contact.successTitle")}</p>
+          <p className={styles.successText}>{t("contact.successText")}</p>
           <button
             type="button"
             className={styles.resetBtn}
             onClick={handleReset}
           >
-            Enviar otro mensaje
+            {t("contact.sendAnother")}
           </button>
         </div>
       ) : (
@@ -187,16 +215,20 @@ export function ContactForm() {
             className={styles.field}
           >
             <label className={styles.label} htmlFor={`${formId}-name`}>
-              Nombre
+              {t("contact.name")}
             </label>
             <div className={styles.inputWrap}>
-              <User className={styles.inputIcon} aria-hidden />
+              <User
+                className={styles.inputIcon}
+                strokeWidth={INPUT_ICON_STROKE}
+                aria-hidden
+              />
               <input
                 id={`${formId}-name`}
                 className={styles.input}
                 type="text"
                 name="name"
-                placeholder="Tu nombre"
+                placeholder={t("contact.namePlaceholder")}
                 required
                 autoComplete="name"
                 value={form.name}
@@ -211,16 +243,20 @@ export function ContactForm() {
             className={styles.field}
           >
             <label className={styles.label} htmlFor={`${formId}-email`}>
-              Email
+              {t("contact.email")}
             </label>
             <div className={styles.inputWrap}>
-              <Mail className={styles.inputIcon} aria-hidden />
+              <Mail
+                className={styles.inputIcon}
+                strokeWidth={INPUT_ICON_STROKE}
+                aria-hidden
+              />
               <input
                 id={`${formId}-email`}
                 className={styles.input}
                 type="email"
                 name="email"
-                placeholder="tu@email.com"
+                placeholder={t("contact.emailPlaceholder")}
                 required
                 autoComplete="email"
                 value={form.email}
@@ -235,16 +271,21 @@ export function ContactForm() {
             className={styles.field}
           >
             <label className={styles.label} htmlFor={`${formId}-company`}>
-              Empresa<span className={styles.optional}>(opcional)</span>
+              {t("contact.company")}
+              <span className={styles.optional}>{t("contact.optional")}</span>
             </label>
             <div className={styles.inputWrap}>
-              <Building2 className={styles.inputIcon} aria-hidden />
+              <Building2
+                className={styles.inputIcon}
+                strokeWidth={INPUT_ICON_STROKE}
+                aria-hidden
+              />
               <input
                 id={`${formId}-company`}
                 className={styles.input}
                 type="text"
                 name="company"
-                placeholder="Nombre de tu empresa"
+                placeholder={t("contact.companyPlaceholder")}
                 autoComplete="organization"
                 value={form.company}
                 onChange={(e) => handleChange("company", e.target.value)}
@@ -258,27 +299,17 @@ export function ContactForm() {
             className={`${styles.field} ${styles.fieldFull}`}
           >
             <label className={styles.label} htmlFor={`${formId}-service`}>
-              ¿Qué servicio necesitas?
+              {t("contact.service")}
             </label>
-            <div className={styles.inputWrap}>
-              <select
-                id={`${formId}-service`}
-                className={`${styles.select} ${styles.selectNoIcon}`}
-                name="service"
-                required
-                value={form.service}
-                onChange={(e) => handleChange("service", e.target.value)}
-              >
-                <option value="" disabled>
-                  Selecciona un servicio
-                </option>
-                {SERVICE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ServiceSelect
+              id={`${formId}-service`}
+              name="service"
+              required
+              placeholder={t("contact.servicePlaceholder")}
+              value={form.service}
+              options={serviceOptions}
+              onChange={(value) => handleChange("service", value)}
+            />
           </FormRevealRow>
 
           <FormRevealRow
@@ -287,20 +318,22 @@ export function ContactForm() {
             className={`${styles.field} ${styles.fieldFull}`}
           >
             <label className={styles.label} htmlFor={`${formId}-project`}>
-              Cuéntanos sobre tu proyecto
+              {t("contact.project")}
             </label>
             <div className={styles.inputWrap}>
               <MessageSquare
                 className={`${styles.inputIcon} ${styles.textareaIcon}`}
+                strokeWidth={INPUT_ICON_STROKE}
                 aria-hidden
               />
               <textarea
+                ref={projectTextareaRef}
                 id={`${formId}-project`}
                 className={styles.textarea}
                 name="project"
-                placeholder="Describe tu idea, objetivos y referencias..."
+                placeholder={t("contact.projectPlaceholder")}
                 required
-                rows={4}
+                rows={1}
                 value={form.project}
                 onChange={(e) => handleChange("project", e.target.value)}
               />
@@ -310,61 +343,6 @@ export function ContactForm() {
           <FormRevealRow
             index={5}
             visible={isRowVisible(5)}
-            className={styles.field}
-          >
-            <label className={styles.label} htmlFor={`${formId}-budget`}>
-              Presupuesto<span className={styles.optional}>(ARS)</span>
-            </label>
-            <div className={styles.inputWrap}>
-              <select
-                id={`${formId}-budget`}
-                className={`${styles.select} ${styles.selectNoIcon}`}
-                name="budget"
-                value={form.budget}
-                onChange={(e) => handleChange("budget", e.target.value)}
-              >
-                <option value="">Selecciona un rango</option>
-                {BUDGET_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </FormRevealRow>
-
-          <FormRevealRow
-            index={6}
-            visible={isRowVisible(6)}
-            className={styles.field}
-          >
-            <label className={styles.label} htmlFor={`${formId}-timeline`}>
-              Plazo estimado
-            </label>
-            <div className={styles.inputWrap}>
-              <select
-                id={`${formId}-timeline`}
-                className={`${styles.select} ${styles.selectNoIcon}`}
-                name="timeline"
-                required
-                value={form.timeline}
-                onChange={(e) => handleChange("timeline", e.target.value)}
-              >
-                <option value="" disabled>
-                  Selecciona un plazo
-                </option>
-                {TIMELINE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </FormRevealRow>
-
-          <FormRevealRow
-            index={7}
-            visible={isRowVisible(7)}
             className={`${styles.submitWrap} ${styles.fieldFull}`}
           >
             <button
@@ -372,8 +350,10 @@ export function ContactForm() {
               className={styles.submit}
               disabled={status === "submitting"}
             >
-              {status === "submitting" ? "Enviando…" : "Enviar mensaje"}
-              <Send aria-hidden />
+              {status === "submitting"
+                ? t("contact.submitting")
+                : t("contact.submit")}
+              <Send strokeWidth={INPUT_ICON_STROKE} aria-hidden />
             </button>
           </FormRevealRow>
         </form>

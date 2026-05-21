@@ -1007,22 +1007,76 @@ $grg-cyan-bright: #7ae0ff;
   min-height: 0;
 }
 
-.lightboxImg {
-  display: block;
-  width: auto;
-  height: auto;
+.lightboxImgSlot {
+  position: relative;
+  flex-shrink: 0;
+  width: min(92vw, 1100px, calc(min(85vh, 780px) * 1100 / 825));
   max-width: min(92vw, 1100px);
   max-height: min(85vh, 780px);
+  aspect-ratio: 1100 / 825;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lightboxShimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.lightboxShimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.06) 44%,
+    rgba(255, 255, 255, 0.12) 52%,
+    rgba(255, 255, 255, 0.06) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 220% 100%;
+  animation: lightboxShimmerSweep 1.4s ease-in-out infinite;
+}
+
+@keyframes lightboxShimmerSweep {
+  0% {
+    background-position: 120% 0;
+  }
+
+  100% {
+    background-position: -20% 0;
+  }
+}
+
+.lightboxImg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center center;
-  border-radius: 12px;
+  border-radius: inherit;
+  transition: opacity 0.32s ease;
+}
+
+.lightboxImgLoading {
+  opacity: 0;
 }
 
 .lightboxEmpty {
-  width: min(80vw, 640px);
-  height: min(50vh, 400px);
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: inherit;
 }
 
 @media (max-width: 899px) {
@@ -1082,19 +1136,18 @@ $grg-cyan-bright: #7ae0ff;
     border-radius: 10px;
   }
 
-  .lightboxImg {
-    width: 100%;
-    height: auto;
+  .lightboxImgSlot {
+    width: min(
+      100%,
+      calc(min(72dvh, calc(100dvh - 9rem)) * 1100 / 825)
+    );
     max-width: 100%;
     max-height: min(72dvh, calc(100dvh - 9rem));
-    object-fit: contain;
     border-radius: 10px;
   }
 
-  .lightboxEmpty {
-    width: 100%;
-    height: min(60dvh, 480px);
-    max-height: min(72dvh, calc(100dvh - 9rem));
+  .lightboxImg {
+    border-radius: inherit;
   }
 
   .lightboxNav {
@@ -1202,6 +1255,16 @@ $grg-cyan-bright: #7ae0ff;
 
   .lightboxRoot {
     animation: none !important;
+  }
+
+  .lightboxShimmer::after {
+    animation: none;
+    background-position: 0 0;
+    opacity: 0.35;
+  }
+
+  .lightboxImg {
+    transition: none;
   }
 }
 

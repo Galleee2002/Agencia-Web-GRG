@@ -32,6 +32,11 @@ export type StaggeredMenuProps = {
   ctaHref?: string;
   ctaLabel?: string;
   showHeaderCta?: boolean;
+  toggleLabelMenu?: string;
+  toggleLabelClose?: string;
+  ariaOpenMenu?: string;
+  ariaCloseMenu?: string;
+  ariaMenuOpen?: string;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
 };

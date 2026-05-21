@@ -2,10 +2,6 @@ $framer-blue: #0099ff;
 $ink: #252525;
 $muted: #6a6a6a;
 $pure-white: #ffffff;
-$progress-track-w: 2px;
-$progress-dot: 12px;
-$progress-gap: clamp(28px, 5vh, 48px);
-
 .section {
   position: relative;
   box-sizing: border-box;
@@ -31,7 +27,7 @@ $progress-gap: clamp(28px, 5vh, 48px);
   min-height: 100vh;
   min-height: 100dvh;
   padding-inline: max(env(safe-area-inset-left, 0px), clamp(16px, 3vw, 40px))
-    max(env(safe-area-inset-right, 0px), clamp(52px, 6vw, 88px));
+    max(env(safe-area-inset-right, 0px), clamp(16px, 3vw, 40px));
   padding-block: max(
       calc(var(--site-sticky-nav-offset) + clamp(12px, 2vh, 24px)),
       clamp(20px, 3vh, 36px)
@@ -64,75 +60,6 @@ $progress-gap: clamp(28px, 5vh, 48px);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: $muted;
-}
-
-.progress {
-  position: absolute;
-  z-index: 4;
-  top: 50%;
-  right: max(env(safe-area-inset-right, 0px), clamp(14px, 2.2vw, 28px));
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.progressReduced {
-  position: fixed;
-  top: 50%;
-}
-
-.progressTrack {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $progress-gap;
-  min-height: calc(#{$progress-gap} * 2 + #{$progress-dot} * 3);
-  pointer-events: auto;
-}
-
-.progressLine {
-  position: absolute;
-  top: calc($progress-dot / 2);
-  bottom: calc($progress-dot / 2);
-  left: 50%;
-  width: $progress-track-w;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: rgba($ink, 0.12);
-}
-
-.progressDot {
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-  width: $progress-dot;
-  height: $progress-dot;
-  margin: 0;
-  padding: 0;
-  border: 1.5px solid rgba($ink, 0.22);
-  border-radius: 50%;
-  background: $pure-white;
-  cursor: pointer;
-  transition:
-    border-color 0.25s ease,
-    background-color 0.25s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    border-color: rgba($framer-blue, 0.55);
-    transform: scale(1.08);
-  }
-
-  &:focus-visible {
-    outline: 2px solid $framer-blue;
-    outline-offset: 3px;
-  }
-}
-
-.progressDotActive {
-  border-color: $framer-blue;
-  background: $framer-blue;
-  transform: scale(1.12);
 }
 
 .stepsStack {
@@ -303,10 +230,6 @@ $progress-gap: clamp(28px, 5vh, 48px);
       max(env(safe-area-inset-right, 0px), clamp(16px, 4vw, 24px));
   }
 
-  .progress {
-    display: none;
-  }
-
   .step {
     inset: clamp(40px, 7vh, 56px) 0 0;
     align-items: stretch;
@@ -459,18 +382,6 @@ $progress-gap: clamp(28px, 5vh, 48px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .progressDot {
-    transition: none;
-  }
-
-  .progressDot:hover {
-    transform: none;
-  }
-
-  .progressDotActive {
-    transform: none;
-  }
-
   .step {
     opacity: 1;
     pointer-events: auto;

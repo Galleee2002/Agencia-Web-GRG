@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useI18n } from "@/components/providers/I18nProvider";
+
 import styles from "./TeamSection.module.scss";
 
 export function TeamHeading() {
+  const { t } = useI18n();
   const ref = useRef<HTMLHeadingElement>(null);
   const [lineVisible, setLineVisible] = useState(false);
 
@@ -34,8 +37,8 @@ export function TeamHeading() {
     >
       <span className={styles.headingStack}>
         <span className={styles.headingRow}>
-          <span className={styles.headingLead}>Quiénes </span>
-          <span className={styles.headingAccent}>somos</span>
+          <span className={styles.headingLead}>{t("team.headingLead")}</span>
+          <span className={styles.headingAccent}>{t("team.headingAccent")}</span>
         </span>
         <span className={styles.headingLineTrack} aria-hidden>
           <span className={styles.headingLine} />

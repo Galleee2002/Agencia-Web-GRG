@@ -5,7 +5,7 @@ $pure-white: #ffffff;
 $muted-silver: #6a6a6a;
 $framer-blue: #0099ff;
 $team-breakpoint: 809px;
-$illustration-max: 420px;
+$illustration-max: 336px; // 80% de 420px
 
 .section {
   position: relative;
@@ -238,7 +238,7 @@ $illustration-max: 420px;
 .media {
   grid-area: media;
   margin: 0;
-  width: min(100%, clamp(240px, 85vw, #{$illustration-max}));
+  width: min(100%, clamp(192px, 68vw, #{$illustration-max}));
   max-width: $illustration-max;
   margin-inline: auto;
 
@@ -259,7 +259,7 @@ $illustration-max: 420px;
   display: block;
   width: 100%;
   height: auto;
-  max-height: min(72vh, 560px);
+  max-height: min(72vh, 448px);
   object-fit: contain;
   object-position: center;
 }

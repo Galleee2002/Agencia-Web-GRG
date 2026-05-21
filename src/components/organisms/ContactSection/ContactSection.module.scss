@@ -255,33 +255,9 @@ $form-reveal-offset-item: -28px;
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
   color: $ink-muted;
   pointer-events: none;
-  transition:
-    color 0.22s $form-reveal-ease,
-    transform 0.22s $form-reveal-ease;
-}
-
-.inputWrap:has(.input:hover:not(:focus-visible)),
-.inputWrap:has(.textarea:hover:not(:focus-visible)) {
-  .inputIcon:not(.textareaIcon) {
-    color: $void-black;
-    transform: translate3d(2px, -50%, 0);
-  }
-
-  .textareaIcon {
-    color: $void-black;
-    transform: translate3d(2px, 0, 0);
-  }
-
-  .input,
-  .textarea {
-    transform: translate3d(2px, 0, 0);
-  }
-}
-
-.inputWrap:has(:focus-within) .inputIcon {
-  color: $framer-blue;
 }
 
 .textareaIcon {
@@ -302,12 +278,10 @@ $form-reveal-offset-item: -28px;
   border-radius: 10px;
   transition:
     border-color 0.22s $form-reveal-ease,
-    box-shadow 0.22s $form-reveal-ease,
-    background-color 0.22s $form-reveal-ease,
-    transform 0.22s $form-reveal-ease;
+    box-shadow 0.22s $form-reveal-ease;
 
-  &:focus-visible {
-    transform: none;
+  &:hover:not(:focus):not(:focus-visible) {
+    border-color: rgba(0, 0, 0, 0.2);
   }
 
   &::placeholder {
@@ -341,8 +315,10 @@ $form-reveal-offset-item: -28px;
 .textarea {
   min-height: 120px;
   padding: 12px 14px 12px 44px;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   line-height: 1.45;
+  field-sizing: content;
 }
 
 // Selects: light-band “disclosure” / tertiary chip (DESIGN.md §2 — chips + hairline; blue = focus only)
@@ -362,19 +338,14 @@ $form-reveal-offset-item: -28px;
 
   transition:
     border-color 0.22s $form-reveal-ease,
-    box-shadow 0.22s $form-reveal-ease,
-    background-color 0.22s $form-reveal-ease,
-    transform 0.22s $form-reveal-ease;
+    box-shadow 0.22s $form-reveal-ease;
 
   &:hover:not(:focus):not(:focus-visible) {
-    background-color: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.1);
-    transform: translate3d(2px, 0, 0);
+    border-color: rgba(0, 0, 0, 0.2);
   }
 
   &:focus,
   &:focus-visible {
-    transform: none;
     background-color: $pure-white;
     border-color: $framer-blue;
     box-shadow: 0 0 0 3px $blue-glow;
@@ -393,6 +364,161 @@ $form-reveal-offset-item: -28px;
     font-weight: 400;
     color: $void-black;
     background-color: $pure-white;
+  }
+}
+
+.customSelect {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.customSelect[data-open="true"] {
+  z-index: 2;
+}
+
+.customSelectTrigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid $hairline-strong;
+  border-radius: 10px;
+  background: $pure-white;
+  color: $void-black;
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.22s $form-reveal-ease,
+    box-shadow 0.22s $form-reveal-ease;
+
+  &[data-placeholder="true"] .customSelectValue {
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  &:hover:not(:focus-visible) {
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background-color: $pure-white;
+    border-color: $framer-blue;
+    box-shadow: 0 0 0 3px $blue-glow;
+  }
+}
+
+.customSelect[data-open="true"] .customSelectTrigger {
+  background-color: $pure-white;
+  border-color: $framer-blue;
+  box-shadow: 0 0 0 3px $blue-glow;
+}
+
+.customSelectValue {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customSelectChevron {
+  flex-shrink: 0;
+  color: $ink-muted;
+  transition: transform 0.22s $form-reveal-ease;
+}
+
+.customSelect[data-open="true"] .customSelectChevron {
+  transform: rotate(180deg);
+}
+
+@keyframes customSelectMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes customSelectOptionIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.customSelectMenu {
+  position: fixed;
+  z-index: 200;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid $hairline-strong;
+  border-radius: 12px;
+  background: $pure-white;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  max-height: min(280px, 42vh);
+  overflow-y: auto;
+  transform-origin: top center;
+  animation: customSelectMenuIn 0.24s $form-reveal-ease both;
+}
+
+.customSelectOptionItem {
+  animation: customSelectOptionIn 0.22s $form-reveal-ease both;
+}
+
+.customSelectOption {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: $void-black;
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.18s $form-reveal-ease,
+    color 0.18s $form-reveal-ease;
+
+  &[data-selected="true"] {
+    font-weight: 500;
+    color: $framer-blue;
+  }
+
+  &[data-active="true"],
+  &:hover {
+    background-color: rgba(0, 153, 255, 0.08);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background-color: rgba(0, 153, 255, 0.12);
+    box-shadow: inset 0 0 0 1px $framer-blue;
   }
 }
 
@@ -550,6 +676,7 @@ $form-reveal-offset-item: -28px;
   .input,
   .textarea,
   .select,
+  .customSelectTrigger,
   .submit,
   .resetBtn {
     transition:
@@ -563,19 +690,12 @@ $form-reveal-offset-item: -28px;
     }
   }
 
-  .inputWrap:has(.input:hover:not(:focus-visible)),
-  .inputWrap:has(.textarea:hover:not(:focus-visible)) {
-    .input,
-    .textarea {
-      transform: none;
-    }
-
-    .inputIcon:not(.textareaIcon) {
-      transform: translateY(-50%);
-    }
-  }
-
   .submit:hover:not(:disabled) {
     box-shadow: none;
+  }
+
+  .customSelectMenu,
+  .customSelectOptionItem {
+    animation: none;
   }
 }

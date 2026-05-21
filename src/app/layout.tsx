@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Inter, Montserrat } from "next/font/google";
 import "./tailwind.css";
 import "./globals.scss";
-import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { AppProviders } from "@/components/providers/AppProviders";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -19,7 +19,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Agencia Web GMG",
+  title: "GRG Solutions",
   description: "Base project with Next.js, TypeScript, SCSS and Atomic Design.",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
@@ -44,7 +44,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full min-w-0 flex flex-col">
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

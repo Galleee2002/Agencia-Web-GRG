@@ -9,40 +9,26 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type KeyboardEvent,
 } from "react";
 
-import {
-  cancelSmoothScroll,
-  prefersReducedMotion,
-  smoothScrollToElement,
-} from "@/lib/smoothScroll";
+import { prefersReducedMotion } from "@/lib/smoothScroll";
+import { registerWorkWithUsScrollTrigger } from "@/lib/workWithUsScrollPin";
 import { cn } from "@/lib/utils";
 
-import { WORK_WITH_US_STEPS } from "./workWithUsSteps";
+import { useI18n, useWorkWithUsSteps } from "@/components/providers/I18nProvider";
+
 import styles from "./WorkWithUsSection.module.scss";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-const STEP_COUNT = WORK_WITH_US_STEPS.length;
 const SCROLL_PER_STEP_VH = 110;
-const SCROLL_PANELS = STEP_COUNT * SCROLL_PER_STEP_VH;
 /** Porción de cada tramo dedicada al crossfade (scroll y visual van juntos) */
 const CROSSFADE_SPAN = 0.42;
 
-function stepProgressForIndex(index: number): number {
-  if (STEP_COUNT <= 1) return 0;
-  if (index >= STEP_COUNT - 1) return 1;
-  return index / (STEP_COUNT - 1);
-}
-
-function stepIndexFromProgress(progress: number): number {
-  if (STEP_COUNT <= 1) return 0;
-  if (progress >= 0.9) return STEP_COUNT - 1;
-  return Math.min(
-    STEP_COUNT - 1,
-    Math.round(progress * (STEP_COUNT - 1)),
-  );
+function stepProgressForIndex(index: number, stepCount: number): number {
+  if (stepCount <= 1) return 0;
+  if (index >= stepCount - 1) return 1;
+  return index / (stepCount - 1);
 }
 
 function setPanelVisible(panel: HTMLElement, visible: boolean) {
@@ -63,11 +49,14 @@ function setPanelContentVisible(panel: HTMLElement) {
 }
 
 export function WorkWithUsSection() {
+  const { t } = useI18n();
+  const steps = useWorkWithUsSteps();
+  const stepCount = steps.length;
+  const scrollPanels = stepCount * SCROLL_PER_STEP_VH;
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
-  const [activeStep, setActiveStep] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(
     () =>
       typeof window !== "undefined" && prefersReducedMotion(),
@@ -78,43 +67,6 @@ export function WorkWithUsSection() {
       stepRefs.current[index] = el;
     },
     [],
-  );
-
-  const scrollToStep = useCallback((index: number) => {
-    const clamped = Math.max(0, Math.min(STEP_COUNT - 1, index));
-    cancelSmoothScroll();
-
-    const st = scrollTriggerRef.current;
-    const stepEl = stepRefs.current[clamped];
-
-    if (!st || reducedMotion) {
-      if (stepEl) {
-        smoothScrollToElement(stepEl, { duration: 0.85 });
-      }
-      setActiveStep(clamped);
-      return;
-    }
-
-    const targetY =
-      st.start + (st.end - st.start) * stepProgressForIndex(clamped);
-
-    gsap.to(window, {
-      duration: 0.55,
-      scrollTo: { y: targetY, autoKill: true },
-      ease: "power2.inOut",
-      overwrite: "auto",
-      onComplete: () => setActiveStep(clamped),
-    });
-  }, [reducedMotion]);
-
-  const handleDotKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        scrollToStep(index);
-      }
-    },
-    [scrollToStep],
   );
 
   useLayoutEffect(() => {
@@ -166,21 +118,21 @@ export function WorkWithUsSection() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: `+=${SCROLL_PANELS}%`,
+          end: `+=${scrollPanels}%`,
           pin,
           scrub: 0.25,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          ...(STEP_COUNT > 1
+          ...(stepCount > 1
             ? {
                 snap: {
                   snapTo: (progress: number) => {
                     if (progress >= 0.92) return 1;
                     const idx = Math.min(
-                      STEP_COUNT - 1,
-                      Math.round(progress * (STEP_COUNT - 1)),
+                      stepCount - 1,
+                      Math.round(progress * (stepCount - 1)),
                     );
-                    return stepProgressForIndex(idx);
+                    return stepProgressForIndex(idx, stepCount);
                   },
                   duration: { min: 0.12, max: 0.32 },
                   delay: 0,
@@ -188,13 +140,12 @@ export function WorkWithUsSection() {
                 },
               }
             : {}),
-          onUpdate: (self) => {
-            setActiveStep(stepIndexFromProgress(self.progress));
-          },
         },
       });
 
-      scrollTriggerRef.current = tl.scrollTrigger ?? null;
+      const st = tl.scrollTrigger ?? null;
+      scrollTriggerRef.current = st;
+      registerWorkWithUsScrollTrigger(st);
 
       for (let i = 1; i < panels.length; i++) {
         const prev = panels[i - 1];
@@ -269,9 +220,10 @@ export function WorkWithUsSection() {
       mq.removeEventListener("change", onMqChange);
       window.removeEventListener("resize", refresh);
       scrollTriggerRef.current = null;
+      registerWorkWithUsScrollTrigger(null);
       ctx.revert();
     };
-  }, []);
+  }, [scrollPanels, stepCount]);
 
   return (
     <section
@@ -292,38 +244,12 @@ export function WorkWithUsSection() {
       >
         <header className={styles.sectionHeader}>
           <p id="work-with-us-heading" className={styles.eyebrow}>
-            Trabajar con nosotros
+            {t("workWithUs.eyebrow")}
           </p>
         </header>
 
-        <nav
-          className={cn(
-            styles.progress,
-            reducedMotion && styles.progressReduced,
-          )}
-          aria-label="Progreso del proceso"
-        >
-          <div className={styles.progressTrack}>
-            <span className={styles.progressLine} aria-hidden="true" />
-            {WORK_WITH_US_STEPS.map((step, index) => (
-              <button
-                key={step.id}
-                type="button"
-                className={cn(
-                  styles.progressDot,
-                  activeStep === index && styles.progressDotActive,
-                )}
-                aria-label={`Ir al paso ${index + 1}`}
-                aria-current={activeStep === index ? "step" : undefined}
-                onClick={() => scrollToStep(index)}
-                onKeyDown={(event) => handleDotKeyDown(event, index)}
-              />
-            ))}
-          </div>
-        </nav>
-
         <div className={styles.stepsStack}>
-          {WORK_WITH_US_STEPS.map((step, index) => (
+          {steps.map((step, index) => (
             <article
               key={step.id}
               ref={setStepRef(index)}

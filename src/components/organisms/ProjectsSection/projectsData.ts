@@ -1,3 +1,5 @@
+import { publicAssetUrl } from "@/lib/publicAssetUrl";
+
 export type ProjectClientType = "national" | "international";
 
 export interface PortfolioProject {
@@ -16,31 +18,27 @@ export interface PortfolioProject {
   href: string;
 }
 
-export function clientLabel(type: ProjectClientType): string {
-  return type === "national" ? "Nacional" : "Internacional";
-}
-
-/** Subir al reemplazar capturas en `public/projects/resize-imgs/` (invalida caché de `next/image`). */
-const PROJECT_IMAGE_CACHE_VERSION = "20260519c";
+export type PortfolioProjectBase = Omit<PortfolioProject, "description">;
 
 const PROJECT_IMAGES_BASE = "/projects/resize-imgs";
 
 function projectImage(file: string): string {
-  const webpName = file.endsWith(".webp") ? file : `${file.replace(/\.png$/i, "")}.webp`;
-  return `${PROJECT_IMAGES_BASE}/${webpName}?v=${PROJECT_IMAGE_CACHE_VERSION}`;
+  const webpName = file.endsWith(".webp")
+    ? file
+    : `${file.replace(/\.png$/i, "")}.webp`;
+  return publicAssetUrl(`${PROJECT_IMAGES_BASE}/${webpName}`);
 }
 
 /**
  * Proyectos de ejemplo. Imágenes WebP bajo `public/projects/resize-imgs/`.
  * `themeId` (1–6) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
+ * Las descripciones visibles se resuelven vía i18n (`getPortfolioProjects`).
  */
-export const portfolioProjects: PortfolioProject[] = [
+export const portfolioProjectsBase: PortfolioProjectBase[] = [
   {
     id: 1,
     themeId: 6,
     name: "Fuera De Contexto",
-    description:
-      "Ecommerce desarrollado para una marca argentina de indumentaria orientada a la venta online de ropa. La plataforma incorpora catálogo de productos, base de datos, servidor, carrito de compras y pagos online, ofreciendo una experiencia clara para clientes y administradores.",
     clientType: "national",
     technologies: ["React", "Vite", "WebSockets", "S3", "Tailwind CSS"],
     images: [
@@ -54,8 +52,6 @@ export const portfolioProjects: PortfolioProject[] = [
     id: 2,
     themeId: 1,
     name: "BVI Finance",
-    description:
-      "Sistema web administrativo desarrollado para una organización financiera internacional con base en las British Virgin Islands. La plataforma centraliza la gestión de eventos, noticias, newsletters, membresías, miembros, legislación y publicaciones, ofreciendo una experiencia completa tanto para usuarios como para administradores.",
     clientType: "international",
     technologies: [
       "React",
@@ -76,8 +72,6 @@ export const portfolioProjects: PortfolioProject[] = [
     id: 3,
     themeId: 2,
     name: "The Coral Garden",
-    description:
-      "Tienda virtual y sitio web desarrollado para un emprendimiento argentino especializado en filtros de agua para cultivo. La plataforma presenta sus productos de forma clara y profesional, destacando la importancia de la calidad del agua en el crecimiento, cuidado y mantenimiento de cultivos.",
     clientType: "national",
     technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Stripe"],
     images: [
@@ -91,8 +85,6 @@ export const portfolioProjects: PortfolioProject[] = [
     id: 4,
     themeId: 4,
     name: "CIL Labs",
-    description:
-      "Plataforma educativa con inteligencia artificial integrada desarrollada para una institución vinculada a China y Estados Unidos. El sistema permite que docentes creen tareas y que alumnos suban videos hablando en inglés para recibir feedback automático orientado a mejorar su desempeño oral.",
     clientType: "international",
     technologies: ["Next.js", "React", "FHIR", "PostgreSQL", "Auth0"],
     images: [
@@ -106,8 +98,6 @@ export const portfolioProjects: PortfolioProject[] = [
     id: 5,
     themeId: 3,
     name: "GPNi",
-    description:
-      "Plataforma educativa internacional desarrollada para un equipo con presencia en China, Japón y Estados Unidos. El sistema centraliza cursos, webinars, seminarios y contenido sobre nutrición, vida fitness y formación profesional, ofreciendo una experiencia organizada para usuarios y administradores.",
     clientType: "international",
     technologies: ["React", "D3.js", "Node.js", "Kafka", "AWS"],
     images: [
@@ -121,8 +111,6 @@ export const portfolioProjects: PortfolioProject[] = [
     id: 6,
     themeId: 5,
     name: "El Sapito 3D",
-    description:
-      "Ecommerce desarrollado para un emprendimiento argentino dedicado a la venta de objetos impresos en 3D. La plataforma cuenta con catálogo de productos, base de datos, servidor, carrito de compras y pagos online, permitiendo gestionar y vender productos de forma profesional.",
     clientType: "national",
     technologies: ["Next.js", "React", "tRPC", "Prisma", "Redis"],
     images: [

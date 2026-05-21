@@ -3,8 +3,6 @@ import { Mail, Menu, X } from 'lucide-react';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
-const TOGGLE_LABEL_MENU = 'Menú';
-const TOGGLE_LABEL_CLOSE = 'Cerrar';
 const MOBILE_BOTTOM_NAV_MAX_WIDTH = 809;
 
 function useMaxWidth(maxWidthPx) {
@@ -41,6 +39,11 @@ const StaggeredMenu = ({
   ctaHref = '/#contact',
   ctaLabel = 'Contáctanos',
   showHeaderCta = true,
+  toggleLabelMenu = 'Menú',
+  toggleLabelClose = 'Cerrar',
+  ariaOpenMenu = 'Abrir menú',
+  ariaCloseMenu = 'Cerrar menú',
+  ariaMenuOpen = 'Menú abierto',
   onMenuOpen,
   onMenuClose
 }) => {
@@ -56,8 +59,8 @@ const StaggeredMenu = ({
   const textInnerRef = useRef(null);
   const textWrapRef = useRef(null);
   const [textLines, setTextLines] = useState([
-    TOGGLE_LABEL_MENU,
-    TOGGLE_LABEL_CLOSE,
+    toggleLabelMenu,
+    toggleLabelClose,
   ]);
 
   const openTlRef = useRef(null);
@@ -325,13 +328,13 @@ const StaggeredMenu = ({
     if (!inner) return;
     textCycleAnimRef.current?.kill();
 
-    const currentLabel = opening ? TOGGLE_LABEL_MENU : TOGGLE_LABEL_CLOSE;
-    const targetLabel = opening ? TOGGLE_LABEL_CLOSE : TOGGLE_LABEL_MENU;
+    const currentLabel = opening ? toggleLabelMenu : toggleLabelClose;
+    const targetLabel = opening ? toggleLabelClose : toggleLabelMenu;
     const cycles = 3;
     const seq = [currentLabel];
     let last = currentLabel;
     for (let i = 0; i < cycles; i++) {
-      last = last === TOGGLE_LABEL_MENU ? TOGGLE_LABEL_CLOSE : TOGGLE_LABEL_MENU;
+      last = last === toggleLabelMenu ? toggleLabelClose : toggleLabelMenu;
       seq.push(last);
     }
     if (last !== targetLabel) seq.push(targetLabel);
@@ -496,7 +499,7 @@ const StaggeredMenu = ({
       ref={toggleBtnRef}
       type="button"
       className="sm-header-left sm-toggle"
-      aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+      aria-label={open ? ariaCloseMenu : ariaOpenMenu}
       aria-expanded={open}
       aria-controls="staggered-menu-panel"
       onClick={toggleMenu}
@@ -525,7 +528,7 @@ const StaggeredMenu = ({
       ref={toggleBtnRef}
       type="button"
       className="sm-header-left sm-toggle sm-toggle--fixedBar"
-      aria-label={open ? 'Menú abierto' : 'Abrir menú'}
+      aria-label={open ? ariaMenuOpen : ariaOpenMenu}
       aria-expanded={open}
       aria-controls="staggered-menu-panel"
       aria-hidden={open}
@@ -533,7 +536,7 @@ const StaggeredMenu = ({
       onClick={toggleMenu}
     >
       <span className="sm-toggle-fixed-row" aria-hidden="true">
-        <span className="sm-toggle-labelPlain">Menú</span>
+        <span className="sm-toggle-labelPlain">{toggleLabelMenu}</span>
         <span ref={iconRef} className="sm-icon">
           <Menu className="sm-icon-svg" size={18} strokeWidth={2} />
         </span>
@@ -546,13 +549,13 @@ const StaggeredMenu = ({
       ref={toggleBtnRef}
       type="button"
       className="sm-header-left sm-toggle sm-toggle--fixedBar sm-toggle--dock"
-      aria-label="Abrir menú"
+      aria-label={ariaOpenMenu}
       aria-expanded={open}
       aria-controls="staggered-menu-panel"
       onClick={toggleMenu}
     >
       <span className="sm-toggle-fixed-row" aria-hidden="true">
-        <span className="sm-toggle-labelPlain">Menú</span>
+        <span className="sm-toggle-labelPlain">{toggleLabelMenu}</span>
         <span className="sm-icon">
           <Menu className="sm-icon-svg" size={18} strokeWidth={2} />
         </span>
@@ -618,7 +621,7 @@ const StaggeredMenu = ({
 
       <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
         {isFixed && !mobileBottomNav ? (
-          <button type="button" className="sm-panel-close" onClick={closeMenu} aria-label="Cerrar menú">
+          <button type="button" className="sm-panel-close" onClick={closeMenu} aria-label={ariaCloseMenu}>
             <X className="sm-panel-close-icon" size={28} strokeWidth={2} aria-hidden />
           </button>
         ) : null}
@@ -662,7 +665,7 @@ const StaggeredMenu = ({
             type="button"
             className="sm-panel-close-mobile"
             onClick={closeMenu}
-            aria-label="Cerrar menú"
+            aria-label={ariaCloseMenu}
           >
             <X className="sm-panel-close-mobile-icon" size={56} strokeWidth={1.5} aria-hidden />
           </button>

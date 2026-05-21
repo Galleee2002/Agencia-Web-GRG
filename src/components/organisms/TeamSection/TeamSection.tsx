@@ -1,9 +1,14 @@
+"use client";
+
+import { useTeamMembers } from "@/components/providers/I18nProvider";
+
 import { TeamHeading } from "./TeamHeading";
-import { teamMembers } from "./teamData";
 import { TeamMemberRows } from "./TeamMemberRows";
 import styles from "./TeamSection.module.scss";
 
 export function TeamSection() {
+  const members = useTeamMembers();
+
   return (
     <section
       id="equipo"
@@ -20,8 +25,7 @@ export function TeamSection() {
       </noscript>
       <div className={styles.inner}>
         <TeamHeading />
-
-        <TeamMemberRows members={teamMembers} />
+        <TeamMemberRows members={members} />
       </div>
     </section>
   );
