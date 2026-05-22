@@ -18,7 +18,7 @@ export function AgencyStaggeredMenu() {
 
   return (
     <StaggeredMenu
-      key={`${locale}-${theme}`}
+      key={locale}
       isFixed
       position="left"
       logoUrl={siteLogoForTheme(theme)}

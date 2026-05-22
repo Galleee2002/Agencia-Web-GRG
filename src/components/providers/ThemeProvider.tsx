@@ -36,12 +36,22 @@ function readStoredTheme(): Theme | null {
   return null;
 }
 
+function readThemeFromCookie(): Theme | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(
+    /(?:^|;\s*)site-theme=(dark|light)(?:;|$)/,
+  );
+  if (match?.[1] === "dark" || match?.[1] === "light") {
+    return match[1];
+  }
+  return null;
+}
+
 function resolveTheme(): Theme {
+  const fromCookie = readThemeFromCookie();
+  if (fromCookie) return fromCookie;
   const stored = readStoredTheme();
   if (stored) return stored;
-  if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  }
   return "light";
 }
 
@@ -51,13 +61,8 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = theme;
 }
 
-function readDomTheme(): Theme {
-  if (typeof document === "undefined") return "light";
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
-}
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(readDomTheme);
+  const [theme, setThemeState] = useState<Theme>("light");
 
   useLayoutEffect(() => {
     const initial = resolveTheme();
