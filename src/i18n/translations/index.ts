@@ -1,11 +1,10 @@
 import type { Locale, Messages } from "../types";
-import { en } from "./en";
 import { es } from "./es";
 
+/** @deprecated Usar carga dinámica en I18nProvider; se mantiene `es` para SSR/fallback. */
 export const messagesByLocale: Record<Locale, Messages> = {
   es,
-  en,
+  en: es,
 };
 
-
-export { es, en };
+export { es };

@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
+import { ThemeLogo } from "@/components/atoms/ThemeLogo";
 import { useI18n, useSiteNavItems } from "@/components/providers/I18nProvider";
-import { useTheme } from "@/components/providers/ThemeProvider";
-import { siteLogoForTheme } from "@/config/siteAssets";
 
 import styles from "./SiteFooter.module.scss";
 
@@ -20,10 +19,8 @@ function phoneToTelUri(display: string): string {
 
 export function SiteFooterContent() {
   const { t } = useI18n();
-  const { theme } = useTheme();
   const navItems = useSiteNavItems().filter((item) => item.link !== HOME_LINK);
   const companyName = t("footer.companyName");
-  const logoSrc = siteLogoForTheme(theme);
   const year = new Date().getFullYear();
   const email = t("footer.email");
   const phone = t("footer.phone");
@@ -37,15 +34,7 @@ export function SiteFooterContent() {
             className={styles.logoLink}
             aria-label={t("footer.logoAria", { company: companyName })}
           >
-            <img
-              className={styles.logo}
-              src={logoSrc}
-              alt=""
-              width={998}
-              height={364}
-              decoding="async"
-              draggable={false}
-            />
+            <ThemeLogo className={styles.logo} />
           </Link>
           <p className={styles.description}>{t("footer.description")}</p>
         </div>

@@ -92,6 +92,7 @@ export const en = {
     showDetails: "Show project details",
     hideDetails: "Hide project details",
     lightboxGalleryLabel: "Image gallery: {{name}}",
+    viewCaseStudy: "View case study",
     closeGallery: "Close gallery",
     close: "Close",
     prevImage: "Previous image",
@@ -194,5 +195,89 @@ export const en = {
     privacy: "Privacy policy",
     terms: "Terms and conditions",
     cookies: "Cookies",
+  },
+  legal: {
+    backHome: "Back to home",
+    backProjects: "Back to projects",
+    contactCta: "Contact us",
+    privacy: {
+      metaTitle: "Privacy policy",
+      metaDescription:
+        "How GRG Solutions collects, uses, and protects personal data on this website and contact forms.",
+      title: "Privacy policy",
+      updated: "Last updated: May 2026",
+      intro:
+        "At GRG Solutions we respect your privacy. This policy describes what data we may process when you visit our site or contact us.",
+      s1Title: "Data controller",
+      s1Body:
+        "The controller is GRG Solutions. You can reach us at hello@agenciawebgmg.com for data-related requests.",
+      s2Title: "Data we collect",
+      s2Body:
+        "We may receive your name, email, company, and message submitted through the contact form. We also store basic technical data (for example, cookies required for language and theme preferences).",
+      s3Title: "Purpose and legal basis",
+      s3Body:
+        "We use your data to respond to business inquiries, prepare proposals, and improve our services. The basis is your consent when submitting the form and our legitimate interest in operating the site securely.",
+      s4Title: "Retention and security",
+      s4Body:
+        "We keep data as long as needed to handle your request and meet legal obligations. We apply reasonable measures to protect information from unauthorized access.",
+      s5Title: "Your rights",
+      s5Body:
+        "You may request access, correction, or deletion by writing to hello@agenciawebgmg.com. You may also file a complaint with your local data protection authority.",
+    },
+    terms: {
+      metaTitle: "Terms and conditions",
+      metaDescription:
+        "Terms of use for the GRG Solutions website and web development services.",
+      title: "Terms and conditions",
+      updated: "Last updated: May 2026",
+      intro:
+        "By accessing this site you accept these terms. If you disagree, please do not use the site.",
+      s1Title: "Use of the site",
+      s1Body:
+        "Content is informational about our design and web development services. You may not copy, distribute, or modify materials without prior written permission.",
+      s2Title: "Services and proposals",
+      s2Body:
+        "Descriptions on the site are not a binding offer. Scope, timelines, and fees are confirmed in proposals or contracts signed with each client.",
+      s3Title: "Intellectual property",
+      s3Body:
+        "Brands, copy, images, and code belong to GRG Solutions or their respective owners. Client projects are published in the portfolio under prior agreement.",
+      s4Title: "Limitation of liability",
+      s4Body:
+        "The site is provided “as is”. We do not guarantee uninterrupted availability. To the extent permitted by law, we are not liable for indirect damages from use of the site.",
+      s5Title: "Governing law",
+      s5Body:
+        "These terms are governed by the laws of Argentina. Disputes shall be submitted to the competent courts of the City of Buenos Aires.",
+    },
+    cookies: {
+      metaTitle: "Cookie policy",
+      metaDescription:
+        "Information about cookies and local storage used on the GRG Solutions website.",
+      title: "Cookie policy",
+      updated: "Last updated: May 2026",
+      intro:
+        "This site uses cookies and local storage to remember preferences and keep a consistent experience.",
+      s1Title: "What cookies are",
+      s1Body:
+        "Cookies are small files stored by your browser. We also use localStorage for language and visual theme.",
+      s2Title: "Cookies we use",
+      s2Body:
+        "Language preference (agencia-web-gmg-locale) and theme (site-theme). These are functional and not used for behavioral advertising.",
+      s3Title: "How to manage them",
+      s3Body:
+        "You can delete cookies in your browser settings. If you disable them, some preferences may not persist between visits.",
+      s4Title: "Updates",
+      s4Body:
+        "We may update this policy to reflect technical or legal changes. We will publish the revision date on this page.",
+      s5Title: "Contact",
+      s5Body:
+        "For cookie-related questions, email hello@agenciawebgmg.com.",
+    },
+  },
+  projectPage: {
+    clientLabel: "Client",
+    technologiesLabel: "Technologies",
+    galleryLabel: "Project gallery",
+    notFoundTitle: "Project not found",
+    notFoundBody: "This link does not match a published case study.",
   },
 } satisfies Messages;

@@ -900,7 +900,9 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
     background: var(--site-cta-surface);
     border-color: var(--site-cta-surface);
     outline: none;
-    box-shadow: rgba(0, 0, 0, 0.14) 0 12px 32px;
+    box-shadow:
+      rgba(0, 0, 0, 0.14) 0 12px 32px,
+      0 0 0 3px rgba(0, 153, 255, 0.45);
   }
 
   .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-mobile-bottom-dock .sm-toggle--dock {

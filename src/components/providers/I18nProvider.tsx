@@ -4,7 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -28,8 +30,8 @@ import {
   setLocaleSnapshot,
   subscribeLocale,
 } from "@/i18n/localeStore";
-import { messagesByLocale } from "@/i18n/translations";
-import type { Locale, TranslationKey } from "@/i18n/types";
+import { es } from "@/i18n/translations/es";
+import type { Locale, Messages, TranslationKey } from "@/i18n/types";
 
 type I18nContextValue = {
   locale: Locale;
@@ -39,6 +41,14 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
+async function loadMessages(locale: Locale): Promise<Messages> {
+  if (locale === "en") {
+    const mod = await import("@/i18n/translations/en");
+    return mod.en;
+  }
+  return es;
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const locale = useSyncExternalStore(
     subscribeLocale,
@@ -46,11 +56,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     getServerLocaleSnapshot,
   );
 
+  const [messages, setMessages] = useState<Messages>(es);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadMessages(locale).then((next) => {
+      if (!cancelled) setMessages(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [locale]);
+
   const setLocale = useCallback((next: Locale) => {
     setLocaleSnapshot(next);
   }, []);
-
-  const messages = messagesByLocale[locale];
 
   const t = useMemo(() => createTranslate(messages), [messages]);
 

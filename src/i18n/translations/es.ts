@@ -90,6 +90,7 @@ export const es = {
     showDetails: "Mostrar detalles del proyecto",
     hideDetails: "Ocultar detalles del proyecto",
     lightboxGalleryLabel: "Galería de imágenes: {{name}}",
+    viewCaseStudy: "Ver caso de estudio",
     closeGallery: "Cerrar galería",
     close: "Cerrar",
     prevImage: "Imagen anterior",
@@ -193,5 +194,89 @@ export const es = {
     privacy: "Política de privacidad",
     terms: "Términos y condiciones",
     cookies: "Cookies",
+  },
+  legal: {
+    backHome: "Volver al inicio",
+    backProjects: "Volver a proyectos",
+    contactCta: "Contactar",
+    privacy: {
+      metaTitle: "Política de privacidad",
+      metaDescription:
+        "Cómo GRG Solutions recopila, usa y protege los datos personales en su sitio web y formularios de contacto.",
+      title: "Política de privacidad",
+      updated: "Última actualización: mayo de 2026",
+      intro:
+        "En GRG Solutions respetamos tu privacidad. Esta política describe qué datos podemos tratar cuando visitás nuestro sitio o nos escribís.",
+      s1Title: "Responsable del tratamiento",
+      s1Body:
+        "El responsable es GRG Solutions. Podés contactarnos en hola@agenciawebgmg.com para consultas sobre tus datos.",
+      s2Title: "Datos que recopilamos",
+      s2Body:
+        "Podemos recibir nombre, correo electrónico, empresa y el mensaje que envíes por el formulario de contacto. También registramos datos técnicos básicos de navegación (por ejemplo, cookies necesarias o preferencias de idioma y tema).",
+      s3Title: "Finalidad y base legal",
+      s3Body:
+        "Usamos tus datos para responder consultas comerciales, preparar propuestas y mejorar nuestros servicios. La base es tu consentimiento al enviar el formulario y nuestro interés legítimo en operar el sitio con seguridad.",
+      s4Title: "Conservación y seguridad",
+      s4Body:
+        "Conservamos los datos el tiempo necesario para atender tu solicitud y obligaciones legales. Aplicamos medidas razonables para proteger la información frente a accesos no autorizados.",
+      s5Title: "Tus derechos",
+      s5Body:
+        "Podés solicitar acceso, rectificación o eliminación de tus datos escribiendo a hola@agenciawebgmg.com. También podés presentar un reclamo ante la autoridad de protección de datos de tu jurisdicción.",
+    },
+    terms: {
+      metaTitle: "Términos y condiciones",
+      metaDescription:
+        "Condiciones de uso del sitio web de GRG Solutions y de los servicios de desarrollo web ofrecidos.",
+      title: "Términos y condiciones",
+      updated: "Última actualización: mayo de 2026",
+      intro:
+        "Al acceder a este sitio aceptás estos términos. Si no estás de acuerdo, por favor no utilices el sitio.",
+      s1Title: "Uso del sitio",
+      s1Body:
+        "El contenido es informativo sobre nuestros servicios de diseño y desarrollo web. No podés copiar, distribuir ni modificar materiales sin autorización previa por escrito.",
+      s2Title: "Servicios y propuestas",
+      s2Body:
+        "Las descripciones en el sitio no constituyen una oferta vinculante. Los alcances, plazos y honorarios se confirman en propuestas o contratos firmados con cada cliente.",
+      s3Title: "Propiedad intelectual",
+      s3Body:
+        "Marcas, textos, imágenes y código mostrados pertenecen a GRG Solutions o a sus respectivos titulares. Los proyectos de clientes se publican con fines de portfolio según acuerdos previos.",
+      s4Title: "Limitación de responsabilidad",
+      s4Body:
+        "El sitio se ofrece “tal cual”. No garantizamos disponibilidad ininterrumpida. En la medida permitida por la ley, no somos responsables por daños indirectos derivados del uso del sitio.",
+      s5Title: "Ley aplicable",
+      s5Body:
+        "Estos términos se rigen por las leyes de la República Argentina. Cualquier controversia se someterá a los tribunales competentes de la Ciudad Autónoma de Buenos Aires.",
+    },
+    cookies: {
+      metaTitle: "Política de cookies",
+      metaDescription:
+        "Información sobre cookies y almacenamiento local utilizados en el sitio de GRG Solutions.",
+      title: "Política de cookies",
+      updated: "Última actualización: mayo de 2026",
+      intro:
+        "Este sitio utiliza cookies y almacenamiento local para recordar preferencias y mantener una experiencia consistente.",
+      s1Title: "Qué son las cookies",
+      s1Body:
+        "Las cookies son pequeños archivos que el navegador guarda en tu dispositivo. También usamos localStorage para idioma y tema visual.",
+      s2Title: "Cookies que utilizamos",
+      s2Body:
+        "Preferencias de idioma (agencia-web-gmg-locale) y tema (site-theme). Estas cookies son funcionales y no se usan para publicidad comportamental.",
+      s3Title: "Cómo gestionarlas",
+      s3Body:
+        "Podés borrar cookies desde la configuración de tu navegador. Si las desactivás, algunas preferencias podrían no guardarse entre visitas.",
+      s4Title: "Actualizaciones",
+      s4Body:
+        "Podemos actualizar esta política para reflejar cambios técnicos o legales. Publicaremos la fecha de revisión en esta página.",
+      s5Title: "Contacto",
+      s5Body:
+        "Para consultas sobre cookies escribinos a hola@agenciawebgmg.com.",
+    },
+  },
+  projectPage: {
+    clientLabel: "Cliente",
+    technologiesLabel: "Tecnologías",
+    galleryLabel: "Galería del proyecto",
+    notFoundTitle: "Proyecto no encontrado",
+    notFoundBody: "El enlace no corresponde a un caso de estudio publicado.",
   },
 } as const;

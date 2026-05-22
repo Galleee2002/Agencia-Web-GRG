@@ -220,10 +220,17 @@ function Plasma({
   }, [color, speed, direction, scale, opacity, mouseInteractive]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
     const containerEl = containerRef.current;
+    if (!containerEl) return;
 
-    containerEl.querySelectorAll("canvas").forEach((node) => {
+    let disposed = false;
+    let teardown: (() => void) | undefined;
+
+    const boot = () => {
+      if (disposed || !containerRef.current) return;
+      const el = containerRef.current;
+
+    el.querySelectorAll("canvas").forEach((node) => {
       node.remove();
     });
 
@@ -256,7 +263,7 @@ function Plasma({
     canvas.style.display = "block";
     canvas.style.width = "100%";
     canvas.style.height = "100%";
-    containerEl.appendChild(canvas);
+    el.appendChild(canvas);
 
     const geometry = new Triangle(gl);
     const program = new Program(gl, {
@@ -304,7 +311,7 @@ function Plasma({
     let minFrameMs = 1000 / 60;
 
     const setSize = () => {
-      const rect = containerEl.getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
       const cssW = Math.max(1, Math.floor(rect.width));
       const cssH = Math.max(1, Math.floor(rect.height));
       cssSize.w = cssW;
@@ -346,7 +353,7 @@ function Plasma({
     };
 
     const ro = new ResizeObserver(setSize);
-    ro.observe(containerEl);
+    ro.observe(el);
     setSize();
 
     let isVisible = document.visibilityState === "visible";
@@ -454,7 +461,7 @@ function Plasma({
       },
       { threshold: 0 },
     );
-    io.observe(containerEl);
+    io.observe(el);
 
     scheduleLoopRef.current = scheduleLoop;
 
@@ -462,7 +469,7 @@ function Plasma({
       scheduleLoop();
     }
 
-    return () => {
+    teardown = () => {
       scheduleLoopRef.current = null;
       stopLoop();
       ro.disconnect();
@@ -476,6 +483,24 @@ function Plasma({
       if (canvas.isConnected) {
         canvas.remove();
       }
+    };
+    };
+
+    const useIdle =
+      typeof window !== "undefined" &&
+      typeof window.requestIdleCallback === "function";
+    const idleId = useIdle
+      ? window.requestIdleCallback(boot, { timeout: 400 })
+      : window.setTimeout(boot, 200);
+
+    return () => {
+      disposed = true;
+      if (useIdle) {
+        window.cancelIdleCallback(idleId as number);
+      } else {
+        window.clearTimeout(idleId as number);
+      }
+      teardown?.();
     };
   }, []);
 

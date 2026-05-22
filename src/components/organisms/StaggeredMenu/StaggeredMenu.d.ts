@@ -19,7 +19,6 @@ export type StaggeredMenuProps = {
   displaySocials?: boolean;
   displayItemNumbering?: boolean;
   className?: string;
-  logoUrl?: string;
   /** Enlace del logo (por defecto inicio de la landing). */
   logoHref?: string;
   menuButtonColor?: string;

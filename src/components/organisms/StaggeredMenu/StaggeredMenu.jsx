@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Mail, Menu, X } from 'lucide-react';
 import { gsap } from 'gsap';
+import { ThemeLogo } from '@/components/atoms/ThemeLogo';
 import './StaggeredMenu.css';
 
 const MOBILE_BOTTOM_NAV_MAX_WIDTH = 809;
@@ -28,7 +29,6 @@ const StaggeredMenu = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/logo.svg',
   logoHref = '/#inicio',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
@@ -468,15 +468,7 @@ const StaggeredMenu = ({
       href={logoHref}
       aria-label="Ir al inicio"
     >
-      <img
-        src={logoUrl || '/logo.svg'}
-        alt="Logo"
-        className="sm-logo-img"
-        width={998}
-        height={364}
-        draggable={false}
-        decoding="async"
-      />
+      <ThemeLogo className="sm-logo-img" />
     </a>
   );
 
@@ -623,7 +615,13 @@ const StaggeredMenu = ({
         </header>
       ) : null}
 
-      <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
+      <aside
+        id="staggered-menu-panel"
+        ref={panelRef}
+        className="staggered-menu-panel"
+        aria-hidden={!open}
+        inert={open ? undefined : true}
+      >
         {isFixed && !mobileBottomNav ? (
           <button type="button" className="sm-panel-close" onClick={closeMenu} aria-label={ariaCloseMenu}>
             <X className="sm-panel-close-icon" size={28} strokeWidth={2} aria-hidden />

@@ -61,20 +61,40 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = theme;
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+export function ThemeProvider({
+  children,
+  initialTheme = "light",
+}: {
+  children: ReactNode;
+  initialTheme?: Theme;
+}) {
+  const [theme, setThemeState] = useState<Theme>(initialTheme);
 
   useLayoutEffect(() => {
-    const initial = resolveTheme();
-    setThemeState(initial);
-    applyTheme(initial);
-    setThemeCookie(initial);
+    const resolved = resolveTheme();
+    if (resolved !== theme) {
+      setThemeState(resolved);
+    }
+    applyTheme(resolved);
+    setThemeCookie(resolved);
     try {
-      localStorage.setItem(STORAGE_KEY, initial);
+      localStorage.setItem(STORAGE_KEY, resolved);
     } catch {
       /* ignore */
     }
+    // Sincroniza cookie/localStorage en el cliente sin desalinear el HTML del servidor.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useLayoutEffect(() => {
+    applyTheme(theme);
+    setThemeCookie(theme);
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      /* ignore */
+    }
+  }, [theme]);
 
   const setTheme = useCallback((next: Theme) => {
     setThemeState(next);

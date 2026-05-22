@@ -1,13 +1,11 @@
-import { gsap } from "gsap";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-
+import { ensureGsapPlugins, gsap } from "@/lib/gsapPlugins";
 import {
   resumeWorkWithUsScrollPinForNav,
   shouldBypassWorkWithUsPinForNavScroll,
   suspendWorkWithUsScrollPinForNav,
 } from "@/lib/workWithUsScrollPin";
 
-gsap.registerPlugin(ScrollToPlugin);
+ensureGsapPlugins();
 
 let activeScrollTween: gsap.core.Tween | null = null;
 

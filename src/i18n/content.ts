@@ -1,3 +1,4 @@
+import { LEGAL_PATHS } from "@/config/site";
 import type { SiteNavItem, LegalNavLink } from "@/config/siteNavigation";
 import type { ContactSelectOption } from "@/components/organisms/ContactSection/contactFormData";
 import type { PortfolioProject } from "@/components/organisms/ProjectsSection/projectsData";
@@ -42,9 +43,9 @@ export function getSiteNavItems(t: TranslateFn): SiteNavItem[] {
 
 export function getSiteLegalLinks(t: TranslateFn): LegalNavLink[] {
   return [
-    { label: t("footer.privacy"), href: "#" },
-    { label: t("footer.terms"), href: "#" },
-    { label: t("footer.cookies"), href: "#" },
+    { label: t("footer.privacy"), href: LEGAL_PATHS.privacy },
+    { label: t("footer.terms"), href: LEGAL_PATHS.terms },
+    { label: t("footer.cookies"), href: LEGAL_PATHS.cookies },
   ];
 }
 
@@ -116,7 +117,7 @@ export function getWorkWithUsSteps(t: TranslateFn): WorkWithUsStep[] {
       number: "01",
       title: t("workWithUs.steps.step1.title"),
       text: t("workWithUs.steps.step1.text"),
-      imageSrc: "/work-with-us/idea.png",
+      imageSrc: "/work-with-us/idea.webp",
       imageAlt: t("workWithUs.steps.step1.imageAlt"),
       imageFirst: true,
     },
@@ -125,7 +126,7 @@ export function getWorkWithUsSteps(t: TranslateFn): WorkWithUsStep[] {
       number: "02",
       title: t("workWithUs.steps.step2.title"),
       text: t("workWithUs.steps.step2.text"),
-      imageSrc: "/work-with-us/plan.png",
+      imageSrc: "/work-with-us/plan.webp",
       imageAlt: t("workWithUs.steps.step2.imageAlt"),
       imageFirst: false,
     },
@@ -134,7 +135,7 @@ export function getWorkWithUsSteps(t: TranslateFn): WorkWithUsStep[] {
       number: "03",
       title: t("workWithUs.steps.step3.title"),
       text: t("workWithUs.steps.step3.text"),
-      imageSrc: "/work-with-us/entrega.png",
+      imageSrc: "/work-with-us/entrega.webp",
       imageAlt: t("workWithUs.steps.step3.imageAlt"),
       imageFirst: true,
     },

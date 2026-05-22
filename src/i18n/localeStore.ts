@@ -19,6 +19,7 @@ function readStoredLocale(): Locale {
 
 if (typeof window !== "undefined") {
   localeSnapshot = readStoredLocale();
+  document.documentElement.lang = localeSnapshot;
 }
 
 export function subscribeLocale(listener: Listener): () => void {

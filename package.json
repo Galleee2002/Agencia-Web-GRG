@@ -7,7 +7,9 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "optimize:assets": "node scripts/optimize-public-assets.mjs",
+    "optimize:projects": "node scripts/resize-project-images.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

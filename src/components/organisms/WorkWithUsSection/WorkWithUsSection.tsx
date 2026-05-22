@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { ensureGsapPlugins, gsap, ScrollTrigger } from "@/lib/gsapPlugins";
 import {
   useCallback,
   useLayoutEffect,
@@ -19,7 +17,7 @@ import { useI18n, useWorkWithUsSteps } from "@/components/providers/I18nProvider
 
 import styles from "./WorkWithUsSection.module.scss";
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+ensureGsapPlugins();
 
 const SCROLL_PER_STEP_VH = 110;
 /** Porción de cada tramo dedicada al crossfade (scroll y visual van juntos) */
@@ -213,10 +211,15 @@ export function WorkWithUsSection() {
       }
     }, section);
 
-    const refresh = () => ScrollTrigger.refresh();
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+    const refresh = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
+    };
     window.addEventListener("resize", refresh);
 
     return () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
       mq.removeEventListener("change", onMqChange);
       window.removeEventListener("resize", refresh);
       scrollTriggerRef.current = null;
@@ -243,9 +246,9 @@ export function WorkWithUsSection() {
         )}
       >
         <header className={styles.sectionHeader}>
-          <p id="work-with-us-heading" className={styles.eyebrow}>
+          <h2 id="work-with-us-heading" className={styles.eyebrow}>
             {t("workWithUs.eyebrow")}
-          </p>
+          </h2>
         </header>
 
         <div className={styles.stepsStack}>
@@ -288,13 +291,13 @@ export function WorkWithUsSection() {
                     <span className={styles.stepNumber}>{step.number}</span>
                     <span className={styles.stepAccentLine} aria-hidden="true" />
                   </div>
-                  <h2
+                  <h3
                     id={`${step.id}-title`}
                     className={styles.stepTitle}
                     data-step-title
                   >
                     {step.title}
-                  </h2>
+                  </h3>
                   <p className={styles.stepBody}>{step.text}</p>
                 </div>
               </div>

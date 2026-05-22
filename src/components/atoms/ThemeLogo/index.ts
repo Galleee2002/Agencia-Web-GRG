@@ -1,0 +1,1 @@
+export { ThemeLogo } from "./ThemeLogo";

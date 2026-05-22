@@ -1,14 +1,53 @@
-import {
-  AgencyStaggeredMenu,
-  Hero,
-  ContactSection,
-  ProjectsSection,
-  SiteFooterReveal,
-  TeamSection,
-  WorkWithUsSection,
-} from "@/components/organisms";
+import dynamic from "next/dynamic";
+
+import { AgencyStaggeredMenu, Hero } from "@/components/organisms";
+
 import { HomeHeroStack } from "./HomeHeroStack";
 import styles from "./HomeTemplate.module.scss";
+
+const WorkWithUsSection = dynamic(
+  () =>
+    import("@/components/organisms/WorkWithUsSection").then((m) => ({
+      default: m.WorkWithUsSection,
+    })),
+  { ssr: true },
+);
+
+const ProjectsSection = dynamic(
+  () =>
+    import("@/components/organisms/ProjectsSection/ProjectsSection").then(
+      (m) => ({
+        default: m.ProjectsSection,
+      }),
+    ),
+  { ssr: true },
+);
+
+const TeamSection = dynamic(
+  () =>
+    import("@/components/organisms/TeamSection/TeamSection").then((m) => ({
+      default: m.TeamSection,
+    })),
+  { ssr: true },
+);
+
+const ContactSection = dynamic(
+  () =>
+    import("@/components/organisms/ContactSection/ContactSection").then(
+      (m) => ({
+        default: m.ContactSection,
+      }),
+    ),
+  { ssr: true },
+);
+
+const SiteFooterReveal = dynamic(
+  () =>
+    import("@/components/organisms/SiteFooter/SiteFooterReveal").then((m) => ({
+      default: m.SiteFooterReveal,
+    })),
+  { ssr: true },
+);
 
 export function HomeTemplate() {
   return (
@@ -19,11 +58,13 @@ export function HomeTemplate() {
           <Hero />
         </div>
       </HomeHeroStack>
-      <WorkWithUsSection />
-      <ProjectsSection />
-      <TeamSection />
-      <ContactSection />
-      <SiteFooterReveal />
+      <main id="main-content">
+        <WorkWithUsSection />
+        <ProjectsSection />
+        <TeamSection />
+        <ContactSection />
+        <SiteFooterReveal />
+      </main>
     </div>
   );
 }

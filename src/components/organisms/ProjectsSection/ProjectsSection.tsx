@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ChevronDown,
   ChevronLeft,
@@ -144,6 +145,8 @@ const ShowcaseCard = memo(function ShowcaseCard({
   );
   const mounted = useIsClient();
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxDialogRef = useRef<HTMLDivElement>(null);
+  const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
   const lightboxMediaRef = useRef<HTMLDivElement>(null);
   const showcaseStageRef = useRef<HTMLDivElement>(null);
   const lightboxLabelId = useId();
@@ -175,6 +178,10 @@ const ShowcaseCard = memo(function ShowcaseCard({
   }, [project.id]);
 
   const openLightbox = useCallback((index: number) => {
+    lightboxReturnFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const next = ((index % GALLERY_SLICES) + GALLERY_SLICES) % GALLERY_SLICES;
     setLightboxIndex(next);
     setRenderedLightboxIndex(next);
@@ -238,19 +245,58 @@ const ShowcaseCard = memo(function ShowcaseCard({
   }, [lightboxOpen]);
 
   useEffect(() => {
-    if (!lightboxOpen) return;
+    if (!lightboxOpen) {
+      const returnFocus = lightboxReturnFocusRef.current;
+      if (returnFocus?.isConnected) {
+        returnFocus.focus();
+      }
+      lightboxReturnFocusRef.current = null;
+      return;
+    }
+
     document.body.style.overflow = "hidden";
-    const t = window.setTimeout(() => {
+    const focusTimer = window.setTimeout(() => {
       lightboxCloseRef.current?.focus();
     }, 0);
+
+    const getFocusable = () => {
+      const dialog = lightboxDialogRef.current;
+      if (!dialog) return [] as HTMLElement[];
+      return Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null || el === lightboxCloseRef.current);
+    };
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeLightbox();
+      if (e.key === "Escape") {
+        closeLightbox();
+        return;
+      }
       if (e.key === "ArrowLeft") goLightboxPrev();
       if (e.key === "ArrowRight") goLightboxNext();
+
+      if (e.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
+
     window.addEventListener("keydown", onKey);
     return () => {
-      window.clearTimeout(t);
+      window.clearTimeout(focusTimer);
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
@@ -323,6 +369,7 @@ const ShowcaseCard = memo(function ShowcaseCard({
           onClick={closeLightbox}
         />
         <div
+          ref={lightboxDialogRef}
           className={styles.lightboxDialog}
           role="dialog"
           aria-modal="true"
@@ -487,6 +534,13 @@ const ShowcaseCard = memo(function ShowcaseCard({
                     })}
                   </span>
                 </p>
+                <Link
+                  href={project.href}
+                  className={styles.caseStudyLink}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {t("projects.viewCaseStudy")}
+                </Link>
                 <button
                   type="button"
                   className={styles.collapseDetailsBtn}

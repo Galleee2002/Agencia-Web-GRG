@@ -59,7 +59,7 @@ export function FloatingSettings() {
         className={styles.menu}
         data-open={open ? "true" : "false"}
         role="region"
-        aria-label={t("settings.language")}
+        aria-label={`${t("settings.language")}, ${t("settings.theme")}`}
         aria-hidden={!open}
       >
         <div className={styles.menuSection}>

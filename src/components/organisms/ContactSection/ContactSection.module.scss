@@ -801,4 +801,12 @@ $form-reveal-offset-item: -28px;
   .customSelectOptionItem {
     animation: none;
   }
+
+  .formRevealCard,
+  .formRevealRow {
+    filter: none !important;
+    transition:
+      opacity $form-reveal-card-duration $form-reveal-ease,
+      transform $form-reveal-card-duration $form-reveal-ease;
+  }
 }

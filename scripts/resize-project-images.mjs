@@ -8,7 +8,7 @@ const OUTPUT_DIR = path.join(PROJECTS_DIR, "resize-imgs");
 
 /** Ancho máximo: lightbox ~1100px; 2× retina en galería ~960px → 1100px cubre ambos usos. */
 const MAX_WIDTH = 1100;
-const WEBP_QUALITY = 82;
+const WEBP_QUALITY = 75;
 
 async function main() {
   fs.mkdirSync(ORIGINALS_DIR, { recursive: true });

@@ -80,6 +80,22 @@ $grg-cyan-bright: #7ae0ff;
   --projects-card-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
   --projects-detail-title: #ffffff;
 
+  .shell {
+    background-color: #252525;
+  }
+
+  .introEyebrow {
+    color: var(--site-ink-graphite);
+  }
+
+  .displayHeading {
+    color: $pure-white;
+  }
+
+  .arrow {
+    color: $pure-white;
+  }
+
   .detailsCard .projectName,
   .projectNameCompact {
     color: var(--projects-detail-title);
@@ -821,6 +837,28 @@ $grg-cyan-bright: #7ae0ff;
   color: $grg-cyan-bright;
 }
 
+.caseStudyLink {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-block-start: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $grg-cyan-mid;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $grg-cyan-bright;
+  }
+
+  &:focus-visible {
+    outline: none;
+    color: $grg-cyan-bright;
+    box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.45);
+    border-radius: 4px;
+  }
+}
+
 .collapseDetailsBtn {
   position: absolute;
   right: clamp(12px, 1.4vw, 18px);
@@ -829,8 +867,11 @@ $grg-cyan-bright: #7ae0ff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   margin: 0;
-  padding: 0;
+  padding: 11px;
+  box-sizing: border-box;
   border: none;
   border-radius: 0;
   background: transparent;
