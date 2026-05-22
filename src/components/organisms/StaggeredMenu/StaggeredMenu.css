@@ -417,6 +417,7 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   display: block;
   height: 32px;
   width: auto;
+  max-width: min(100%, 220px);
   object-fit: contain;
 }
 

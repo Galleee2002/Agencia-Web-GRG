@@ -72,8 +72,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 .bannerImageWrap {
   width: 100%;
   line-height: 0;
-  opacity: 0;
-  animation: bannerFadeDown 0.85s $ease-smooth forwards;
 }
 
 .bannerImage {
@@ -185,6 +183,88 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
+// Modo fijado en <head> por heroEntranceBoot.ts (antes de React)
+:global(html[data-hero-entrance="mobile"]) .hero .bannerImageWrap {
+  opacity: 0;
+  animation: bannerFadeDown 0.85s $ease-smooth forwards;
+}
+
+:global(html[data-hero-entrance="mobile"]) .hero .cta {
+  opacity: 0;
+  animation: ctaFadeIn 0.7s $ease-smooth forwards;
+  animation-delay: 1.25s;
+}
+
+:global(html[data-hero-entrance="desktop"]) .hero .bannerImageWrap {
+  opacity: 0;
+  animation: bannerSlideIn 0.9s $ease-smooth forwards;
+}
+
+:global(html[data-hero-entrance="desktop"]) .hero .titleWord {
+  opacity: 0;
+  animation: titleWordFadeIn 0.65s ease forwards;
+
+  &:nth-of-type(1) {
+    animation-delay: 0.1s;
+  }
+
+  &:nth-of-type(3) {
+    animation-delay: 1s;
+  }
+}
+
+:global(html[data-hero-entrance="desktop"]) .hero .titleWord.titleWordAccent {
+  background-image: linear-gradient(
+    90deg,
+    $framer-blue 0%,
+    $framer-blue 50%,
+    var(--hero-title-ink) 50%,
+    var(--hero-title-ink) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation:
+    titleWordFadeIn 0.65s ease forwards,
+    titleWordAccentPaint 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.55s, 3s;
+}
+
+:global(html[data-hero-entrance="desktop"]) .hero .description {
+  opacity: 0;
+  animation: descriptionSlideIn 0.7s ease forwards;
+  animation-delay: 1.65s;
+}
+
+:global(html[data-hero-entrance="desktop"]) .hero .cta {
+  opacity: 0;
+  animation: ctaFadeIn 0.7s $ease-smooth forwards;
+  animation-delay: 2.35s;
+}
+
+:global(html[data-hero-entrance="static"]) .hero .bannerImageWrap,
+:global(html[data-hero-entrance="static"]) .hero .titleWord,
+:global(html[data-hero-entrance="static"]) .hero .description,
+:global(html[data-hero-entrance="static"]) .hero .cta {
+  opacity: 1;
+  animation: none;
+  transform: none;
+}
+
+:global(html[data-hero-entrance="static"]) .hero .titleWord.titleWordAccent {
+  background-image: linear-gradient(90deg, $framer-blue, $framer-blue);
+  background-size: 100% 100%;
+  background-position: 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 @media (min-width: 810px) {
   .inner {
     display: grid;
@@ -202,7 +282,7 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .bannerImageWrap {
-    max-width: min(100%, 520px);
+    max-width: min(100%, 676px);
   }
 
   .content {
@@ -211,10 +291,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
     max-width: 100%;
     padding-inline-start: clamp(0.25rem, 1.5vw, 1rem);
     overflow-x: clip;
-  }
-
-  .bannerImageWrap {
-    animation: bannerSlideIn 0.9s $ease-smooth forwards;
   }
 
   .title {
@@ -228,52 +304,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   .description {
     max-width: 100%;
   }
-
-  .titleWord {
-    opacity: 0;
-    animation: titleWordFadeIn 0.65s ease forwards;
-
-    &:nth-of-type(1) {
-      animation-delay: 0.1s;
-    }
-
-    &:nth-of-type(3) {
-      animation-delay: 1s;
-    }
-  }
-
-  // Tras el CTA (2.35s delay + 0.65s duración): barrido azul en «Experiencias»
-  .titleWord.titleWordAccent {
-    background-image: linear-gradient(
-      90deg,
-      $framer-blue 0%,
-      $framer-blue 50%,
-      var(--hero-title-ink) 50%,
-      var(--hero-title-ink) 100%
-    );
-    background-size: 200% 100%;
-    background-position: 100% 0;
-    background-repeat: no-repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation:
-      titleWordFadeIn 0.65s ease forwards,
-      titleWordAccentPaint 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: 0.55s, 3s;
-  }
-
-  // Tras la última palabra del h1 (1s delay + 0.65s duración)
-  .description {
-    opacity: 0;
-    animation: descriptionSlideIn 0.7s ease forwards;
-    animation-delay: 1.65s;
-  }
-
-  .cta {
-    animation-delay: 2.35s;
-  }
 }
 
 // Desktop amplio: hasta 60px; se reduce con el ancho de la columna (cqi)
@@ -283,7 +313,7 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .bannerImageWrap {
-    max-width: min(100%, 560px);
+    max-width: min(100%, 728px);
   }
 }
 
@@ -295,42 +325,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
-@media (min-width: 810px) and (prefers-reduced-motion: reduce) {
-  .titleWord {
-    opacity: 1;
-    animation: none;
-  }
-
-  .description {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
-
-  .cta {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
-
-  .bannerImageWrap {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
-
-  .titleWord.titleWordAccent {
-    background-image: linear-gradient(90deg, $framer-blue, $framer-blue);
-    background-size: 100% 100%;
-    background-position: 0 0;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: titleWordFadeIn 0.65s ease forwards;
-    animation-delay: 0.55s;
-  }
-}
 
 .description {
   margin: clamp(20px, 3vw, 28px) 0 0;
@@ -353,9 +347,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 // CTA pill — minimal; relleno azul solo en hover
 .cta {
   margin-top: clamp(24px, 4vw, 36px);
-  opacity: 0;
-  animation: ctaFadeIn 0.7s $ease-smooth forwards;
-  animation-delay: 1.25s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -424,19 +415,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bannerImageWrap {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
-
-  .cta {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
-}
 
 .heroBackdrop {
   position: absolute;

@@ -26,6 +26,31 @@ const hexToRgb = (hex: string): [number, number, number] => {
   ];
 };
 
+type PlasmaVisualProps = {
+  color?: string;
+  speed: number;
+  direction: PlasmaProps["direction"];
+  scale: number;
+  opacity: number;
+  mouseInteractive: boolean;
+};
+
+function applyPlasmaUniforms(program: Program, props: PlasmaVisualProps) {
+  const customColorRgb = props.color ? hexToRgb(props.color) : [1, 1, 1];
+  const colorUniform = program.uniforms.uCustomColor.value as Float32Array;
+  colorUniform[0] = customColorRgb[0];
+  colorUniform[1] = customColorRgb[1];
+  colorUniform[2] = customColorRgb[2];
+  (program.uniforms.uUseCustomColor as { value: number }).value = props.color ? 1.0 : 0.0;
+  (program.uniforms.uSpeed as { value: number }).value = props.speed * 0.4;
+  (program.uniforms.uDirection as { value: number }).value =
+    props.direction === "reverse" ? -1.0 : 1.0;
+  (program.uniforms.uScale as { value: number }).value = props.scale;
+  (program.uniforms.uOpacity as { value: number }).value = props.opacity;
+  (program.uniforms.uMouseInteractive as { value: number }).value =
+    props.mouseInteractive ? 1.0 : 0.0;
+}
+
 function isDesktopHeavyFootprint(cssWidth: number, cssHeight: number): boolean {
   const w = Math.max(1, cssWidth);
   const h = Math.max(1, cssHeight);
@@ -177,14 +202,30 @@ function Plasma({
   const contextLostRef = useRef(false);
   const rafRef = useRef(0);
   const scheduleLoopRef = useRef<(() => void) | null>(null);
+  const propsRef = useRef<PlasmaVisualProps>({
+    color,
+    speed,
+    direction,
+    scale,
+    opacity,
+    mouseInteractive,
+  });
+  const programRef = useRef<Program | null>(null);
+
+  useEffect(() => {
+    propsRef.current = { color, speed, direction, scale, opacity, mouseInteractive };
+    if (programRef.current) {
+      applyPlasmaUniforms(programRef.current, propsRef.current);
+    }
+  }, [color, speed, direction, scale, opacity, mouseInteractive]);
 
   useEffect(() => {
     if (!containerRef.current) return;
     const containerEl = containerRef.current;
 
-    const useCustomColor = color ? 1.0 : 0.0;
-    const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
-    const directionMultiplier = direction === "reverse" ? -1.0 : 1.0;
+    containerEl.querySelectorAll("canvas").forEach((node) => {
+      node.remove();
+    });
 
     const startW =
       typeof window !== "undefined" ? Math.max(1, Math.floor(window.innerWidth)) : 1;
@@ -228,19 +269,21 @@ function Plasma({
       uniforms: {
         iTime: { value: 0 },
         iResolution: { value: new Float32Array([1, 1]) },
-        uCustomColor: { value: new Float32Array(customColorRgb) },
-        uUseCustomColor: { value: useCustomColor },
-        uSpeed: { value: speed * 0.4 },
-        uDirection: { value: directionMultiplier },
-        uScale: { value: scale },
-        uOpacity: { value: opacity },
+        uCustomColor: { value: new Float32Array([1, 1, 1]) },
+        uUseCustomColor: { value: 0 },
+        uSpeed: { value: 0.4 },
+        uDirection: { value: 1 },
+        uScale: { value: 1 },
+        uOpacity: { value: 1 },
         uMouse: { value: new Float32Array([0, 0]) },
-        uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 },
+        uMouseInteractive: { value: 0 },
         uSteps: { value: 60 },
       },
     });
 
     const mesh = new Mesh(gl, { geometry, program, frustumCulled: false });
+    programRef.current = program;
+    applyPlasmaUniforms(program, propsRef.current);
     const reducedMotion = typeof window !== "undefined"
       ? window.matchMedia("(prefers-reduced-motion: reduce)")
       : null;
@@ -257,17 +300,6 @@ function Plasma({
       mouseUniform[0] = (mouseCurrent.current.x / cw) * bufW;
       mouseUniform[1] = (mouseCurrent.current.y / ch) * bufH;
     };
-
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!mouseInteractive) return;
-      const bounds = boundsRef.current;
-      mouseTarget.current.x = event.clientX - bounds.left;
-      mouseTarget.current.y = event.clientY - bounds.top;
-    };
-
-    if (mouseInteractive) {
-      containerEl.addEventListener("pointermove", handlePointerMove, { passive: true });
-    }
 
     let minFrameMs = 1000 / 60;
 
@@ -305,7 +337,7 @@ function Plasma({
           ? 1000 / 30
           : 1000 / 60;
 
-      if (!mouseInteractive) return;
+      if (!propsRef.current.mouseInteractive) return;
       mouseTarget.current.x = cssW * 0.5;
       mouseTarget.current.y = cssH * 0.5;
       mouseCurrent.current.x = cssW * 0.5;
@@ -337,7 +369,7 @@ function Plasma({
       rafRef.current = 0;
       if (contextLostRef.current || !isVisibleRef.current || pausedRef.current) return;
 
-      if (mouseInteractive) {
+      if (propsRef.current.mouseInteractive) {
         const current = mouseCurrent.current;
         const target = mouseTarget.current;
         current.x += (target.x - current.x) * 0.14;
@@ -346,7 +378,7 @@ function Plasma({
       }
 
       const timeValue = (t - t0) * 0.001;
-      if (direction === "pingpong") {
+      if (propsRef.current.direction === "pingpong") {
         const pingpongDuration = 10;
         const segmentTime = timeValue % pingpongDuration;
         const isForward = Math.floor(timeValue / pingpongDuration) % 2 === 0;
@@ -440,17 +472,31 @@ function Plasma({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       reducedMotion?.removeEventListener("change", handleMotionPreferenceChange);
 
-      if (mouseInteractive) {
-        containerEl.removeEventListener("pointermove", handlePointerMove);
-      }
-
-      try {
-        containerEl.removeChild(canvas);
-      } catch {
-        /* canvas already removed */
+      programRef.current = null;
+      if (canvas.isConnected) {
+        canvas.remove();
       }
     };
-  }, [color, speed, direction, scale, opacity, mouseInteractive]);
+  }, []);
+
+  useEffect(() => {
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!propsRef.current.mouseInteractive) return;
+      const bounds = boundsRef.current;
+      mouseTarget.current.x = event.clientX - bounds.left;
+      mouseTarget.current.y = event.clientY - bounds.top;
+    };
+
+    if (!mouseInteractive) return;
+
+    containerEl.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => {
+      containerEl.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, [mouseInteractive]);
 
   useEffect(() => {
     pausedRef.current = paused;

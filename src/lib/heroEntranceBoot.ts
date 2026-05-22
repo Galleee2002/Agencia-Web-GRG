@@ -1,0 +1,2 @@
+/** Ejecutar en <head> antes del body para activar animaciones del hero sin esperar a React. */
+export const HERO_ENTRANCE_BOOT_SCRIPT = `(function(){try{var m="mobile";if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)m="static";else if(window.matchMedia("(min-width:810px)").matches)m="desktop";document.documentElement.setAttribute("data-hero-entrance",m)}catch(e){document.documentElement.setAttribute("data-hero-entrance","mobile")}})();`;

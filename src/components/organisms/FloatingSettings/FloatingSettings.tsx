@@ -11,8 +11,6 @@ import {
 
 import { useI18n } from "@/components/providers/I18nProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
-import type { Locale } from "@/i18n/types";
-
 import styles from "./FloatingSettings.module.scss";
 
 export function FloatingSettings() {
@@ -46,8 +44,12 @@ export function FloatingSettings() {
     };
   }, [close, open]);
 
-  const toggleLocale = (option: Locale) => {
-    setLocale(locale === option ? (option === "es" ? "en" : "es") : option);
+  const cycleLocale = () => {
+    setLocale(locale === "es" ? "en" : "es");
+  };
+
+  const cycleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
@@ -62,64 +64,60 @@ export function FloatingSettings() {
       >
         <div className={styles.menuSection}>
           <p className={styles.menuLabel}>{t("settings.language")}</p>
-          <div
+          <button
+            type="button"
             className={styles.toggleGroup}
-            role="group"
-            aria-label={t("settings.language")}
+            aria-label={`${t("settings.language")}: ${locale === "es" ? "ES" : "EN"}`}
             data-active-index={locale === "es" ? "0" : "1"}
+            onClick={cycleLocale}
           >
             <span className={styles.toggleThumb} aria-hidden />
-            <button
-              type="button"
+            <span
               className={styles.toggleOption}
               data-active={locale === "es" ? "true" : "false"}
-              aria-pressed={locale === "es"}
-              onClick={() => toggleLocale("es")}
+              aria-hidden
             >
               ES
-            </button>
-            <button
-              type="button"
+            </span>
+            <span
               className={styles.toggleOption}
               data-active={locale === "en" ? "true" : "false"}
-              aria-pressed={locale === "en"}
-              onClick={() => toggleLocale("en")}
+              aria-hidden
             >
               EN
-            </button>
-          </div>
+            </span>
+          </button>
         </div>
 
         <div className={styles.menuSection}>
           <p className={styles.menuLabel}>{t("settings.theme")}</p>
-          <div
+          <button
+            type="button"
             className={styles.toggleGroup}
-            role="group"
-            aria-label={t("settings.theme")}
+            aria-label={
+              isDark
+                ? `${t("settings.theme")}: ${t("settings.themeDark")}`
+                : `${t("settings.theme")}: ${t("settings.themeLight")}`
+            }
             data-active-index={isDark ? "1" : "0"}
+            onClick={cycleTheme}
           >
             <span className={styles.toggleThumb} aria-hidden />
-            <button
-              type="button"
+            <span
               className={styles.toggleOption}
               data-active={!isDark ? "true" : "false"}
-              aria-pressed={!isDark}
-              aria-label={t("settings.themeLight")}
-              onClick={() => setTheme("light")}
+              aria-hidden
             >
-              <Sun size={16} strokeWidth={1.75} aria-hidden />
-            </button>
-            <button
-              type="button"
+              <Sun size={16} strokeWidth={1.75} />
+            </span>
+            <span
               className={styles.toggleOption}
               data-active={isDark ? "true" : "false"}
-              aria-pressed={isDark}
-              aria-label={t("settings.themeDark")}
-              onClick={() => setTheme("dark")}
+              aria-hidden
             >
-              <Moon size={16} strokeWidth={1.75} aria-hidden />
-            </button>
-          </div>
+              <Moon size={16} strokeWidth={1.75} />
+            </span>
+          </button>
         </div>
       </div>
 
@@ -131,7 +129,9 @@ export function FloatingSettings() {
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
       >
-        <Settings size={20} strokeWidth={1.75} aria-hidden />
+        <span className={styles.triggerIcon} aria-hidden>
+          <Settings size={20} strokeWidth={1.75} />
+        </span>
       </button>
     </div>
   );

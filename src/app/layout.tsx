@@ -5,6 +5,7 @@ import { Geist, Inter, Montserrat } from "next/font/google";
 import "./tailwind.css";
 import "./globals.scss";
 import { AppProviders } from "@/components/providers/AppProviders";
+import { HERO_ENTRANCE_BOOT_SCRIPT } from "@/lib/heroEntranceBoot";
 import { parseThemeCookie } from "@/lib/themeCookie";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +56,11 @@ export default async function RootLayout({
       )}
       style={{ colorScheme: isDark ? "dark" : "light" }}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: HERO_ENTRANCE_BOOT_SCRIPT }}
+        />
+      </head>
       <body className="min-h-full min-w-0 flex flex-col">
         <AppProviders>{children}</AppProviders>
       </body>

@@ -1,5 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
+
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { useMenuOverlay } from "@/contexts/MenuOverlayContext";
 
 import Plasma from "./Plasma";
@@ -12,19 +15,33 @@ const HERO_PLASMA_LIGHT = {
   direction: "reverse" as const,
   scale: 0.76,
   opacity: 0.34,
-};
+} as const;
+
+/** Gris más claro y algo más de opacidad para que se lea sobre #252525. */
+const HERO_PLASMA_DARK = {
+  color: "#b8c8dc",
+  speed: 0.55,
+  direction: "reverse" as const,
+  scale: 0.76,
+  opacity: 0.46,
+} as const;
 
 export function HeroBeamsBackground() {
   const { isMenuOpen } = useMenuOverlay();
+  const { theme } = useTheme();
+  const plasma = useMemo(
+    () => (theme === "dark" ? HERO_PLASMA_DARK : HERO_PLASMA_LIGHT),
+    [theme],
+  );
 
   return (
     <div className={styles.heroBackdrop} aria-hidden>
       <Plasma
-        color={HERO_PLASMA_LIGHT.color}
-        speed={HERO_PLASMA_LIGHT.speed}
-        direction={HERO_PLASMA_LIGHT.direction}
-        scale={HERO_PLASMA_LIGHT.scale}
-        opacity={HERO_PLASMA_LIGHT.opacity}
+        color={plasma.color}
+        speed={plasma.speed}
+        direction={plasma.direction}
+        scale={plasma.scale}
+        opacity={plasma.opacity}
         mouseInteractive
         paused={isMenuOpen}
       />
