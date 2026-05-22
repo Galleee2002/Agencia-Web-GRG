@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       },
       { pathname: "/work-with-us/**", search: "" },
       { pathname: "/logo.svg", search: "" },
+      { pathname: "/logo-negro.svg", search: "" },
+      // Hero banner en raíz de `public/` (admite `?v=` vía publicAssetUrl).
+      { pathname: "/GRG-banner.webp" },
     ],
   },
 };

@@ -5,11 +5,7 @@ $muted-silver: #6a6a6a;
 $framer-blue: #0099ff;
 $accent-paint-delay: 3s;
 $accent-paint-duration: 1.35s;
-// Inicio del barrido del CTA: casi al final del de «Experiencias», sin esperar al 100%
-$cta-fill-start-lead: 0.55s;
-$cta-hero-delay: $accent-paint-delay + $accent-paint-duration - $cta-fill-start-lead;
-$cta-fill-duration: 0.65s;
-$cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
 .hero {
   --hero-title-ink: #{$hero-ink};
@@ -49,6 +45,7 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
   box-sizing: border-box;
   min-height: 100vh;
   min-height: 100dvh;
@@ -65,23 +62,55 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
+.bannerMedia {
+  display: flex;
+  width: 100%;
+  max-width: min(88vw, 420px);
+  justify-content: center;
+}
+
+.bannerImageWrap {
+  width: 100%;
+  line-height: 0;
+  opacity: 0;
+  animation: bannerFadeDown 0.85s $ease-smooth forwards;
+}
+
+.bannerImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 38rem;
+  min-width: 0;
+  container-type: inline-size;
+  container-name: hero-content;
+}
+
 // Display Hero — DESIGN §3: tight tracking, weight 500, line-height ~0.85; responsive §8
 .title {
   margin: 0;
   font-family: var(--font-montserrat), system-ui, sans-serif;
-  font-size: clamp(2.5rem, 5vw + 1rem, 6.875rem);
+  font-size: clamp(1.5rem, 12cqi, 2.75rem);
   font-weight: 700;
   line-height: 0.88;
   letter-spacing: -0.05em;
   color: var(--hero-title-ink);
   text-transform: uppercase;
-  text-wrap: balance;
 }
 
 .titleWord {
   display: block;
   color: inherit;
   opacity: 1;
+  white-space: nowrap;
 }
 
 .titleWordAccent {
@@ -110,10 +139,10 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
-@keyframes ctaSlideUp {
+@keyframes ctaFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(1.5rem);
+    transform: translateY(0.75rem);
   }
 
   100% {
@@ -122,18 +151,27 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
-// Tras titleWordAccentPaint: barrido azul en el CTA (sin tocar opacidad)
-@keyframes ctaFillPaint {
+@keyframes bannerSlideIn {
   0% {
-    background-position: 100% 0;
-    border-color: var(--hero-cta-surface);
-    color: var(--hero-cta-ink-unfilled);
+    opacity: 0;
+    transform: translateX(-2.75rem);
   }
 
   100% {
-    background-position: 0% 0;
-    border-color: $framer-blue;
-    color: #{$pure-white};
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bannerFadeDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-1.75rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -148,9 +186,47 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (min-width: 810px) {
-  .title {
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 2.75rem);
+    max-width: min(1280px, 94vw);
+    text-align: left;
+  }
+
+  .bannerMedia {
+    min-width: 0;
     max-width: none;
-    letter-spacing: -0.045em;
+    justify-content: flex-start;
+  }
+
+  .bannerImageWrap {
+    max-width: min(100%, 520px);
+  }
+
+  .content {
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+    padding-inline-start: clamp(0.25rem, 1.5vw, 1rem);
+    overflow-x: clip;
+  }
+
+  .bannerImageWrap {
+    animation: bannerSlideIn 0.9s $ease-smooth forwards;
+  }
+
+  .title {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(1.75rem, 10cqi, 2.75rem);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .description {
+    max-width: 100%;
   }
 
   .titleWord {
@@ -195,14 +271,27 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     animation-delay: 1.65s;
   }
 
-  // Tras el párrafo (1.65s delay + 0.7s duración): entrada del CTA; fill + ink en sincronía
   .cta {
-    color: var(--hero-cta-ink-unfilled);
-    opacity: 0;
-    animation:
-      ctaSlideUp 0.65s ease forwards,
-      ctaFillPaint $cta-fill-duration $cta-fill-ease forwards;
-    animation-delay: 2.35s, $cta-hero-delay;
+    animation-delay: 2.35s;
+  }
+}
+
+// Desktop amplio: hasta 60px; se reduce con el ancho de la columna (cqi)
+@media (min-width: 1200px) {
+  .title {
+    font-size: clamp(1.75rem, 10cqi, 3.75rem);
+  }
+
+  .bannerImageWrap {
+    max-width: min(100%, 560px);
+  }
+}
+
+// Tablet apilado (layout móvil, pantallas medianas)
+@media (min-width: 600px) and (max-width: 809px) {
+  .title {
+    font-size: clamp(1.75rem, 11cqi, 3rem);
+    line-height: 1;
   }
 }
 
@@ -222,9 +311,12 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     opacity: 1;
     animation: none;
     transform: none;
-    background-position: 0% 0;
-    border-color: $framer-blue;
-    color: #{$pure-white};
+  }
+
+  .bannerImageWrap {
+    opacity: 1;
+    animation: none;
+    transform: none;
   }
 
   .titleWord.titleWordAccent {
@@ -258,27 +350,22 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     "ss07" on;
 }
 
-// CTA pill — acento alineado con TeamSection .nameAccent ($framer-blue)
+// CTA pill — minimal; relleno azul solo en hover
 .cta {
   margin-top: clamp(24px, 4vw, 36px);
+  opacity: 0;
+  animation: ctaFadeIn 0.7s $ease-smooth forwards;
+  animation-delay: 1.25s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   min-height: 44px;
   padding: 10px clamp(20px, 3vw, 28px);
   border-radius: 100px;
-  background-image: linear-gradient(
-    90deg,
-    $framer-blue 0%,
-    $framer-blue 50%,
-    var(--hero-cta-surface) 50%,
-    var(--hero-cta-surface) 100%
-  );
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  background-repeat: no-repeat;
-  color: var(--hero-cta-ink);
-  border: 1px solid var(--hero-cta-surface);
+  background: $pure-white;
+  color: $hero-ink;
+  border: 1px solid rgba(37, 37, 37, 0.16);
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: 15px;
   font-weight: 500;
@@ -290,52 +377,64 @@ $cta-fill-ease: cubic-bezier(0.22, 1, 0.36, 1);
     "dlig" on,
     "ss03" on;
   text-decoration: none;
-  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 28px;
+  box-shadow: none;
   transition:
-    transform 0.2s ease,
-    background-position $cta-fill-duration $cta-fill-ease,
-    border-color $cta-fill-duration $cta-fill-ease,
-    color $cta-fill-duration $cta-fill-ease,
-    box-shadow 0.2s ease;
+    background 0.25s $ease-smooth,
+    color 0.25s $ease-smooth,
+    border-color 0.25s $ease-smooth;
 }
 
-@media (min-width: 810px) {
-  .cta:hover {
-    background-position: 100% 0;
-    border-color: var(--hero-cta-surface);
-    color: var(--hero-cta-ink-unfilled);
-    box-shadow: rgba(0, 0, 0, 0.14) 0 12px 32px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  @media (min-width: 810px) {
-    .cta:hover {
-      background-position: 100% 0;
-      border-color: var(--hero-cta-surface);
-      color: var(--hero-cta-ink-unfilled);
-    }
-  }
+.cta:hover {
+  background: $framer-blue;
+  color: $pure-white;
+  border-color: $framer-blue;
 }
 
 .cta:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 1px #0099ff,
+    0 0 0 1px $framer-blue,
     0 0 0 4px rgba(0, 153, 255, 0.15);
+}
+
+:global(html.dark) .hero .cta {
+  background: var(--site-cta-surface);
+  color: var(--site-cta-ink);
+  border-color: rgba(255, 255, 255, 0.14);
+
+  &:hover {
+    background: $framer-blue;
+    color: $pure-white;
+    border-color: $framer-blue;
+  }
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: clamp(1.5rem, 12cqi, 2.5rem);
+    line-height: 1;
+  }
 }
 
 @media (max-width: 808px) {
   .cta {
     width: 100%;
     max-width: 20rem;
-    background: var(--hero-cta-surface);
-    background-image: none;
   }
 
-  .cta:hover {
-    transform: scale(0.985);
-    box-shadow: rgba(0, 0, 0, 0.14) 0 12px 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerImageWrap {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  .cta {
+    opacity: 1;
+    animation: none;
+    transform: none;
   }
 }
 
