@@ -45,10 +45,10 @@ export function SiteFooterContent() {
               className={styles.logo}
               src={siteLogoForTheme(theme)}
               alt=""
-              width={120}
-              height={36}
+              width={998}
+              height={364}
               decoding="async"
-              style={{ width: "auto" }}
+              style={{ width: "auto", height: "auto" }}
             />
           </Link>
           <p className={styles.description}>{t("footer.description")}</p>

@@ -472,9 +472,10 @@ const StaggeredMenu = ({
         src={logoUrl || '/logo.svg'}
         alt="Logo"
         className="sm-logo-img"
+        width={998}
+        height={364}
         draggable={false}
-        width={110}
-        height={24}
+        decoding="async"
       />
     </a>
   );

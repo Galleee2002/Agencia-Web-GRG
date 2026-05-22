@@ -28,7 +28,7 @@ export function Hero() {
               height={720}
               priority
               className={styles.bannerImage}
-              sizes="(max-width: 809px) min(88vw, 420px), min(52vw, 560px)"
+              sizes="(max-width: 809px) min(88vw, 420px), min(68vw, 728px)"
             />
           </div>
         </div>
