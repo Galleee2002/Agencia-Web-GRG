@@ -149,9 +149,9 @@ export const en = {
     },
   },
   contact: {
-    heading: "Your site, ",
-    headingAccent: "ready",
-    headingEnd: " to grow.",
+    heading: "Contact us to ",
+    headingAccent: "get started",
+    headingEnd: "",
     sublead: "Tell us your idea — we'll make it real.",
     name: "Name",
     namePlaceholder: "Your name",

@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 
+import { SectionDivider } from "@/components/atoms/SectionDivider";
 import { AgencyStaggeredMenu, Hero } from "@/components/organisms";
 
 import { HomeHeroStack } from "./HomeHeroStack";
@@ -62,6 +63,7 @@ export function HomeTemplate() {
         <WorkWithUsSection />
         <ProjectsSection />
         <TeamSection />
+        <SectionDivider />
         <ContactSection />
         <SiteFooterReveal />
       </main>

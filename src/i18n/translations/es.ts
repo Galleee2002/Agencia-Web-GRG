@@ -147,9 +147,9 @@ export const es = {
     },
   },
   contact: {
-    heading: "Tu web, ",
-    headingAccent: "lista",
-    headingEnd: " para crecer.",
+    heading: "Contactanos para ",
+    headingAccent: "empezar",
+    headingEnd: "",
     sublead: "Cuéntanos tu idea, nosotros la hacemos realidad.",
     name: "Nombre",
     namePlaceholder: "Tu nombre",

@@ -50,18 +50,12 @@ $contact-control-height: 46px;
 .intro {
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 2vw, 20px);
+  gap: clamp(6px, 1vw, 10px);
+  box-sizing: border-box;
+  width: 100%;
   min-width: 0;
-  text-align: center;
-  align-items: center;
-
-  @media (min-width: $contact-breakpoint) {
-    box-sizing: border-box;
-    width: 100%;
-    padding-inline-start: $contact-content-inset;
-    text-align: left;
-    align-items: flex-start;
-  }
+  text-align: left;
+  align-items: flex-start;
 }
 
 .heading {
@@ -95,6 +89,12 @@ $contact-control-height: 46px;
   font-size: clamp(0.9375rem, 1vw + 0.75rem, 1.0625rem);
   line-height: 1.5;
   color: $ink-muted;
+
+  @media (min-width: $contact-breakpoint) {
+    max-width: none;
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
 }
 
 // —— Form card (single-column vertical layout) ——
@@ -674,6 +674,11 @@ $form-reveal-offset-item: -28px;
   }
 }
 
+$contact-dark-control-bg: #252525;
+$contact-dark-control-border: rgba(255, 255, 255, 0.14);
+$contact-dark-control-border-hover: rgba(255, 255, 255, 0.28);
+$contact-dark-placeholder: rgba(255, 255, 255, 0.45);
+
 :global(html.dark) .section {
   .sublead {
     color: var(--site-ink-graphite);
@@ -688,7 +693,7 @@ $form-reveal-offset-item: -28px;
   }
 
   .label {
-    color: var(--site-ink-strong);
+    color: $pure-white;
   }
 
   .field:has(:hover, :focus-within) .optional {
@@ -700,7 +705,7 @@ $form-reveal-offset-item: -28px;
   }
 
   .inputIcon {
-    color: var(--site-frost-ink);
+    color: $pure-white;
   }
 
   .inputWrap:has(:focus-within) .inputIcon {
@@ -709,65 +714,111 @@ $form-reveal-offset-item: -28px;
 
   .input,
   .textarea {
-    color: var(--site-frost-ink);
-    background: var(--site-frost-surface);
-    border-color: rgba(0, 0, 0, 0.1);
+    color: $pure-white;
+    background: $contact-dark-control-bg;
+    border-color: $contact-dark-control-border;
 
     &::placeholder {
-      color: rgba(0, 0, 0, 0.45);
+      color: $contact-dark-placeholder;
     }
 
     &:hover:not(:focus):not(:focus-visible) {
-      border-color: rgba(0, 0, 0, 0.2);
+      border-color: $contact-dark-control-border-hover;
     }
 
     &:focus,
     &:focus-visible {
+      background: $contact-dark-control-bg;
       border-color: $framer-blue;
       box-shadow: 0 0 0 3px $blue-glow;
     }
   }
 
   .customSelectTrigger {
-    background: var(--site-frost-surface);
-    color: var(--site-frost-ink);
-    border-color: rgba(0, 0, 0, 0.1);
+    background: $contact-dark-control-bg;
+    color: $pure-white;
+    border-color: $contact-dark-control-border;
 
     &[data-placeholder="true"] .customSelectValue {
-      color: rgba(0, 0, 0, 0.45);
+      color: $contact-dark-placeholder;
     }
 
     &:hover:not(:focus-visible) {
-      border-color: rgba(0, 0, 0, 0.2);
+      border-color: $contact-dark-control-border-hover;
     }
 
     &:focus-visible {
-      background-color: var(--site-frost-surface);
+      background-color: $contact-dark-control-bg;
       border-color: $framer-blue;
       box-shadow: 0 0 0 3px $blue-glow;
     }
   }
 
   .customSelect[data-open="true"] .customSelectTrigger {
-    background-color: var(--site-frost-surface);
+    background-color: $contact-dark-control-bg;
     border-color: $framer-blue;
     box-shadow: 0 0 0 3px $blue-glow;
   }
 
   .customSelectChevron {
-    color: var(--site-frost-ink);
+    color: $pure-white;
   }
 
   .submit {
-    background: var(--site-cta-surface);
-    color: var(--site-cta-ink);
+    background: $contact-dark-control-bg;
+    color: $pure-white;
+    border: 1px solid $contact-dark-control-border;
+    transition:
+      background-color 0.22s $form-reveal-ease,
+      color 0.22s $form-reveal-ease,
+      border-color 0.22s $form-reveal-ease,
+      opacity 0.22s $form-reveal-ease,
+      transform 0.22s $form-reveal-ease,
+      box-shadow 0.22s $form-reveal-ease;
 
     svg {
-      color: var(--site-cta-ink);
+      color: $pure-white;
+      transition: color 0.22s $form-reveal-ease;
     }
 
     &:hover:not(:disabled) {
+      background: $pure-white;
+      color: $void-black;
+      border-color: $pure-white;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+
+      svg {
+        color: $void-black;
+      }
+    }
+  }
+}
+
+// Menú en portal (document.body): no está dentro de .section
+:global(html.dark) {
+  .customSelectMenu {
+    background: $contact-dark-control-bg;
+    border-color: $contact-dark-control-border;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.45),
+      0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  .customSelectOption {
+    color: $pure-white;
+
+    &[data-selected="true"] {
+      color: $framer-blue;
+    }
+
+    &[data-active="true"],
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    &:focus-visible {
+      background-color: rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 0 0 1px $framer-blue;
     }
   }
 }

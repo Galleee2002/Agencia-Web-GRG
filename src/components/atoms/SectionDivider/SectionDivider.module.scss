@@ -1,0 +1,69 @@
+$divider-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$divider-light: var(--site-ink-muted);
+$divider-dark: rgba(255, 255, 255, 0.22);
+
+.wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(8px, 1.5vw, 20px) max(env(safe-area-inset-left, 0px), clamp(16px, 4vw, 40px));
+  background: var(--site-surface);
+  border: none;
+}
+
+.line {
+  --divider-line-opacity: 0.65;
+  display: block;
+  width: clamp(160px, 52vw, 440px);
+  height: 3px;
+  border: none;
+  border-radius: 999px;
+  background: $divider-light;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  animation:
+    sectionDividerDraw 1.2s $divider-ease 0.12s forwards,
+    sectionDividerGlow 2.6s ease-in-out 1.4s infinite;
+}
+
+:global(html.dark) .line {
+  --divider-line-opacity: 0.85;
+  background: $divider-dark;
+}
+
+@keyframes sectionDividerDraw {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: var(--divider-line-opacity);
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sectionDividerGlow {
+  0%,
+  100% {
+    opacity: var(--divider-line-opacity);
+  }
+
+  50% {
+    opacity: calc(var(--divider-line-opacity) * 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line {
+    animation: none;
+    opacity: var(--divider-line-opacity);
+    transform: scaleX(1);
+    will-change: auto;
+  }
+}

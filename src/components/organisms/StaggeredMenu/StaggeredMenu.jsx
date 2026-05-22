@@ -4,21 +4,21 @@ import { gsap } from 'gsap';
 import { ThemeLogo } from '@/components/atoms/ThemeLogo';
 import './StaggeredMenu.css';
 
-const MOBILE_BOTTOM_NAV_MAX_WIDTH = 809;
+/** Alineado con el panel a ancho completo (@media max-width: 1024px en StaggeredMenu.css). */
+const MOBILE_BOTTOM_NAV_MAX_WIDTH = 1024;
 
 function useMaxWidth(maxWidthPx) {
-  const query = `(max-width: ${maxWidthPx}px)`;
-  return React.useSyncExternalStore(
-    onStoreChange => {
-      if (typeof window === 'undefined') return () => {};
-      const mq = window.matchMedia(query);
-      mq.addEventListener('change', onStoreChange);
-      return () => mq.removeEventListener('change', onStoreChange);
-    },
-    () =>
-      typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
-    () => false
-  );
+  const [matches, setMatches] = useState(false);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${maxWidthPx}px)`);
+    const onChange = () => setMatches(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [maxWidthPx]);
+
+  return matches;
 }
 
 const StaggeredMenu = ({
