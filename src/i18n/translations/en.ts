@@ -36,7 +36,8 @@ export const en = {
     titleDigital: "Experiences",
     description:
       "A solid, modern digital presence designed to turn visits into customers.",
-    cta: "Start here",
+    cta: "Learn More",
+    bannerAlt: "GRG three-dimensional logo",
   },
   workWithUs: {
     eyebrow: "Work with us",

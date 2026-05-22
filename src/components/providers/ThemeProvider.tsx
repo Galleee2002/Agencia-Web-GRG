@@ -4,15 +4,20 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
+import {
+  setThemeCookie,
+  THEME_COOKIE_NAME,
+} from "@/lib/themeCookie";
+
 export type Theme = "light" | "dark";
 
-const STORAGE_KEY = "site-theme";
+const STORAGE_KEY = THEME_COOKIE_NAME;
 
 type ThemeContextValue = {
   theme: Theme;
@@ -46,18 +51,30 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = theme;
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+function readDomTheme(): Theme {
+  if (typeof document === "undefined") return "light";
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
 
-  useEffect(() => {
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>(readDomTheme);
+
+  useLayoutEffect(() => {
     const initial = resolveTheme();
     setThemeState(initial);
     applyTheme(initial);
+    setThemeCookie(initial);
+    try {
+      localStorage.setItem(STORAGE_KEY, initial);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const setTheme = useCallback((next: Theme) => {
     setThemeState(next);
     applyTheme(next);
+    setThemeCookie(next);
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {

@@ -34,7 +34,8 @@ export const es = {
     titleDigital: "Digitales",
     description:
       "Una presencia digital sólida, moderna y pensada para convertir visitas en clientes.",
-    cta: "Empieza aquí",
+    cta: "Conoce Más",
+    bannerAlt: "Logotipo tridimensional GRG",
   },
   workWithUs: {
     eyebrow: "Trabajar con nosotros",

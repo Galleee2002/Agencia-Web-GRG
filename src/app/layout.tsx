@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Inter, Montserrat } from "next/font/google";
+
 import "./tailwind.css";
 import "./globals.scss";
 import { AppProviders } from "@/components/providers/AppProviders";
-import { ThemeScript } from "@/components/providers/ThemeScript";
+import { parseThemeCookie } from "@/lib/themeCookie";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,11 +29,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const themeCookie = parseThemeCookie(
+    cookieStore.get("site-theme")?.value,
+  );
+  const isDark = themeCookie === "dark";
+
   return (
     <html
       lang="es"
@@ -43,10 +51,11 @@ export default function RootLayout({
         montserrat.variable,
         "font-sans",
         inter.variable,
+        isDark && "dark",
       )}
+      style={{ colorScheme: isDark ? "dark" : "light" }}
     >
       <body className="min-h-full min-w-0 flex flex-col">
-        <ThemeScript />
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
