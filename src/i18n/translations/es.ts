@@ -147,11 +147,10 @@ export const es = {
     },
   },
   contact: {
-    heading: "Creamos sitios web que ",
-    headingAccent: "impulsan",
-    headingEnd: " tu negocio.",
-    sublead:
-      "Cuéntanos tu proyecto y te respondemos con una propuesta clara.",
+    heading: "Tu web, ",
+    headingAccent: "lista",
+    headingEnd: " para crecer.",
+    sublead: "Cuéntanos tu idea, nosotros la hacemos realidad.",
     name: "Nombre",
     namePlaceholder: "Tu nombre",
     email: "Email",

@@ -11,7 +11,7 @@ $illustration-max: 336px; // 80% de 420px
   position: relative;
   background: var(--site-surface);
   color: var(--site-ink);
-  padding-block: clamp(60px, 8vw, 120px) clamp(72px, 9vw, 120px);
+  padding-block: clamp(60px, 8vw, 120px) clamp(60px, 7.5vw, 100px);
   // Evita scroll horizontal por tipografía o sombras en viewports estrechos
   overflow-x: hidden;
 }
@@ -229,6 +229,12 @@ $illustration-max: 336px; // 80% de 420px
 }
 
 :global(html.dark) .section {
+  .heading,
+  .headingLead,
+  .headingAccent {
+    color: $pure-white;
+  }
+
   .name {
     color: $pure-white;
   }

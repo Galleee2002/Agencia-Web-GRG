@@ -7,12 +7,15 @@ $hairline-strong: rgba(0, 0, 0, 0.1);
 $blue-glow: rgba(0, 153, 255, 0.15);
 $chip-bg: rgba(0, 0, 0, 0.06);
 $contact-breakpoint: 809px;
+$contact-content-inset: clamp(20px, 3.5vw, 34px);
+$contact-field-gap: 14px;
+$contact-control-height: 46px;
 
 .section {
   position: relative;
   background: var(--site-surface);
   color: var(--site-ink-strong);
-  padding-block: clamp(60px, 8vw, 120px);
+  padding-block: clamp(40px, 5vw, 72px) clamp(52px, 6.5vw, 96px);
   overflow-x: hidden;
   scroll-margin-top: 5rem;
 }
@@ -31,7 +34,7 @@ $contact-breakpoint: 809px;
 .grid {
   display: flex;
   flex-direction: column;
-  gap: clamp(40px, 5vw, 56px);
+  gap: clamp(10px, 1.75vw, 18px);
   align-items: stretch;
   min-width: 0;
 }
@@ -47,12 +50,15 @@ $contact-breakpoint: 809px;
 .intro {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vw, 28px);
+  gap: clamp(14px, 2vw, 20px);
   min-width: 0;
   text-align: center;
   align-items: center;
 
   @media (min-width: $contact-breakpoint) {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline-start: $contact-content-inset;
     text-align: left;
     align-items: flex-start;
   }
@@ -60,12 +66,17 @@ $contact-breakpoint: 809px;
 
 .heading {
   margin: 0;
+  max-width: 14ch;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-size: clamp(2rem, 3.5vw + 0.5rem, 3.25rem);
+  font-size: clamp(1.75rem, 3vw + 0.35rem, 2.75rem);
   font-weight: 500;
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -0.04em;
   color: $void-black;
+
+  @media (min-width: $contact-breakpoint) {
+    max-width: none;
+  }
 
   @supports (text-wrap: balance) {
     text-wrap: balance;
@@ -79,16 +90,11 @@ $contact-breakpoint: 809px;
 
 .sublead {
   margin: 0;
-  max-width: 38ch;
+  max-width: 36ch;
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: clamp(0.9375rem, 1vw + 0.75rem, 1.0625rem);
   line-height: 1.5;
   color: $ink-muted;
-
-  @media (min-width: $contact-breakpoint) {
-    max-width: none;
-    white-space: nowrap;
-  }
 }
 
 // —— Form card (single-column vertical layout) ——
@@ -115,7 +121,7 @@ $form-reveal-offset-item: -28px;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  padding: clamp(24px, 4vw, 40px);
+  padding: $contact-content-inset;
   border-radius: 18px;
   border: 1px solid $hairline;
   background: transparent;
@@ -191,13 +197,13 @@ $form-reveal-offset-item: -28px;
 }
 
 .formRevealRow.fieldPair {
-  gap: 16px;
+  gap: $contact-field-gap;
 }
 
 .form {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  gap: $contact-field-gap;
   min-width: 0;
 }
 
@@ -206,10 +212,22 @@ $form-reveal-offset-item: -28px;
 }
 
 .fieldPair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 1 / -1;
+  gap: $contact-field-gap;
+  min-width: 0;
+
+  @media (max-width: 520px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.fieldStack {
   display: flex;
   flex-direction: column;
+  gap: $contact-field-gap;
   grid-column: 1 / -1;
-  gap: 16px;
   min-width: 0;
 }
 
@@ -244,7 +262,7 @@ $form-reveal-offset-item: -28px;
   position: relative;
   display: flex;
   align-items: stretch;
-  min-height: 48px;
+  min-height: $contact-control-height;
 }
 
 .inputIcon {
@@ -308,8 +326,8 @@ $form-reveal-offset-item: -28px;
 
 .input,
 .select {
-  height: 48px;
-  min-height: 48px;
+  height: $contact-control-height;
+  min-height: $contact-control-height;
   padding: 0 14px 0 44px;
 }
 
@@ -318,7 +336,7 @@ $form-reveal-offset-item: -28px;
 }
 
 .textarea {
-  min-height: 120px;
+  min-height: 104px;
   padding: 12px 14px 12px 44px;
   resize: none;
   overflow: hidden;
@@ -389,7 +407,7 @@ $form-reveal-offset-item: -28px;
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  min-height: 48px;
+  min-height: $contact-control-height;
   padding: 0 14px;
   border: 1px solid $hairline-strong;
   border-radius: 10px;
@@ -528,8 +546,8 @@ $form-reveal-offset-item: -28px;
 }
 
 .submitWrap {
-  margin-top: clamp(12px, 2vw, 20px);
-  padding-top: clamp(14px, 2.5vw, 22px);
+  margin-top: clamp(2px, 0.75vw, 6px);
+  padding-top: clamp(12px, 2vw, 18px);
   border-top: 1px solid $hairline;
 }
 
@@ -540,8 +558,8 @@ $form-reveal-offset-item: -28px;
   gap: 10px;
   width: 100%;
   max-width: none;
-  min-height: 48px;
-  padding: 12px 24px;
+  min-height: $contact-control-height;
+  padding: 11px 24px;
   border: none;
   border-radius: 100px;
   background: $void-black;

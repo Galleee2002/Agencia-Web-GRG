@@ -20,7 +20,7 @@ const INITIAL_FORM = {
   project: "",
 };
 
-const FORM_ROW_COUNT = 6;
+const FORM_ROW_COUNT = 3;
 
 type FormRevealRowProps = {
   index: number;
@@ -212,55 +212,100 @@ export function ContactForm() {
           <FormRevealRow
             index={0}
             visible={isRowVisible(0)}
-            className={styles.field}
+            className={styles.fieldPair}
           >
-            <label className={styles.label} htmlFor={`${formId}-name`}>
-              {t("contact.name")}
-            </label>
-            <div className={styles.inputWrap}>
-              <User
-                className={styles.inputIcon}
-                strokeWidth={INPUT_ICON_STROKE}
-                aria-hidden
-              />
-              <input
-                id={`${formId}-name`}
-                className={styles.input}
-                type="text"
-                name="name"
-                placeholder={t("contact.namePlaceholder")}
-                required
-                autoComplete="name"
-                value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-              />
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${formId}-name`}>
+                {t("contact.name")}
+              </label>
+              <div className={styles.inputWrap}>
+                <User
+                  className={styles.inputIcon}
+                  strokeWidth={INPUT_ICON_STROKE}
+                  aria-hidden
+                />
+                <input
+                  id={`${formId}-name`}
+                  className={styles.input}
+                  type="text"
+                  name="name"
+                  placeholder={t("contact.namePlaceholder")}
+                  required
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${formId}-email`}>
+                {t("contact.email")}
+              </label>
+              <div className={styles.inputWrap}>
+                <Mail
+                  className={styles.inputIcon}
+                  strokeWidth={INPUT_ICON_STROKE}
+                  aria-hidden
+                />
+                <input
+                  id={`${formId}-email`}
+                  className={styles.input}
+                  type="email"
+                  name="email"
+                  placeholder={t("contact.emailPlaceholder")}
+                  required
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                />
+              </div>
             </div>
           </FormRevealRow>
 
           <FormRevealRow
             index={1}
             visible={isRowVisible(1)}
-            className={styles.field}
+            className={styles.fieldPair}
           >
-            <label className={styles.label} htmlFor={`${formId}-email`}>
-              {t("contact.email")}
-            </label>
-            <div className={styles.inputWrap}>
-              <Mail
-                className={styles.inputIcon}
-                strokeWidth={INPUT_ICON_STROKE}
-                aria-hidden
-              />
-              <input
-                id={`${formId}-email`}
-                className={styles.input}
-                type="email"
-                name="email"
-                placeholder={t("contact.emailPlaceholder")}
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${formId}-company`}>
+                {t("contact.company")}
+                <span className={styles.optional}>
+                  {t("contact.optional")}
+                </span>
+              </label>
+              <div className={styles.inputWrap}>
+                <Building2
+                  className={styles.inputIcon}
+                  strokeWidth={INPUT_ICON_STROKE}
+                  aria-hidden
+                />
+                <input
+                  id={`${formId}-company`}
+                  className={styles.input}
+                  type="text"
+                  name="company"
+                  placeholder={t("contact.companyPlaceholder")}
+                  autoComplete="organization"
+                  value={form.company}
+                  onChange={(e) => handleChange("company", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${formId}-service`}>
+                {t("contact.service")}
+              </label>
+              <ServiceSelect
+                id={`${formId}-service`}
+                name="service"
                 required
-                autoComplete="email"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
+                placeholder={t("contact.servicePlaceholder")}
+                value={form.service}
+                options={serviceOptions}
+                onChange={(value) => handleChange("service", value)}
               />
             </div>
           </FormRevealRow>
@@ -268,93 +313,44 @@ export function ContactForm() {
           <FormRevealRow
             index={2}
             visible={isRowVisible(2)}
-            className={styles.field}
+            className={`${styles.fieldStack} ${styles.fieldFull}`}
           >
-            <label className={styles.label} htmlFor={`${formId}-company`}>
-              {t("contact.company")}
-              <span className={styles.optional}>{t("contact.optional")}</span>
-            </label>
-            <div className={styles.inputWrap}>
-              <Building2
-                className={styles.inputIcon}
-                strokeWidth={INPUT_ICON_STROKE}
-                aria-hidden
-              />
-              <input
-                id={`${formId}-company`}
-                className={styles.input}
-                type="text"
-                name="company"
-                placeholder={t("contact.companyPlaceholder")}
-                autoComplete="organization"
-                value={form.company}
-                onChange={(e) => handleChange("company", e.target.value)}
-              />
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${formId}-project`}>
+                {t("contact.project")}
+              </label>
+              <div className={styles.inputWrap}>
+                <MessageSquare
+                  className={`${styles.inputIcon} ${styles.textareaIcon}`}
+                  strokeWidth={INPUT_ICON_STROKE}
+                  aria-hidden
+                />
+                <textarea
+                  ref={projectTextareaRef}
+                  id={`${formId}-project`}
+                  className={styles.textarea}
+                  name="project"
+                  placeholder={t("contact.projectPlaceholder")}
+                  required
+                  rows={1}
+                  value={form.project}
+                  onChange={(e) => handleChange("project", e.target.value)}
+                />
+              </div>
             </div>
-          </FormRevealRow>
 
-          <FormRevealRow
-            index={3}
-            visible={isRowVisible(3)}
-            className={`${styles.field} ${styles.fieldFull}`}
-          >
-            <label className={styles.label} htmlFor={`${formId}-service`}>
-              {t("contact.service")}
-            </label>
-            <ServiceSelect
-              id={`${formId}-service`}
-              name="service"
-              required
-              placeholder={t("contact.servicePlaceholder")}
-              value={form.service}
-              options={serviceOptions}
-              onChange={(value) => handleChange("service", value)}
-            />
-          </FormRevealRow>
-
-          <FormRevealRow
-            index={4}
-            visible={isRowVisible(4)}
-            className={`${styles.field} ${styles.fieldFull}`}
-          >
-            <label className={styles.label} htmlFor={`${formId}-project`}>
-              {t("contact.project")}
-            </label>
-            <div className={styles.inputWrap}>
-              <MessageSquare
-                className={`${styles.inputIcon} ${styles.textareaIcon}`}
-                strokeWidth={INPUT_ICON_STROKE}
-                aria-hidden
-              />
-              <textarea
-                ref={projectTextareaRef}
-                id={`${formId}-project`}
-                className={styles.textarea}
-                name="project"
-                placeholder={t("contact.projectPlaceholder")}
-                required
-                rows={1}
-                value={form.project}
-                onChange={(e) => handleChange("project", e.target.value)}
-              />
+            <div className={styles.submitWrap}>
+              <button
+                type="submit"
+                className={styles.submit}
+                disabled={status === "submitting"}
+              >
+                {status === "submitting"
+                  ? t("contact.submitting")
+                  : t("contact.submit")}
+                <Send strokeWidth={INPUT_ICON_STROKE} aria-hidden />
+              </button>
             </div>
-          </FormRevealRow>
-
-          <FormRevealRow
-            index={5}
-            visible={isRowVisible(5)}
-            className={`${styles.submitWrap} ${styles.fieldFull}`}
-          >
-            <button
-              type="submit"
-              className={styles.submit}
-              disabled={status === "submitting"}
-            >
-              {status === "submitting"
-                ? t("contact.submitting")
-                : t("contact.submit")}
-              <Send strokeWidth={INPUT_ICON_STROKE} aria-hidden />
-            </button>
           </FormRevealRow>
         </form>
       )}
