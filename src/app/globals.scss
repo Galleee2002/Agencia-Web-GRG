@@ -34,3 +34,8 @@ body {
     background-color 0.3s ease,
     color 0.3s ease;
 }
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}

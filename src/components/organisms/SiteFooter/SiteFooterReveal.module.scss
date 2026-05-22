@@ -20,7 +20,7 @@
   overflow: hidden;
   isolation: isolate;
   contain: layout style;
-  background-color: var(--background);
+  background-color: var(--site-footer-surface, var(--background));
 }
 
 .footerBody {
@@ -35,7 +35,7 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  background-color: var(--background);
+  background-color: var(--site-footer-surface, var(--background));
   pointer-events: none;
   transform: translateZ(0);
   backface-visibility: hidden;

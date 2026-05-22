@@ -32,6 +32,9 @@
   --site-menu-panel-shadow: rgba(15, 23, 42, 0.1);
   --site-menu-prelayer-1: #f3f6fb;
   --site-menu-prelayer-2: #e8edf4;
+  --site-footer-surface: var(--site-canvas);
+  --site-footer-edge: var(--site-hairline-strong);
+  --site-footer-shadow: 0 -10px 28px rgba(15, 23, 42, 0.08);
 }
 
 html.dark {
@@ -64,4 +67,11 @@ html.dark {
   --site-menu-panel-shadow: rgba(0, 0, 0, 0.35);
   --site-menu-prelayer-1: #1e1e22;
   --site-menu-prelayer-2: #252525;
+  /* Mismo #252525 que el canvas; la elevación es borde + sombra, no otro tono de fondo */
+  --site-footer-surface: #252525;
+  --site-footer-edge: rgba(255, 255, 255, 0.14);
+  --site-footer-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 -24px 56px rgba(0, 0, 0, 0.55),
+    0 -4px 16px rgba(0, 0, 0, 0.35);
 }

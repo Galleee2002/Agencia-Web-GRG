@@ -66,6 +66,24 @@ $pure-white: #ffffff;
   .eyebrow {
     color: var(--site-ink-graphite);
   }
+
+  .step,
+  .stepGrid,
+  .stepImageFrame {
+    background: #252525;
+  }
+
+  .stepTitle {
+    color: $pure-white;
+  }
+
+  .stepBody {
+    color: var(--site-ink-graphite);
+  }
+
+  .stepReduced:not(:last-child) {
+    border-bottom-color: var(--site-hairline);
+  }
 }
 
 .stepsStack {

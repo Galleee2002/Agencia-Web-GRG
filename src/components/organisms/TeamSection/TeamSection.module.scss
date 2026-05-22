@@ -229,6 +229,14 @@ $illustration-max: 336px; // 80% de 420px
 }
 
 :global(html.dark) .section {
+  .name {
+    color: $pure-white;
+  }
+
+  .role {
+    color: $pure-white;
+  }
+
   .description {
     color: var(--site-ink-graphite);
   }

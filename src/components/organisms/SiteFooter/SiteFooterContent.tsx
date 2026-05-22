@@ -1,36 +1,32 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { ExternalLink, Mail } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 
-import {
-  useI18n,
-  useSiteLegalLinks,
-  useSiteNavItems,
-} from "@/components/providers/I18nProvider";
+import { useI18n, useSiteNavItems } from "@/components/providers/I18nProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { siteLogoForTheme } from "@/config/siteAssets";
-import { SITE_SOCIAL_LINKS } from "@/config/siteNavigation";
 
 import styles from "./SiteFooter.module.scss";
 
 const QUICK_LINKS_ID = "footer-quick-links-heading";
+const CONTACT_ID = "footer-contact-heading";
+const HOME_LINK = "/#inicio";
 
-function socialIconForLabel(label: string) {
-  const key = label.toLowerCase();
-  if (key.includes("mail") || key.includes("correo")) return Mail;
-  return ExternalLink;
+function phoneToTelUri(display: string): string {
+  const digits = display.replace(/\D/g, "");
+  return digits.length > 0 ? `tel:+${digits}` : "tel:";
 }
 
 export function SiteFooterContent() {
   const { t } = useI18n();
   const { theme } = useTheme();
-  const navItems = useSiteNavItems();
-  const legalLinks = useSiteLegalLinks();
+  const navItems = useSiteNavItems().filter((item) => item.link !== HOME_LINK);
   const companyName = t("footer.companyName");
+  const logoSrc = siteLogoForTheme(theme);
   const year = new Date().getFullYear();
-  const showSocials = SITE_SOCIAL_LINKS.length > 0;
+  const email = t("footer.email");
+  const phone = t("footer.phone");
 
   return (
     <div className={styles.inner}>
@@ -41,40 +37,59 @@ export function SiteFooterContent() {
             className={styles.logoLink}
             aria-label={t("footer.logoAria", { company: companyName })}
           >
-            <Image
+            <img
               className={styles.logo}
-              src={siteLogoForTheme(theme)}
+              src={logoSrc}
               alt=""
               width={998}
               height={364}
               decoding="async"
-              style={{ width: "auto", height: "auto" }}
+              draggable={false}
             />
           </Link>
           <p className={styles.description}>{t("footer.description")}</p>
-          {showSocials ? (
-            <div className={styles.socials}>
-              {SITE_SOCIAL_LINKS.map((item) => {
-                const Icon = socialIconForLabel(item.label);
-                return (
-                  <a
-                    key={`${item.label}-${item.link}`}
-                    href={item.link}
-                    className={styles.socialLink}
-                    aria-label={item.label}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Icon className={styles.socialIcon} strokeWidth={1.75} />
-                  </a>
-                );
-              })}
-            </div>
-          ) : null}
         </div>
 
+        <section className={styles.contact} aria-labelledby={CONTACT_ID}>
+          <h2 className={styles.columnTitle} id={CONTACT_ID}>
+            {t("footer.contact")}
+          </h2>
+          <ul className={styles.contactList}>
+            <li>
+              <a href={`mailto:${email}`} className={styles.contactLink}>
+                <Mail
+                  className={styles.contactIcon}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                <span>{email}</span>
+              </a>
+            </li>
+            <li>
+              <a href={phoneToTelUri(phone)} className={styles.contactLink}>
+                <Phone
+                  className={styles.contactIcon}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                <span>{phone}</span>
+              </a>
+            </li>
+            <li className={styles.contactAddressRow}>
+              <MapPin
+                className={styles.contactIcon}
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <span className={styles.contactAddress}>
+                {t("footer.address")}
+              </span>
+            </li>
+          </ul>
+        </section>
+
         <nav className={styles.links} aria-labelledby={QUICK_LINKS_ID}>
-          <h2 className={styles.linksTitle} id={QUICK_LINKS_ID}>
+          <h2 className={styles.columnTitle} id={QUICK_LINKS_ID}>
             {t("footer.quickLinks")}
           </h2>
           <ul className={styles.linksList}>
@@ -97,17 +112,10 @@ export function SiteFooterContent() {
 
       <div className={styles.bottom}>
         <p className={styles.copyright}>
-          {t("footer.copyright", { year, company: companyName })}
+          {t("footer.copyrightBefore", { year })}
+          <span className={styles.copyrightBrand}>{companyName}</span>
+          {t("footer.copyrightAfter")}
         </p>
-        <ul className={styles.legal}>
-          {legalLinks.map((item) => (
-            <li key={item.label}>
-              <a href={item.href} className={styles.legalLink}>
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
