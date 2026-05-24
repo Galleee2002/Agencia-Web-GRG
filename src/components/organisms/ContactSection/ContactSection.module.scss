@@ -60,17 +60,14 @@ $contact-control-height: 46px;
 
 .heading {
   margin: 0;
-  max-width: 14ch;
+  width: 100%;
+  max-width: none;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: clamp(1.75rem, 3vw + 0.35rem, 2.75rem);
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: -0.04em;
   color: $void-black;
-
-  @media (min-width: $contact-breakpoint) {
-    max-width: none;
-  }
 
   @supports (text-wrap: balance) {
     text-wrap: balance;
@@ -84,14 +81,14 @@ $contact-control-height: 46px;
 
 .sublead {
   margin: 0;
-  max-width: 36ch;
+  width: 100%;
+  max-width: none;
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: clamp(0.9375rem, 1vw + 0.75rem, 1.0625rem);
   line-height: 1.5;
   color: $ink-muted;
 
   @media (min-width: $contact-breakpoint) {
-    max-width: none;
     white-space: nowrap;
     text-wrap: nowrap;
   }

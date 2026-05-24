@@ -2,14 +2,14 @@
   display: block;
 }
 
-.dark {
+.img.dark {
   display: none;
 }
 
-:global(html.dark) .light {
+:global(html.dark) .img.light {
   display: none;
 }
 
-:global(html.dark) .dark {
+:global(html.dark) .img.dark {
   display: block;
 }

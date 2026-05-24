@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+import { useI18n } from "@/components/providers/I18nProvider";
+
 import type { TeamMember } from "./teamData";
 import styles from "./TeamSection.module.scss";
 
@@ -15,6 +17,7 @@ const ROOT_MARGIN = "0px 0px -12% 0px";
 const THRESHOLD = 0.08;
 
 export function TeamMemberRows({ members }: Props) {
+  const { t } = useI18n();
   const [entered, setEntered] = useState<Record<number, boolean>>(() => {
     const initial: Record<number, boolean> = {};
     for (let i = 0; i < members.length; i += 1) initial[i] = false;
@@ -85,7 +88,10 @@ export function TeamMemberRows({ members }: Props) {
                   member.name
                 )}
               </h3>
-              <p className={styles.role}>{member.role}</p>
+              <div className={styles.roleRow}>
+                <span className={styles.coFounderPill}>{t("team.coFounderBadge")}</span>
+                <p className={styles.role}>{member.role}</p>
+              </div>
               <p className={styles.description}>
                 {member.description.map((part, j) =>
                   part.emphasize ? (

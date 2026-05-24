@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, useTransform } from "motion/react";
-import { useRef, useState, useEffect } from "react";
+import { useLayoutEffect, useRef, useState, useEffect } from "react";
 
 import { useI18n } from "@/components/providers/I18nProvider";
 
@@ -10,13 +10,45 @@ import footerStyles from "./SiteFooter.module.scss";
 import styles from "./SiteFooterReveal.module.scss";
 import { useFooterCurtainProgress } from "./useFooterCurtainProgress";
 
+const MOBILE_MAX_WIDTH = 1024;
+
+function useMaxWidth(maxWidthPx: number) {
+  const [matches, setMatches] = useState(false);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${maxWidthPx}px)`);
+    const onChange = () => setMatches(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [maxWidthPx]);
+
+  return matches;
+}
+
+function StaticFooter({ ariaLabel }: { ariaLabel: string }) {
+  return (
+    <footer
+      className={`${footerStyles.wrap} ${footerStyles.wrapWithMobileDock}`}
+      id="pie"
+      aria-label={ariaLabel}
+    >
+      <SiteFooterContent />
+    </footer>
+  );
+}
+
 export function SiteFooterReveal() {
   const { t } = useI18n();
   const revealZoneRef = useRef<HTMLDivElement>(null);
+  const mobileLayout = useMaxWidth(MOBILE_MAX_WIDTH);
   const reduceMotion = useReducedMotion();
-  const animateScroll = reduceMotion !== true;
+  const useRevealAnimation = reduceMotion !== true && !mobileLayout;
 
-  const progress = useFooterCurtainProgress(revealZoneRef, animateScroll);
+  const progress = useFooterCurtainProgress(
+    revealZoneRef,
+    useRevealAnimation,
+  );
 
   const footerY = useTransform(progress, [0.06, 0.9], ["-100%", "0%"]);
   const curtainClip = useTransform(
@@ -25,28 +57,20 @@ export function SiteFooterReveal() {
     ["inset(0% 0% 0% 0%)", "inset(100% 0% 0% 0%)"],
   );
 
-  const [zoneReady, setZoneReady] = useState(!animateScroll);
+  const [zoneReady, setZoneReady] = useState(!useRevealAnimation);
 
   useEffect(() => {
-    if (!animateScroll) return;
+    if (!useRevealAnimation) return;
 
     const unsubscribe = progress.on("change", (value) => {
       setZoneReady(value > 0.02);
     });
 
     return () => unsubscribe();
-  }, [animateScroll, progress]);
+  }, [useRevealAnimation, progress]);
 
-  if (!animateScroll) {
-    return (
-      <footer
-        className={footerStyles.wrap}
-        id="pie"
-        aria-label={t("footer.ariaLabel")}
-      >
-        <SiteFooterContent />
-      </footer>
-    );
+  if (!useRevealAnimation) {
+    return <StaticFooter ariaLabel={t("footer.ariaLabel")} />;
   }
 
   return (

@@ -3,6 +3,7 @@
 import { useTeamMembers } from "@/components/providers/I18nProvider";
 
 import { TeamHeading } from "./TeamHeading";
+import { TeamOrigin } from "./TeamOrigin";
 import { TeamMemberRows } from "./TeamMemberRows";
 import styles from "./TeamSection.module.scss";
 
@@ -25,6 +26,7 @@ export function TeamSection() {
       </noscript>
       <div className={styles.inner}>
         <TeamHeading />
+        <TeamOrigin />
         <TeamMemberRows members={members} />
       </div>
     </section>

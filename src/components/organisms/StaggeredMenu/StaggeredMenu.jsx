@@ -21,6 +21,18 @@ function useMaxWidth(maxWidthPx) {
   return matches;
 }
 
+const COMPACT_NAV_AFTER = 72;
+
+function readCompactNavState() {
+  if (typeof window === 'undefined') return false;
+
+  const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  if (scrollY > COMPACT_NAV_AFTER) return true;
+
+  const hash = window.location.hash;
+  return Boolean(hash && hash !== '#inicio');
+}
+
 const StaggeredMenu = ({
   position = 'right',
   colors = ['#B497CF', '#5227FF'],
@@ -48,7 +60,7 @@ const StaggeredMenu = ({
   onMenuClose
 }) => {
   const [open, setOpen] = useState(false);
-  const [compactNav, setCompactNav] = useState(false);
+  const [compactNav, setCompactNav] = useState(readCompactNavState);
   const mobileBottomNav = useMaxWidth(MOBILE_BOTTOM_NAV_MAX_WIDTH);
   const mobileBottomNavRef = useRef(false);
   const openRef = useRef(false);
@@ -445,20 +457,34 @@ const StaggeredMenu = ({
     };
   }, [open]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isFixed || typeof window === 'undefined') return;
 
-    const COMPACT_AFTER = 72;
-
-    const readScroll = () => {
-      setCompactNav(window.scrollY > COMPACT_AFTER);
+    const syncCompactNav = () => {
+      setCompactNav(readCompactNavState());
     };
 
-    readScroll();
-    window.addEventListener('scroll', readScroll, { passive: true });
+    syncCompactNav();
+
+    const raf = requestAnimationFrame(() => {
+      syncCompactNav();
+      requestAnimationFrame(syncCompactNav);
+    });
+
+    const timers = [0, 50, 150, 400].map((ms) => window.setTimeout(syncCompactNav, ms));
+
+    window.addEventListener('scroll', syncCompactNav, { passive: true });
+    window.addEventListener('load', syncCompactNav);
+    window.addEventListener('pageshow', syncCompactNav);
+    window.addEventListener('hashchange', syncCompactNav);
 
     return () => {
-      window.removeEventListener('scroll', readScroll);
+      cancelAnimationFrame(raf);
+      timers.forEach((id) => window.clearTimeout(id));
+      window.removeEventListener('scroll', syncCompactNav);
+      window.removeEventListener('load', syncCompactNav);
+      window.removeEventListener('pageshow', syncCompactNav);
+      window.removeEventListener('hashchange', syncCompactNav);
     };
   }, [isFixed]);
 
@@ -551,11 +577,8 @@ const StaggeredMenu = ({
       aria-controls="staggered-menu-panel"
       onClick={toggleMenu}
     >
-      <span className="sm-toggle-fixed-row" aria-hidden="true">
-        <span className="sm-toggle-labelPlain">{toggleLabelMenu}</span>
-        <span className="sm-icon">
-          <Menu className="sm-icon-svg" size={18} strokeWidth={2} />
-        </span>
+      <span className="sm-icon" aria-hidden="true">
+        <Menu className="sm-icon-svg" size={20} strokeWidth={1.75} />
       </span>
     </button>
   );
