@@ -254,6 +254,17 @@ $pure-white: #ffffff;
       max(env(safe-area-inset-right, 0px), clamp(16px, 4vw, 24px));
   }
 
+  .sectionHeader {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .eyebrow {
+    text-align: center;
+    text-wrap: balance;
+  }
+
   .step {
     inset: clamp(40px, 7vh, 56px) 0 0;
     align-items: stretch;

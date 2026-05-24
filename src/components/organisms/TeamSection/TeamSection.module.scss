@@ -29,7 +29,7 @@ $illustration-max: 336px; // 80% de 420px
 }
 
 .heading {
-  margin: 0 auto clamp(48px, 7vw, 88px);
+  margin: 0 auto clamp(32px, 5vw, 56px);
   display: flex;
   justify-content: center;
   min-width: 0;
@@ -105,6 +105,69 @@ $illustration-max: 336px; // 80% de 420px
   }
 }
 
+.origin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(24px, 4vw, 40px);
+  margin: 0 auto clamp(56px, 8vw, 96px);
+  max-width: min(44rem, 100%);
+  text-align: center;
+
+  @media (min-width: $team-breakpoint) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 5vw, 56px);
+    max-width: 100%;
+    text-align: left;
+  }
+}
+
+.originMedia {
+  margin: 0;
+  width: min(100%, 360px);
+
+  @media (min-width: $team-breakpoint) {
+    width: auto;
+    max-width: min(676px, 35vw);
+    justify-self: start;
+  }
+}
+
+.originImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(36vh, 264px);
+
+  @media (min-width: $team-breakpoint) {
+    width: min(676px, 35vw);
+    max-width: 100%;
+    max-height: none;
+  }
+}
+
+.originText {
+  margin: 0;
+  max-width: min(52ch, 100%);
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: clamp(0.9375rem, 0.35vw + 0.85rem, 1.0625rem);
+  font-weight: 400;
+  line-height: 1.65;
+  color: $muted-silver;
+
+  @supports (text-wrap: pretty) {
+    text-wrap: pretty;
+  }
+
+  @media (min-width: $team-breakpoint) {
+    max-width: none;
+    text-align: left;
+    font-size: clamp(1rem, 0.25vw + 0.9rem, 1.125rem);
+  }
+}
+
 .rows {
   display: flex;
   flex-direction: column;
@@ -166,9 +229,14 @@ $illustration-max: 336px; // 80% de 420px
   text-align: left;
   min-width: 0;
 
-  // Viewports muy estrechos: número arriba, texto a ancho completo (mejor legibilidad)
+  @media (max-width: #{$team-breakpoint - 1px}) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+  }
+
   @media (max-width: 380px) {
-    grid-template-columns: 1fr;
     gap: 10px;
   }
 }
@@ -190,6 +258,15 @@ $illustration-max: 336px; // 80% de 420px
 .copyMain {
   min-width: 0;
   padding-top: clamp(4px, 0.8vw, 10px);
+
+  @media (max-width: #{$team-breakpoint - 1px}) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: min(100%, 28rem);
+    padding-top: 0;
+  }
 }
 
 .name {
@@ -200,6 +277,10 @@ $illustration-max: 336px; // 80% de 420px
   line-height: 1.15;
   letter-spacing: -0.04em;
   color: $team-ink;
+
+  @media (max-width: #{$team-breakpoint - 1px}) {
+    text-align: center;
+  }
 }
 
 // Acento de marca (alineado con línea del título y resto del sitio)
@@ -207,8 +288,37 @@ $illustration-max: 336px; // 80% de 420px
   color: $framer-blue;
 }
 
-.role {
+.roleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
   margin: 0 0 clamp(12px, 2vw, 18px);
+
+  @media (max-width: #{$team-breakpoint - 1px}) {
+    justify-content: flex-start;
+  }
+}
+
+.coFounderPill {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(0, 153, 255, 0.1);
+  border: 1px solid rgba(0, 153, 255, 0.38);
+  color: $framer-blue;
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.role {
+  margin: 0;
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -226,6 +336,12 @@ $illustration-max: 336px; // 80% de 420px
   font-weight: 400;
   line-height: 1.6;
   color: $muted-silver;
+
+  @media (max-width: #{$team-breakpoint - 1px}) {
+    max-width: none;
+    margin-inline: 0;
+    text-align: left;
+  }
 }
 
 :global(html.dark) .section {
@@ -246,13 +362,15 @@ $illustration-max: 336px; // 80% de 420px
   .description {
     color: var(--site-ink-graphite);
   }
+
+  .originText {
+    color: var(--site-ink-graphite);
+  }
 }
 
 .descEm {
-  text-decoration: underline;
-  text-decoration-color: rgba(37, 37, 37, 0.28);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
+  font-weight: 500;
+  color: inherit;
 }
 
 .media {

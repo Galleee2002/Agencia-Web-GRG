@@ -12,8 +12,8 @@ export const es = {
   nav: {
     home: "Inicio",
     homeAria: "Ir al inicio",
-    process: "Proceso",
-    processAria: "Ir al proceso de trabajo",
+    process: "Método",
+    processAria: "Ir al método de trabajo",
     projects: "Proyectos",
     projectsAria: "Ir a proyectos",
     team: "Nosotros",
@@ -33,12 +33,12 @@ export const es = {
     titleExperiences: "Experiencias",
     titleDigital: "Digitales",
     description:
-      "Una presencia digital sólida, moderna y pensada para convertir visitas en clientes.",
+      "Creamos sitios web profesionales que reflejan la identidad de tu negocio y ayudan a convertir visitas en oportunidades reales.",
     cta: "Conoce Más",
     bannerAlt: "Logotipo tridimensional GRG",
   },
   workWithUs: {
-    eyebrow: "Trabajar con nosotros",
+    eyebrow: "¿Cómo es trabajar con nosotros?",
     steps: {
       step1: {
         title: "Recibimos tu idea",
@@ -125,24 +125,21 @@ export const es = {
   team: {
     headingLead: "Quiénes ",
     headingAccent: "somos",
+    originImageAlt: "Ilustración de los fundadores trabajando en las letras GRG",
+    originStory:
+      "GRG nace como un proyecto de colegas con la meta de brindar servicios web de calidad, en un mercado con mucha demanda pero también lleno de productos genéricos o hechos a medias. Queríamos algo distinto: sitios pensados para cada negocio, con atención real al detalle. Nuestra prioridad siempre será la calidad, lograr una identidad única para cada cliente y crear una gran experiencia al utilizar cualquiera de nuestros productos.",
     role: "Desarrollador Web Fullstack",
+    coFounderBadge: "CO-FOUNDER",
     gael: {
       imageAlt: "Ilustración de Gael Garcia",
       description: {
-        part1: "Enfocado en ",
-        emphasize: "soluciones web",
-        part2:
-          ", rendimiento y experiencias que convierten. Combina criterio de producto con ejecución técnica impecable.",
+        full: "Enfocado en el desarrollo de sistemas eficientes y seguros para el almacenamiento y manejo de todos los datos de cada proyecto.",
       },
     },
     manuel: {
       imageAlt: "Ilustración de Manuel Rodriguez Garcia",
       description: {
-        part1:
-          "Traduce la identidad de cada marca en interfaces claras y memorables. ",
-        emphasize: "Diseño y narrativa",
-        part2:
-          " alineados a objetivos de negocio, sin perder de vista el detalle visual.",
+        full: "Encargado del diseño y desarrollo del estilo visual de todos nuestros proyectos. Detallista y creador de soluciones a medida para cada cliente.",
       },
     },
   },

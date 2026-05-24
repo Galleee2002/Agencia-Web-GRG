@@ -43,7 +43,11 @@ export function Hero() {
             <span className={styles.titleWord}>{t("hero.titleDigital")}</span>
           </h1>
           <p className={styles.description}>{t("hero.description")}</p>
-          <Link className={styles.cta} href="#trabajar-con-nosotros">
+          <Link
+            className={styles.cta}
+            href="#trabajar-con-nosotros"
+            scroll={false}
+          >
             <span>{t("hero.cta")}</span>
             <ArrowRight size={18} strokeWidth={2} aria-hidden />
           </Link>

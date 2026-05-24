@@ -14,8 +14,8 @@ export const en = {
   nav: {
     home: "Home",
     homeAria: "Go to home",
-    process: "Process",
-    processAria: "Go to our work process",
+    process: "Method",
+    processAria: "Go to our work method",
     projects: "Projects",
     projectsAria: "Go to projects",
     team: "About us",
@@ -35,12 +35,12 @@ export const en = {
     titleExperiences: "Digital",
     titleDigital: "Experiences",
     description:
-      "A solid, modern digital presence designed to turn visits into customers.",
+      "We build professional websites that reflect your brand identity and help turn visits into real opportunities.",
     cta: "Learn More",
     bannerAlt: "GRG three-dimensional logo",
   },
   workWithUs: {
-    eyebrow: "Work with us",
+    eyebrow: "What's it like working with us?",
     steps: {
       step1: {
         title: "We receive your idea",
@@ -127,24 +127,21 @@ export const en = {
   team: {
     headingLead: "Who ",
     headingAccent: "we are",
+    originImageAlt: "Illustration of the founders working on the GRG letters",
+    originStory:
+      "GRG was born as a project among colleagues with the goal of offering quality web services in a market with high demand but also full of generic or half-finished products. We wanted something different: websites designed for each business, with real attention to detail. Our priority will always be quality, achieving a unique identity for each client, and creating a great experience when using any of our products.",
     role: "Fullstack Web Developer",
+    coFounderBadge: "CO-FOUNDER",
     gael: {
       imageAlt: "Illustration of Gael Garcia",
       description: {
-        part1: "Focused on ",
-        emphasize: "web solutions",
-        part2:
-          ", performance, and experiences that convert. Combines product judgment with flawless technical execution.",
+        full: "Focused on developing efficient and secure systems for storing and managing all data for each project.",
       },
     },
     manuel: {
       imageAlt: "Illustration of Manuel Rodriguez Garcia",
       description: {
-        part1:
-          "Translates each brand's identity into clear, memorable interfaces. ",
-        emphasize: "Design and narrative",
-        part2:
-          " aligned with business goals, without losing sight of visual detail.",
+        full: "In charge of designing and developing the visual style of all our projects. Detail-oriented and creator of tailored solutions for each client.",
       },
     },
   },

@@ -12,6 +12,15 @@ $footer-breakpoint: 809px;
   overflow-x: clip;
 }
 
+/* Footer estático en móvil: espacio para dock + ajustes flotantes */
+.wrapWithMobileDock {
+  @media (max-width: 1024px) {
+    padding-bottom: calc(
+      clamp(32px, 5vw, 48px) + env(safe-area-inset-bottom, 0px) + 5rem
+    );
+  }
+}
+
 .inner {
   position: relative;
   z-index: 1;
