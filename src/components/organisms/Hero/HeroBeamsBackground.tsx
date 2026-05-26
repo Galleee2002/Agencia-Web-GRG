@@ -17,13 +17,13 @@ const HERO_PLASMA_LIGHT = {
   opacity: 0.34,
 } as const;
 
-/** Gris más claro y algo más de opacidad para que se lea sobre #252525. */
+/** Gris claro de alto contraste sobre #252525 para que el plasma se distinga bien. */
 const HERO_PLASMA_DARK = {
-  color: "#b8c8dc",
+  color: "#e6ecf2",
   speed: 0.55,
   direction: "reverse" as const,
   scale: 0.76,
-  opacity: 0.46,
+  opacity: 0.62,
 } as const;
 
 export function HeroBeamsBackground() {
