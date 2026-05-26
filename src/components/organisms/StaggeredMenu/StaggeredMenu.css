@@ -1122,9 +1122,10 @@ html.dark .sm-sticky-brand-inner .sm-header-cta {
 }
 
 @media (hover: hover) and (min-width: 1025px) {
-  html.dark .sm-sticky-brand-inner .sm-header-cta:hover {
+  html.dark .sm-sticky-brand-inner .sm-header-cta:hover,
+  html.dark .sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
     color: var(--site-nav-ink);
-    border-color: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.45);
   }
 }
 
