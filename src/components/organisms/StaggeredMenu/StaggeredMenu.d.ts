@@ -38,6 +38,8 @@ export type StaggeredMenuProps = {
   ariaMenuOpen?: string;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
+  /** Nodo opcional que reemplaza el CTA de la columna derecha de la sticky bar. */
+  rightSlot?: React.ReactNode;
 };
 
 export declare const StaggeredMenu: React.FC<StaggeredMenuProps>;

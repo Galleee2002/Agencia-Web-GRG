@@ -156,7 +156,8 @@
 }
 
 .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
-  width: min(56rem, calc(100% - 1.5rem));
+  /* Mismo ancho que .inner de TeamSection/ContactSection/etc. */
+  width: min(1200px, calc(100% - 3rem));
   padding: 0.5rem;
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.92);
@@ -175,6 +176,9 @@
   align-items: center;
   width: 100%;
   max-width: 100%;
+  /* Mantenemos la altura del estado compact (trigger 48px + 2 * 0.5rem padding)
+   * para que el logo no salte verticalmente al abrir el menú. */
+  min-height: calc(clamp(2.75rem, 10vw, 3rem) + 1rem);
   padding: 0.5rem;
   background: transparent;
   -webkit-backdrop-filter: none;
@@ -234,36 +238,33 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   flex: 0 0 auto;
 }
 
-.sm-sticky-brand-inner .sm-header-left {
+.sm-sticky-brand-inner .sm-header-left,
+.sm-sticky-brand-inner .sm-header-left.sm-toggle {
   pointer-events: auto;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0;
   justify-self: start;
-  min-width: 0;
-  min-height: 44px;
-  height: auto;
-  padding: 0.6875rem;
+  width: clamp(2.75rem, 10vw, 3rem);
+  height: clamp(2.75rem, 10vw, 3rem);
+  max-width: none;
+  padding: 0;
   background: transparent;
-  color: #252525;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 100px;
-  line-height: 1;
+  color: #252525 !important;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  line-height: 0;
   transition:
     background 0.22s ease,
     border-color 0.22s ease,
     color 0.22s ease;
 }
 
-.sm-sticky-brand-inner .sm-header-left.sm-toggle {
-  color: #252525 !important;
-}
-
 @media (hover: hover) and (min-width: 1025px) {
   .sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
-    border-color: rgba(37, 37, 37, 0.55);
+    background: rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -1107,9 +1108,20 @@ html.dark .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host[data-compa
     var(--site-nav-pill-shadow) 0 12px 40px;
 }
 
+/* Al abrir el panel del menú, el pill sticky debe desvanecerse (igual que en
+ * light mode). Sin este override la regla anterior gana por especificidad
+ * (html + data-compact) y deja el pill visible con bg #252525. */
+html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-sticky-brand-inner,
+html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 html.dark .sm-sticky-brand-inner .sm-header-left {
   color: var(--site-nav-ink);
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: transparent;
 }
 
 html.dark .sm-sticky-brand-inner .sm-header-left.sm-toggle {
@@ -1122,10 +1134,14 @@ html.dark .sm-sticky-brand-inner .sm-header-cta {
 }
 
 @media (hover: hover) and (min-width: 1025px) {
-  html.dark .sm-sticky-brand-inner .sm-header-cta:hover,
-  html.dark .sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
+  html.dark .sm-sticky-brand-inner .sm-header-cta:hover {
     color: var(--site-nav-ink);
     border-color: rgba(255, 255, 255, 0.45);
+  }
+
+  html.dark .sm-sticky-brand-inner .sm-header-left.sm-toggle:hover {
+    color: var(--site-nav-ink);
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 

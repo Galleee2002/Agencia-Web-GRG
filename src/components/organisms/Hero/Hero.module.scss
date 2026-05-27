@@ -346,6 +346,15 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
 // CTA pill — minimal; relleno azul solo en hover
 .cta {
+  /* Coordenadas del cursor (en px relativos al botón). Las inicializamos al
+   * centro para que en focus/teclado o cuando el JS aún no actualizó las vars
+   * el efecto crezca desde el medio. */
+  --cta-mx: 50%;
+  --cta-my: 50%;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   margin-top: clamp(24px, 4vw, 36px);
   display: inline-flex;
   align-items: center;
@@ -369,16 +378,54 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
     "ss03" on;
   text-decoration: none;
   box-shadow: none;
+  /* Transición del estado DE-HOVER (de hover → default): el borde se mantiene
+   * celeste mientras el `::before` (0.75s) se contrae y solo vuelve a su tono
+   * original justo cuando el círculo de tinta ya está fuera del botón. */
   transition:
-    background 0.25s $ease-smooth,
-    color 0.25s $ease-smooth,
-    border-color 0.25s $ease-smooth;
+    color 0.45s $ease-smooth 0.3s,
+    border-color 0.18s $ease-smooth 0.62s;
+}
+
+/* Transición de ENTRADA al hover: color y borde acompañan rápido al inicio
+ * del relleno (no esperan a que termine el `::before`). */
+.cta:hover {
+  transition:
+    color 0.35s $ease-smooth,
+    border-color 0.35s $ease-smooth;
+}
+
+/* Ink reveal: círculo absoluto posicionado en la coordenada del cursor que
+ * crece para cubrir todo el botón en :hover y se contrae al salir. Usamos
+ * width/height en % del botón con aspect-ratio: 1 para mantenerlo circular.
+ * Un diámetro de 260% garantiza cobertura completa desde cualquier punto. */
+.cta::before {
+  content: "";
+  position: absolute;
+  top: var(--cta-my);
+  left: var(--cta-mx);
+  z-index: -1;
+  width: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: $framer-blue;
+  transform: translate(-50%, -50%);
+  transition: width 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  will-change: width;
+}
+
+.cta > * {
+  position: relative;
+  z-index: 1;
 }
 
 .cta:hover {
-  background: $framer-blue;
   color: $pure-white;
   border-color: $framer-blue;
+}
+
+.cta:hover::before {
+  width: 260%;
 }
 
 .cta:focus-visible {
@@ -394,7 +441,6 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   border-color: rgba(255, 255, 255, 0.14);
 
   &:hover {
-    background: $framer-blue;
     color: $pure-white;
     border-color: $framer-blue;
   }

@@ -41,6 +41,7 @@ function StaticFooter({ ariaLabel }: { ariaLabel: string }) {
 export function SiteFooterReveal() {
   const { t } = useI18n();
   const revealZoneRef = useRef<HTMLDivElement>(null);
+  const footerShellRef = useRef<HTMLElement>(null);
   const mobileLayout = useMaxWidth(MOBILE_MAX_WIDTH);
   const reduceMotion = useReducedMotion();
   const useRevealAnimation = reduceMotion !== true && !mobileLayout;
@@ -58,6 +59,26 @@ export function SiteFooterReveal() {
   );
 
   const [zoneReady, setZoneReady] = useState(!useRevealAnimation);
+
+  useLayoutEffect(() => {
+    if (!useRevealAnimation) return;
+
+    const zone = revealZoneRef.current;
+    const shell = footerShellRef.current;
+    if (!zone || !shell) return;
+
+    const syncHeight = () => {
+      zone.style.setProperty(
+        "--footer-content-height",
+        `${shell.offsetHeight}px`,
+      );
+    };
+
+    syncHeight();
+    const ro = new ResizeObserver(syncHeight);
+    ro.observe(shell);
+    return () => ro.disconnect();
+  }, [useRevealAnimation, t]);
 
   useEffect(() => {
     if (!useRevealAnimation) return;
@@ -80,6 +101,7 @@ export function SiteFooterReveal() {
       aria-hidden={!zoneReady}
     >
       <footer
+        ref={footerShellRef}
         className={`${footerStyles.wrap} ${styles.curtainShell}`}
         id="pie"
         aria-label={t("footer.ariaLabel")}
