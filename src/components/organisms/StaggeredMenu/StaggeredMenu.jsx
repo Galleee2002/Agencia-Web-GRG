@@ -7,6 +7,16 @@ import './StaggeredMenu.css';
 /** Alineado con el panel a ancho completo (@media max-width: 1024px en StaggeredMenu.css). */
 const MOBILE_BOTTOM_NAV_MAX_WIDTH = 1024;
 
+function readMotionProfile() {
+  if (typeof window === 'undefined') {
+    return { reduced: false, compact: false };
+  }
+  return {
+    reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    compact: window.matchMedia(`(max-width: ${MOBILE_BOTTOM_NAV_MAX_WIDTH}px)`).matches,
+  };
+}
+
 function useMaxWidth(maxWidthPx) {
   const [matches, setMatches] = useState(false);
 
@@ -81,7 +91,9 @@ const StaggeredMenu = ({
   const [compactNav, setCompactNav] = useState(false);
   const mobileBottomNav = useMaxWidth(MOBILE_BOTTOM_NAV_MAX_WIDTH);
   const mobileBottomNavRef = useRef(false);
+  const compactNavRef = useRef(false);
   const openRef = useRef(false);
+  const wrapperRef = useRef(null);
   const panelRef = useRef(null);
   const preLayersRef = useRef(null);
   const preLayerElsRef = useRef([]);
@@ -103,9 +115,46 @@ const StaggeredMenu = ({
   const mobileDockRef = useRef(null);
   const busyRef = useRef(false);
 
+  const setMotionPhase = useCallback(animating => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    if (animating) {
+      wrapper.setAttribute('data-sm-animating', '');
+    } else {
+      wrapper.removeAttribute('data-sm-animating');
+    }
+  }, []);
+
+  const clearPillMorphClose = useCallback(() => {
+    wrapperRef.current?.removeAttribute('data-sm-pill-morph');
+  }, []);
+
+  /** Al cerrar con nav compacta: pill ancha → compacta (sin pasar por 100%). */
+  const beginPillMorphClose = useCallback(() => {
+    if (!isFixed || mobileBottomNavRef.current || !compactNavRef.current) return;
+    const { reduced } = readMotionProfile();
+    if (reduced) return;
+
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    wrapper.removeAttribute('data-open');
+    wrapper.setAttribute('data-sm-pill-morph', '');
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        wrapper.removeAttribute('data-sm-pill-morph');
+      });
+    });
+  }, [isFixed]);
+
   useEffect(() => {
     mobileBottomNavRef.current = mobileBottomNav;
   }, [mobileBottomNav]);
+
+  useEffect(() => {
+    compactNavRef.current = compactNav;
+  }, [compactNav]);
   const itemEntranceTweenRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -123,10 +172,10 @@ const StaggeredMenu = ({
       preLayerElsRef.current = preLayers;
 
       const offscreen = position === 'left' ? -100 : 100;
-      gsap.set(panel, { xPercent: offscreen });
+      gsap.set(panel, { xPercent: offscreen, force3D: true });
       panel.classList.add('sm-gsap-ready');
       if (preLayers.length) {
-        gsap.set(preLayers, { xPercent: offscreen, opacity: 1 });
+        gsap.set(preLayers, { xPercent: offscreen, opacity: 1, force3D: true });
       }
       if (preContainer) {
         gsap.set(preContainer, { xPercent: 0, opacity: 1 });
@@ -149,6 +198,19 @@ const StaggeredMenu = ({
     gsap.set(btn, { clearProps: 'color' });
   }, [mobileBottomNav]);
 
+  const resetPanelMotionState = useCallback(panel => {
+    const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
+    if (itemEls.length) {
+      gsap.set(itemEls, { yPercent: 140, force3D: true });
+    }
+    const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
+    numberEls.forEach(el => el.classList.remove('sm-num-ready'));
+    const socialTitle = panel.querySelector('.sm-socials-title');
+    const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
+    if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
+    if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
+  }, []);
+
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current;
     const layers = preLayerElsRef.current;
@@ -167,77 +229,91 @@ const StaggeredMenu = ({
     const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
 
     const offscreen = position === 'left' ? -100 : 100;
-    const layerStates = layers.map(el => ({ el, start: offscreen }));
-    const panelStart = offscreen;
+    const { reduced: reducedMotion, compact: compactMotion } = readMotionProfile();
 
-    if (itemEls.length) {
-      gsap.set(itemEls, { yPercent: 140, force3D: true });
+    resetPanelMotionState(panel);
+
+    const finishInstantOpen = () => {
+      gsap.set(panel, { xPercent: 0, force3D: true });
+      if (layers.length) gsap.set(layers, { xPercent: 0, force3D: true });
+      if (itemEls.length) gsap.set(itemEls, { yPercent: 0, force3D: true });
+      numberEls.forEach(el => el.classList.add('sm-num-ready'));
+      if (socialTitle) gsap.set(socialTitle, { opacity: 1 });
+      if (socialLinks.length) gsap.set(socialLinks, { y: 0, opacity: 1 });
+    };
+
+    if (reducedMotion) {
+      finishInstantOpen();
+      const tl = gsap.timeline({ paused: true });
+      openTlRef.current = tl;
+      return tl;
     }
-    if (numberEls.length) {
-      gsap.set(numberEls, { '--sm-num-opacity': 0 });
-    }
-    if (socialTitle) {
-      gsap.set(socialTitle, { opacity: 0 });
-    }
-    if (socialLinks.length) {
-      gsap.set(socialLinks, { y: 25, opacity: 0 });
+
+    const panelDuration = compactMotion ? 0.42 : 0.58;
+    const layerDuration = compactMotion ? 0.34 : 0.46;
+    const layerStagger = compactMotion ? 0.04 : 0.06;
+    const itemStagger = compactMotion ? 0.05 : 0.07;
+    const itemDuration = compactMotion ? 0.58 : 0.72;
+
+    gsap.set(panel, { xPercent: offscreen, force3D: true });
+    if (layers.length) {
+      gsap.set(layers, { xPercent: offscreen, force3D: true });
     }
 
     const tl = gsap.timeline({ paused: true });
 
-    layerStates.forEach((ls, i) => {
-      tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
-    });
-    const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0;
-    const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0);
-    const panelDuration = 0.65;
-    tl.fromTo(
-      panel,
-      { xPercent: panelStart, opacity: 1 },
-      { xPercent: 0, opacity: 1, duration: panelDuration, ease: 'power4.out' },
-      panelInsertTime
-    );
+    if (compactMotion) {
+      /* Pantalla completa: una sola capa en movimiento evita 3 repaints con blur. */
+      if (layers.length) {
+        gsap.set(layers, { xPercent: 0, force3D: true });
+      }
+      tl.fromTo(
+        panel,
+        { xPercent: offscreen },
+        { xPercent: 0, duration: panelDuration, ease: 'power2.out', force3D: true },
+        0
+      );
+    } else {
+      /* Panel y prelayers arrancan juntos: el panel (z-index mayor) tapa las capas
+       * grises y no se filtra la franja de prelayer antes de que entre el aside. */
+      tl.fromTo(
+        panel,
+        { xPercent: offscreen },
+        { xPercent: 0, duration: panelDuration, ease: 'power2.out', force3D: true },
+        0
+      );
+      layers.forEach((layer, i) => {
+        tl.fromTo(
+          layer,
+          { xPercent: offscreen },
+          { xPercent: 0, duration: layerDuration, ease: 'power2.out', force3D: true },
+          i * layerStagger
+        );
+      });
+    }
 
     if (itemEls.length) {
-      const itemsStartRatio = 0.15;
-      const itemsStart = panelInsertTime + panelDuration * itemsStartRatio;
+      const itemsStart = panelDuration * (compactMotion ? 0.22 : 0.18);
       tl.to(
         itemEls,
         {
           yPercent: 0,
-          duration: 0.85,
-          ease: 'power3.out',
-          stagger: { each: 0.08, from: 'start' },
-          force3D: true
+          duration: itemDuration,
+          ease: 'power2.out',
+          stagger: { each: itemStagger, from: 'start' },
+          force3D: true,
         },
         itemsStart
       );
-      if (numberEls.length) {
-        tl.to(
-          numberEls,
-          {
-            duration: 0.6,
-            ease: 'power2.out',
-            '--sm-num-opacity': 1,
-            stagger: { each: 0.08, from: 'start' }
-          },
-          itemsStart + 0.1
-        );
-      }
+      numberEls.forEach((el, index) => {
+        tl.call(() => el.classList.add('sm-num-ready'), null, itemsStart + 0.06 + index * itemStagger);
+      });
     }
 
     if (socialTitle || socialLinks.length) {
-      const socialsStart = panelInsertTime + panelDuration * 0.4;
+      const socialsStart = panelDuration * (compactMotion ? 0.35 : 0.38);
       if (socialTitle) {
-        tl.to(
-          socialTitle,
-          {
-            opacity: 1,
-            duration: 0.5,
-            ease: 'power2.out'
-          },
-          socialsStart
-        );
+        tl.to(socialTitle, { opacity: 1, duration: 0.4, ease: 'power2.out' }, socialsStart);
       }
       if (socialLinks.length) {
         tl.to(
@@ -245,35 +321,44 @@ const StaggeredMenu = ({
           {
             y: 0,
             opacity: 1,
-            duration: 0.55,
-            ease: 'power3.out',
-            stagger: { each: 0.08, from: 'start' },
+            duration: 0.45,
+            ease: 'power2.out',
+            stagger: { each: itemStagger, from: 'start' },
+            force3D: true,
             onComplete: () => {
               gsap.set(socialLinks, { clearProps: 'opacity' });
-            }
+            },
           },
-          socialsStart + 0.04
+          socialsStart + 0.03
         );
       }
     }
 
     openTlRef.current = tl;
     return tl;
-  }, [position]);
+  }, [position, resetPanelMotionState]);
 
   const playOpen = useCallback(() => {
     if (busyRef.current) return;
     busyRef.current = true;
+    setMotionPhase(true);
     const tl = buildOpenTimeline();
     if (tl) {
+      const { reduced: reducedMotion } = readMotionProfile();
       tl.eventCallback('onComplete', () => {
+        setMotionPhase(false);
         busyRef.current = false;
       });
-      tl.play(0);
+      if (reducedMotion) {
+        tl.progress(1);
+      } else {
+        tl.play(0);
+      }
     } else {
+      setMotionPhase(false);
       busyRef.current = false;
     }
-  }, [buildOpenTimeline]);
+  }, [buildOpenTimeline, setMotionPhase]);
 
   const playClose = useCallback(() => {
     openTlRef.current?.kill();
@@ -284,31 +369,43 @@ const StaggeredMenu = ({
     const layers = preLayerElsRef.current;
     if (!panel) return;
 
-    const all = [...layers, panel];
-    closeTweenRef.current?.kill();
+    const { reduced: reducedMotion } = readMotionProfile();
     const offscreen = position === 'left' ? -100 : 100;
-    closeTweenRef.current = gsap.to(all, {
-      xPercent: offscreen,
-      duration: 0.32,
-      ease: 'power3.in',
-      overwrite: 'auto',
-      onComplete: () => {
-        const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
-        if (itemEls.length) {
-          gsap.set(itemEls, { yPercent: 140 });
-        }
-        const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
-        if (numberEls.length) {
-          gsap.set(numberEls, { '--sm-num-opacity': 0 });
-        }
-        const socialTitle = panel.querySelector('.sm-socials-title');
-        const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
-        if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
-        if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
-        busyRef.current = false;
+
+    closeTweenRef.current?.kill();
+    setMotionPhase(true);
+    busyRef.current = true;
+
+    const onCloseSettled = () => {
+      if (layers.length) {
+        gsap.set(layers, { xPercent: offscreen, force3D: true });
       }
+      resetPanelMotionState(panel);
+      clearPillMorphClose();
+      setMotionPhase(false);
+      busyRef.current = false;
+    };
+
+    if (reducedMotion) {
+      gsap.set(panel, { xPercent: offscreen, force3D: true });
+      if (layers.length) {
+        gsap.set(layers, { xPercent: offscreen, force3D: true });
+      }
+      onCloseSettled();
+      return;
+    }
+
+    beginPillMorphClose();
+
+    closeTweenRef.current = gsap.to(panel, {
+      xPercent: offscreen,
+      duration: 0.3,
+      ease: 'power2.in',
+      overwrite: 'auto',
+      force3D: true,
+      onComplete: onCloseSettled,
     });
-  }, [position]);
+  }, [position, resetPanelMotionState, setMotionPhase, beginPillMorphClose, clearPillMorphClose]);
 
   const animateIcon = useCallback(() => {
     const icon = iconRef.current;
@@ -480,13 +577,20 @@ const StaggeredMenu = ({
 
     let hasResolvedScroll = false;
 
+    let scrollRaf = 0;
+
     const syncCompactNav = () => {
-      setCompactNav(readCompactNavState({ hasResolvedScroll }));
+      const next = readCompactNavState({ hasResolvedScroll });
+      setCompactNav(prev => (prev === next ? prev : next));
     };
 
     const markResolvedAndSync = () => {
       hasResolvedScroll = true;
-      syncCompactNav();
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = 0;
+        syncCompactNav();
+      });
     };
 
     syncCompactNav();
@@ -512,6 +616,7 @@ const StaggeredMenu = ({
 
     return () => {
       cancelAnimationFrame(raf);
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
       timers.forEach((id) => window.clearTimeout(id));
       window.clearTimeout(resolveTimer);
       window.removeEventListener('scroll', markResolvedAndSync);
@@ -735,10 +840,11 @@ const StaggeredMenu = ({
     (className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '');
 
   const wrapperProps = {
+    ref: wrapperRef,
     className: wrapperClassName,
     style: accentColor ? { ['--sm-accent']: accentColor } : undefined,
     'data-position': position,
-    'data-open': open || undefined
+    'data-open': open || undefined,
   };
 
   if (isFixed) {

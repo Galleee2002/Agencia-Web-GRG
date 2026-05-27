@@ -47,7 +47,14 @@
   backdrop-filter: blur(6px) saturate(1.05);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.32s ease;
+  transition: opacity 0.28s ease;
+}
+
+/* Durante el slide: sin blur del scrim (muy costoso en cada frame). */
+.staggered-menu-wrapper[data-sm-animating] .staggered-menu-backdrop {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: opacity 0.22s ease;
 }
 
 .staggered-menu-wrapper[data-open] .staggered-menu-backdrop {
@@ -146,13 +153,12 @@
     opacity 0.45s cubic-bezier(0.33, 1, 0.32, 1),
     transform 0.45s cubic-bezier(0.33, 1, 0.32, 1),
     visibility 0.45s cubic-bezier(0.33, 1, 0.32, 1),
-    width 1.05s cubic-bezier(0.33, 1, 0.32, 1),
+    width 0.85s cubic-bezier(0.33, 1, 0.32, 1),
     padding 0.85s cubic-bezier(0.33, 1, 0.32, 1),
     background 0.85s cubic-bezier(0.33, 1, 0.32, 1),
-    -webkit-backdrop-filter 0.85s cubic-bezier(0.33, 1, 0.32, 1),
-    backdrop-filter 0.85s cubic-bezier(0.33, 1, 0.32, 1),
     border-radius 0.85s cubic-bezier(0.33, 1, 0.32, 1),
     box-shadow 0.85s cubic-bezier(0.33, 1, 0.32, 1);
+  /* backdrop-filter sin transición: el blur en cada frame del morph es muy costoso */
 }
 
 .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
@@ -204,6 +210,138 @@
 /* Dark: logo ya es blanco; en móvil con panel claro se oscurece */
 html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-logo-img {
   filter: none;
+}
+
+/* Desktop: mismas animaciones, menos jank al abrir/cerrar el panel. */
+@media (min-width: 1025px) {
+  .sm-sticky-brand-inner {
+    contain: layout style;
+  }
+
+  /* Mientras el aside hace slide (GSAP), la barra no morpha ancho/fondo a la vez */
+  .staggered-menu-wrapper[data-sm-animating] .sm-sticky-brand-host .sm-sticky-brand-inner {
+    transition-property: opacity, transform, visibility;
+  }
+
+  /* Solo al abrir: logo centrado a ancho completo mientras entra el panel */
+  .staggered-menu-wrapper[data-sm-animating][data-open] .sm-sticky-brand-host .sm-sticky-brand-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    min-height: calc(clamp(2.75rem, 10vw, 3rem) + 1rem);
+    padding: 0.5rem;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating][data-open] .sm-sticky-brand-host .sm-brand-col--start,
+  .staggered-menu-wrapper[data-sm-animating][data-open] .sm-sticky-brand-host .sm-brand-col--end {
+    display: none;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating][data-open] .sm-sticky-brand-host .sm-brand-col--center {
+    flex: 0 0 auto;
+    justify-content: center;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating][data-open] .sm-sticky-brand-host .sm-logo-img {
+    filter: brightness(0) invert(1);
+  }
+
+  html.dark .staggered-menu-wrapper[data-sm-animating][data-open] .sm-sticky-brand-host .sm-logo-img {
+    filter: none;
+  }
+
+  /* Cierre: ancho intermedio (no 100%) y luego shrink animado al pill compacto */
+  .staggered-menu-wrapper[data-sm-animating]:not([data-open]) .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+    transition-property:
+      opacity,
+      transform,
+      visibility,
+      width,
+      max-width,
+      padding,
+      background,
+      border-radius,
+      box-shadow;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating]:not([data-open])[data-sm-pill-morph] .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+    display: grid;
+    width: min(1200px, calc(100% - 1.25rem));
+    max-width: min(1200px, calc(100% - 1.25rem));
+    padding: 0.5rem;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow:
+      rgba(0, 0, 0, 0.06) 0 0.5px 0 0.5px inset,
+      rgba(0, 0, 0, 0.08) 0 12px 40px;
+    transition: none;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating]:not([data-open]):not([data-sm-pill-morph]) .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+    display: grid;
+    width: min(1200px, calc(100% - 3rem));
+    max-width: min(1200px, calc(100% - 3rem));
+    padding: 0.5rem;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow:
+      rgba(0, 0, 0, 0.06) 0 0.5px 0 0.5px inset,
+      rgba(0, 0, 0, 0.08) 0 12px 40px;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating]:not([data-open]) .sm-sticky-brand-host[data-compact] .sm-brand-col--start,
+  .staggered-menu-wrapper[data-sm-animating]:not([data-open]) .sm-sticky-brand-host[data-compact] .sm-brand-col--end {
+    display: flex;
+  }
+
+  html.dark .staggered-menu-wrapper[data-sm-animating]:not([data-open])[data-sm-pill-morph] .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner,
+  html.dark .staggered-menu-wrapper[data-sm-animating]:not([data-open]):not([data-sm-pill-morph]) .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+    background: #252525;
+    box-shadow:
+      rgba(255, 255, 255, 0.06) 0 0.5px 0 0.5px inset,
+      var(--site-nav-pill-shadow) 0 12px 40px;
+  }
+
+  /* Blur entra un instante después del morph (no se interpola frame a frame) */
+  .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+    transition:
+      opacity 0.45s cubic-bezier(0.33, 1, 0.32, 1),
+      transform 0.45s cubic-bezier(0.33, 1, 0.32, 1),
+      visibility 0.45s cubic-bezier(0.33, 1, 0.32, 1),
+      width 0.85s cubic-bezier(0.33, 1, 0.32, 1),
+      padding 0.85s cubic-bezier(0.33, 1, 0.32, 1),
+      background 0.85s cubic-bezier(0.33, 1, 0.32, 1),
+      border-radius 0.85s cubic-bezier(0.33, 1, 0.32, 1),
+      box-shadow 0.85s cubic-bezier(0.33, 1, 0.32, 1),
+      -webkit-backdrop-filter 0s 0.72s,
+      backdrop-filter 0s 0.72s;
+  }
+
+  .sm-sticky-brand-host:not([data-compact]) .sm-sticky-brand-inner {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    transition-delay: 0s;
+  }
+
+  .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner,
+  .sm-sticky-brand-host[data-open] .sm-sticky-brand-inner {
+    will-change: transform, opacity, width;
+  }
+
+  .sm-sticky-brand-host:not([data-compact]):not([data-open]) .sm-sticky-brand-inner {
+    will-change: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -522,6 +660,7 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   position: relative;
   overflow: hidden;
   line-height: 1;
+  contain: layout paint;
 }
 
 .sm-icon-line {
@@ -563,6 +702,24 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   z-index: 10;
   pointer-events: auto;
   opacity: 1;
+  backface-visibility: hidden;
+}
+
+/* Slide: mismo tono que el panel abierto, sin sombra/borde (evita franja gris al borde). */
+.staggered-menu-wrapper[data-sm-animating] .staggered-menu-panel {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--sm-panel-bg);
+  box-shadow: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  will-change: transform;
+  contain: layout paint style;
+}
+
+.staggered-menu-wrapper[data-sm-animating] .sm-prelayer {
+  will-change: transform;
+  contain: strict;
 }
 
 /* Oculto hasta que GSAP fije la posición inicial (evita flash sin pisar transform). */
@@ -785,6 +942,11 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 .sm-panel-itemLabel {
   display: inline-block;
   transform-origin: 50% 100%;
+  backface-visibility: hidden;
+}
+
+.staggered-menu-wrapper[data-sm-animating] .sm-panel-itemLabel {
+  will-change: transform;
 }
 
 .sm-panel-item:hover {
@@ -807,14 +969,27 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   letter-spacing: 0;
   pointer-events: none;
   user-select: none;
-  opacity: var(--sm-num-opacity, 0);
+  opacity: 0;
+}
+
+.sm-panel-list[data-numbering] .sm-panel-item.sm-num-ready::after {
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .staggered-menu-panel {
+  .staggered-menu-panel,
+  .staggered-menu-wrapper[data-sm-animating] .staggered-menu-panel {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     background: var(--site-menu-panel-bg, #252525);
+    will-change: auto;
+    contain: none;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating] .sm-prelayer,
+  .staggered-menu-wrapper[data-sm-animating] .sm-panel-itemLabel {
+    will-change: auto;
+    contain: none;
   }
 }
 
