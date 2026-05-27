@@ -1,12 +1,13 @@
 "use client";
 
+import { FloatingSettings } from "@/components/organisms/FloatingSettings/FloatingSettings";
 import { useI18n, useSiteNavItems } from "@/components/providers/I18nProvider";
 import { useMenuOverlay } from "@/contexts/MenuOverlayContext";
 import StaggeredMenu from "./StaggeredMenu";
 
 export function AgencyStaggeredMenu() {
   const { setMenuOpen } = useMenuOverlay();
-  const { locale, t } = useI18n();
+  const { t } = useI18n();
   const items = useSiteNavItems();
   const menuPrelayerColors = [
     "var(--site-menu-prelayer-1)",
@@ -15,7 +16,6 @@ export function AgencyStaggeredMenu() {
 
   return (
     <StaggeredMenu
-      key={locale}
       isFixed
       position="left"
       colors={menuPrelayerColors}
@@ -26,6 +26,8 @@ export function AgencyStaggeredMenu() {
       openMenuButtonColor="#252525"
       changeMenuColorOnOpen={false}
       ctaLabel={t("nav.cta")}
+      showHeaderCta={false}
+      rightSlot={<FloatingSettings placement="inline" />}
       toggleLabelMenu={t("nav.menu")}
       toggleLabelClose={t("nav.close")}
       ariaOpenMenu={t("nav.openMenu")}

@@ -176,7 +176,7 @@ export const es = {
   },
   footer: {
     ariaLabel: "Pie de página",
-    companyName: "Agencia Web GMG",
+    companyName: "Agencia Web GRG",
     logoAria: "{{company}}, ir al inicio",
     description:
       "Somos una agencia de diseño y desarrollo web: convertimos ideas en sitios rápidos, claros y pensados para que tu marca convierta visitas en clientes.",

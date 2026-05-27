@@ -13,7 +13,17 @@ import { useI18n } from "@/components/providers/I18nProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import styles from "./FloatingSettings.module.scss";
 
-export function FloatingSettings() {
+type FloatingSettingsProps = {
+  /**
+   * "floating": botón flotante esquina inferior derecha (default, visible solo en mobile).
+   * "inline": se integra en el contenedor padre (sin position:fixed), visible solo en desktop.
+   */
+  placement?: "floating" | "inline";
+};
+
+export function FloatingSettings({
+  placement = "floating",
+}: FloatingSettingsProps = {}) {
   const { locale, setLocale, t } = useI18n();
   const { theme, setTheme } = useTheme();
   const menuId = useId();
@@ -36,11 +46,17 @@ export function FloatingSettings() {
       close();
     };
 
+    const onScroll = () => {
+      close();
+    };
+
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("mousedown", onPointerDown);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("mousedown", onPointerDown);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [close, open]);
 
@@ -53,7 +69,12 @@ export function FloatingSettings() {
   };
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div
+      ref={rootRef}
+      className={styles.root}
+      data-placement={placement}
+      data-open={open ? "true" : "false"}
+    >
       <div
         id={menuId}
         className={styles.menu}

@@ -23,11 +23,20 @@ function useMaxWidth(maxWidthPx) {
 
 const COMPACT_NAV_AFTER = 72;
 
-function readCompactNavState() {
+/**
+ * `hasResolvedScroll` actúa como flag: una vez que el navegador asentó el
+ * scroll real (sea por F5 sobre `/#contact` o por interacción del usuario)
+ * dejamos de consultar el hash y nos guiamos solo por `scrollY`. Esto evita
+ * que la pill compacta quede visible al volver al tope solo porque la URL
+ * conserva un hash anterior.
+ */
+function readCompactNavState({ hasResolvedScroll } = {}) {
   if (typeof window === 'undefined') return false;
 
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
   if (scrollY > COMPACT_NAV_AFTER) return true;
+
+  if (hasResolvedScroll) return false;
 
   const hash = window.location.hash;
   return Boolean(hash && hash !== '#inicio');
@@ -57,10 +66,19 @@ const StaggeredMenu = ({
   ariaCloseMenu = 'Cerrar menú',
   ariaMenuOpen = 'Menú abierto',
   onMenuOpen,
-  onMenuClose
+  onMenuClose,
+  /**
+   * Nodo opcional que reemplaza el CTA del header en la columna derecha de la sticky bar.
+   * Útil para inyectar, por ejemplo, un botón de ajustes inline en lugar del CTA.
+   */
+  rightSlot = null
 }) => {
   const [open, setOpen] = useState(false);
-  const [compactNav, setCompactNav] = useState(readCompactNavState);
+  /* SSR siempre arranca en false para coincidir con la salida del server.
+   * El useLayoutEffect de abajo sincroniza el estado real antes del primer
+   * paint, así no hay flash visible y se evita el hydration mismatch que
+   * causaba leer `window` en el initial state. */
+  const [compactNav, setCompactNav] = useState(false);
   const mobileBottomNav = useMaxWidth(MOBILE_BOTTOM_NAV_MAX_WIDTH);
   const mobileBottomNavRef = useRef(false);
   const openRef = useRef(false);
@@ -460,8 +478,15 @@ const StaggeredMenu = ({
   useLayoutEffect(() => {
     if (!isFixed || typeof window === 'undefined') return;
 
+    let hasResolvedScroll = false;
+
     const syncCompactNav = () => {
-      setCompactNav(readCompactNavState());
+      setCompactNav(readCompactNavState({ hasResolvedScroll }));
+    };
+
+    const markResolvedAndSync = () => {
+      hasResolvedScroll = true;
+      syncCompactNav();
     };
 
     syncCompactNav();
@@ -473,7 +498,14 @@ const StaggeredMenu = ({
 
     const timers = [0, 50, 150, 400].map((ms) => window.setTimeout(syncCompactNav, ms));
 
-    window.addEventListener('scroll', syncCompactNav, { passive: true });
+    /* Después de 600ms ya pasó el reposicionamiento automático del navegador
+     * por el hash inicial. A partir de aquí confiamos solo en `scrollY`. */
+    const resolveTimer = window.setTimeout(() => {
+      hasResolvedScroll = true;
+      syncCompactNav();
+    }, 600);
+
+    window.addEventListener('scroll', markResolvedAndSync, { passive: true });
     window.addEventListener('load', syncCompactNav);
     window.addEventListener('pageshow', syncCompactNav);
     window.addEventListener('hashchange', syncCompactNav);
@@ -481,7 +513,8 @@ const StaggeredMenu = ({
     return () => {
       cancelAnimationFrame(raf);
       timers.forEach((id) => window.clearTimeout(id));
-      window.removeEventListener('scroll', syncCompactNav);
+      window.clearTimeout(resolveTimer);
+      window.removeEventListener('scroll', markResolvedAndSync);
       window.removeEventListener('load', syncCompactNav);
       window.removeEventListener('pageshow', syncCompactNav);
       window.removeEventListener('hashchange', syncCompactNav);
@@ -515,7 +548,9 @@ const StaggeredMenu = ({
       </a>
     ) : null;
 
-  const rightColumn = <div className="sm-header-right">{headerContactCta}</div>;
+  const rightColumn = (
+    <div className="sm-header-right">{rightSlot ?? headerContactCta}</div>
+  );
 
   const menuLeftColumnFloating = (
     <button
@@ -558,11 +593,8 @@ const StaggeredMenu = ({
       tabIndex={open ? -1 : undefined}
       onClick={toggleMenu}
     >
-      <span className="sm-toggle-fixed-row" aria-hidden="true">
-        <span className="sm-toggle-labelPlain">{toggleLabelMenu}</span>
-        <span ref={iconRef} className="sm-icon">
-          <Menu className="sm-icon-svg" size={18} strokeWidth={2} />
-        </span>
+      <span ref={iconRef} className="sm-icon" aria-hidden="true">
+        <Menu className="sm-icon-svg" size={20} strokeWidth={1.75} />
       </span>
     </button>
   );

@@ -26,15 +26,75 @@
     0 4px 16px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
-  position: fixed;
-  right: clamp(0.75rem, 3vw, 1.25rem);
-  bottom: clamp(0.75rem, 3vw, 1.25rem);
-  z-index: 48;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
-  pointer-events: none;
+
+  &[data-placement="floating"] {
+    position: fixed;
+    right: clamp(0.75rem, 3vw, 1.25rem);
+    bottom: clamp(0.75rem, 3vw, 1.25rem);
+    z-index: 48;
+    pointer-events: none;
+
+    /* Visible solo en mobile (desktop tiene la versión inline en el nav) */
+    @media (min-width: 1025px) {
+      display: none;
+    }
+  }
+
+  &[data-placement="inline"] {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    border-radius: 999px;
+    padding: 0;
+    background: transparent;
+    transition:
+      background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Tamaños fijos en px (cuentas redondas para evitar problemas de calc
+     * con clamp). El cog define el alto base del pill global; cada toggle
+     * es un pill SÓLIDO independiente con su propio bg visible. */
+    --fs-inline-cog-size: clamp(2.75rem, 10vw, 3rem);
+    --fs-inline-toggle-gap: 0.25rem;
+    --fs-inline-toggle-size: 36px;
+    --fs-inline-toggle-width: 64px;
+    --fs-inline-menu-open-width: calc(
+      var(--fs-inline-toggle-width) * 2 + var(--fs-inline-toggle-gap) * 3
+    );
+
+    /* Pill global cuando el menú está abierto: tinte OSCURO siempre (nunca
+     * blanco) para que el único elemento blanco visible sea el thumb. */
+    &[data-open="true"] {
+      background: rgba(0, 0, 0, 0.05);
+      padding-left: 0.75rem;
+    }
+
+    /* Dentro del nav el trigger debe verse igual que el toggle del menú a la
+     * izquierda: sin fondo propio, sin sombra y sin borde visible. El hover
+     * únicamente cambia el background con la misma opacidad usada en el botón
+     * del menú para mantener coherencia visual entre light y dark mode. */
+    .trigger {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: transparent;
+      }
+    }
+
+    /* Inline solo aplica en desktop (en mobile el nav top oculta la columna derecha) */
+    @media (max-width: 1024px) {
+      display: none;
+    }
+  }
 
   :global(html.dark) & {
     --fs-menu-bg: var(--site-surface);
@@ -63,6 +123,23 @@
     --fs-trigger-shadow:
       0 4px 20px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  /* Pill global del root en dark mode: tinte CLARO sutil (sube ligeramente
+   * sobre el canvas oscuro, efecto "raised"). */
+  :global(html.dark) &[data-placement="inline"] {
+    &[data-open="true"] {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .trigger {
+      border-color: transparent;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: transparent;
+      }
+    }
   }
 }
 
@@ -116,11 +193,6 @@
   }
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .trigger:hover .triggerIcon {
-    transform: rotate(45deg) translateZ(0);
-  }
-}
 
 .menu {
   display: flex;
@@ -142,6 +214,38 @@
     opacity 0.22s ease,
     transform 0.22s ease,
     visibility 0.22s ease;
+
+  /* En modo inline el menú vive in-flow junto al cog y se anima cambiando
+   * su ancho desde 0 hasta el ancho natural (calculado vía CSS var sobre el
+   * tamaño del toggle). Esto le permite a `.root` envolver tanto al menú
+   * como al cog en un único pill cuando está abierto. */
+  .root[data-placement="inline"] & {
+    position: static;
+    inset: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--fs-inline-toggle-gap);
+    width: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+    opacity: 0;
+    transform: none;
+    visibility: visible;
+    transition:
+      width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.25s ease,
+      margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .root[data-placement="inline"] &[data-open="true"] {
+    width: var(--fs-inline-menu-open-width);
+    opacity: 1;
+    margin-right: var(--fs-inline-toggle-gap);
+  }
 
   &:not([data-open="true"]) {
     pointer-events: none;
@@ -178,6 +282,24 @@
   color: var(--fs-menu-label);
 }
 
+/* En modo inline las secciones no tienen título (label) ni separación entre
+ * sí: son simplemente toggles uno al lado del otro. */
+.root[data-placement="inline"] {
+  .menuSection {
+    align-items: stretch;
+  }
+
+  .menuSection + .menuSection {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .menuLabel {
+    display: none;
+  }
+}
+
 .toggleGroup {
   --toggle-inset: 0.25rem;
   --toggle-option-size: 1.6875rem;
@@ -207,6 +329,110 @@
   &:focus-visible {
     outline: 2px solid #0099ff;
     outline-offset: 2px;
+  }
+}
+
+/* =============================================================================
+ * INLINE TOGGLE — reconstruido limpio.
+ *
+ * Geometría (px exactos, sin clamp para evitar calc fragmentado):
+ *   - Toggle: 64w × 36h, padding 4px (igual H y V)
+ *   - Inner area: 56w × 28h → 2 opciones de 28×28
+ *   - Thumb: 28×28 circular, slide = 28px
+ *
+ * Backgrounds:
+ *   - Toggle pill: SÓLIDO oscuro (rgba(0,0,0,.08) light / rgba(0,0,0,.4) dark).
+ *     NUNCA usamos tintes blancos.
+ *   - Thumb: #ffffff. Único elemento blanco del componente.
+ * ============================================================================= */
+.root[data-placement="inline"] .toggleGroup {
+  --inline-toggle-pad: 4px;
+  --inline-thumb-size: 28px;
+
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: var(--inline-thumb-size) var(--inline-thumb-size);
+  grid-template-rows: var(--inline-thumb-size);
+  column-gap: 0;
+  align-items: center;
+  justify-items: center;
+  width: 64px;
+  height: 36px;
+  padding: var(--inline-toggle-pad);
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+  cursor: pointer;
+  font: inherit;
+  flex: 0 0 auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:global(html.dark) .root[data-placement="inline"] .toggleGroup {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.root[data-placement="inline"] .toggleThumb {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 0;
+  width: var(--inline-thumb-size);
+  height: var(--inline-thumb-size);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: none;
+  transform: translate3d(
+    calc(var(--toggle-active-index) * var(--inline-thumb-size)),
+    0,
+    0
+  );
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.root[data-placement="inline"] .toggleOption {
+  position: relative;
+  z-index: 1;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--inline-thumb-size);
+  height: var(--inline-thumb-size);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:nth-child(2) { grid-column: 1; }
+  &:nth-child(3) { grid-column: 2; }
+
+  &[data-active="true"] {
+    color: #252525;
+  }
+
+  svg {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+:global(html.dark) .root[data-placement="inline"] .toggleOption {
+  color: rgba(255, 255, 255, 0.6);
+
+  &[data-active="true"] {
+    color: #252525;
   }
 }
 
@@ -281,10 +507,6 @@
     .triggerIcon {
       transition: none;
     }
-
-    &:hover .triggerIcon {
-      transform: translateZ(0);
-    }
   }
 
   .menu {
@@ -299,7 +521,6 @@
   .toggleOption {
     transition: none;
   }
-
 }
 
 @media (max-width: 809px) {
