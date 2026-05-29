@@ -1,6 +1,6 @@
 /** Configuración global del sitio (SEO, JSON-LD, sitemap). */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://grgsolutions.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://grgsolutions.com.ar";
 
 export const SITE_NAME = "GRG Solutions";
 

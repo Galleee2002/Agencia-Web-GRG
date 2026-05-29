@@ -8,7 +8,9 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    // Sin handlers unload: evita deprecaciones, mejora bfcache (Chrome).
+    value:
+      "camera=(), microphone=(), geolocation=(), interest-cohort=(), unload=()",
   },
 ];
 
@@ -38,6 +40,15 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: securityHeaders,
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination: "/favicon.svg",
+        permanent: true,
       },
     ];
   },
