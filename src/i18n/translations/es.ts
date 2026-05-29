@@ -165,6 +165,10 @@ export const es = {
     successText:
       "Te contactaremos pronto. Revisamos cada solicitud con atención.",
     sendAnother: "Enviar otro mensaje",
+    errorTitle: "No pudimos enviar tu mensaje",
+    errorText:
+      "Hubo un problema al enviar el formulario. Intentá de nuevo en unos minutos.",
+    retry: "Reintentar",
     services: {
       corporate: "Sitio web corporativo",
       ecommerce: "E-commerce",

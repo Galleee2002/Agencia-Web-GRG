@@ -10,7 +10,7 @@ import styles from "./ContactSection.module.scss";
 
 const INPUT_ICON_STROKE = 1.75;
 
-type FormStatus = "idle" | "submitting" | "success";
+type FormStatus = "idle" | "submitting" | "success" | "error";
 
 const INITIAL_FORM = {
   name: "",
@@ -48,7 +48,7 @@ function FormRevealRow({
 }
 
 export function ContactForm() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const serviceOptions = useServiceOptions();
   const formId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -174,8 +174,30 @@ export function ContactForm() {
     if (!formElement || !formElement.reportValidity()) return;
 
     setStatus("submitting");
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setStatus("success");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          company: form.company || undefined,
+          service: form.service,
+          project: form.project,
+          locale,
+        }),
+      });
+
+      if (!response.ok) {
+        setStatus("error");
+        return;
+      }
+
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   };
 
   const handleReset = () => {
@@ -200,6 +222,18 @@ export function ContactForm() {
             onClick={handleReset}
           >
             {t("contact.sendAnother")}
+          </button>
+        </div>
+      ) : status === "error" ? (
+        <div className={styles.success} role="alert">
+          <p className={styles.successTitle}>{t("contact.errorTitle")}</p>
+          <p className={styles.successText}>{t("contact.errorText")}</p>
+          <button
+            type="button"
+            className={styles.resetBtn}
+            onClick={() => setStatus("idle")}
+          >
+            {t("contact.retry")}
           </button>
         </div>
       ) : (

@@ -80,7 +80,25 @@ cd Agencia-Web-GRG
 pnpm install
 ```
 
-### 2. Arrancar el servidor de desarrollo
+### 2. Variables de entorno (formulario de contacto / Resend)
+
+Copiá `.env.example` a `.env.local` y completá los valores:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Descripción |
+|----------|-------------|
+| `RESEND_API_KEY` | Clave en [resend.com/api-keys](https://resend.com/api-keys) |
+| `RESEND_FROM_EMAIL` | Remitente verificado (sandbox: `GRG Solutions <onboarding@resend.dev>`) |
+| `RESEND_NOTIFY_EMAIL` | Bandeja donde llegan las consultas del formulario |
+
+**Sandbox:** con `onboarding@resend.dev` solo podés enviar al email de tu cuenta Resend hasta verificar el dominio `agenciawebgmg.com`. En producción usá `GRG Solutions <hola@agenciawebgmg.com>`.
+
+Configurá las mismas variables en Vercel (Production y Preview).
+
+### 3. Arrancar el servidor de desarrollo
 
 ```bash
 pnpm dev
@@ -88,7 +106,7 @@ pnpm dev
 
 Abre **[http://localhost:3000](http://localhost:3000)** en el navegador.
 
-### 3. Build de producción
+### 4. Build de producción
 
 ```bash
 pnpm build
@@ -105,6 +123,7 @@ pnpm start
 | `pnpm build` | Compilación optimizada para producción |
 | `pnpm start` | Servidor de producción (tras `build`) |
 | `pnpm lint` | Análisis estático con ESLint |
+| `pnpm email` | Vista previa de plantillas React Email en el puerto 3001 |
 
 ---
 

@@ -167,6 +167,10 @@ export const en = {
     successText:
       "We will contact you soon. We review every request with care.",
     sendAnother: "Send another message",
+    errorTitle: "We couldn't send your message",
+    errorText:
+      "There was a problem submitting the form. Please try again in a few minutes.",
+    retry: "Try again",
     services: {
       corporate: "Corporate website",
       ecommerce: "E-commerce",

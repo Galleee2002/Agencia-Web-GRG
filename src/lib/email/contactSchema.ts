@@ -1,0 +1,39 @@
+import { z } from "zod";
+
+const SERVICE_VALUES = [
+  "corporate",
+  "ecommerce",
+  "landing",
+  "redesign",
+  "maintenance",
+  "other",
+] as const;
+
+const suspiciousUrlPattern = /https?:\/\//i;
+
+function noSuspiciousUrls(value: string) {
+  return !suspiciousUrlPattern.test(value);
+}
+
+export const contactSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Nombre demasiado corto")
+    .max(120)
+    .refine(noSuspiciousUrls, "Contenido no permitido"),
+  email: z.string().trim().email("Email inválido").max(254),
+  company: z.string().trim().max(120).optional(),
+  service: z.enum(SERVICE_VALUES),
+  project: z
+    .string()
+    .trim()
+    .min(10, "Describe tu proyecto con más detalle")
+    .max(4000)
+    .refine(noSuspiciousUrls, "Contenido no permitido"),
+  locale: z.enum(["es", "en"]).default("es"),
+});
+
+export type ContactFormPayload = z.infer<typeof contactSchema>;
+
+export const SERVICE_VALUES_LIST = SERVICE_VALUES;
