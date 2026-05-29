@@ -187,9 +187,9 @@ export const en = {
     description:
       "We are a web design and development agency: we turn ideas into fast, clear sites built to help your brand turn visits into customers.",
     contact: "Contact",
-    email: "hello@agenciawebgmg.com",
-    phone: "+54 11 5555-0100",
-    address: "1234 Corrientes Ave, CABA, Buenos Aires, Argentina",
+    email: "agencygrg@gmail.com",
+    phone: "+54 115989 7869",
+    address: "Autonomous City of Buenos Aires, Argentina",
     quickLinks: "Quick links",
     copyrightBefore: "Copyright © {{year}} ",
     copyrightAfter: ". All rights reserved.",
@@ -211,7 +211,7 @@ export const en = {
         "At GRG Solutions we respect your privacy. This policy describes what data we may process when you visit our site or contact us.",
       s1Title: "Data controller",
       s1Body:
-        "The controller is GRG Solutions. You can reach us at hello@agenciawebgmg.com for data-related requests.",
+        "The controller is GRG Solutions. You can reach us at agencygrg@gmail.com for data-related requests.",
       s2Title: "Data we collect",
       s2Body:
         "We may receive your name, email, company, and message submitted through the contact form. We also store basic technical data (for example, cookies required for language and theme preferences).",
@@ -223,7 +223,7 @@ export const en = {
         "We keep data as long as needed to handle your request and meet legal obligations. We apply reasonable measures to protect information from unauthorized access.",
       s5Title: "Your rights",
       s5Body:
-        "You may request access, correction, or deletion by writing to hello@agenciawebgmg.com. You may also file a complaint with your local data protection authority.",
+        "You may request access, correction, or deletion by writing to agencygrg@gmail.com. You may also file a complaint with your local data protection authority.",
     },
     terms: {
       metaTitle: "Terms and conditions",
@@ -271,7 +271,7 @@ export const en = {
         "We may update this policy to reflect technical or legal changes. We will publish the revision date on this page.",
       s5Title: "Contact",
       s5Body:
-        "For cookie-related questions, email hello@agenciawebgmg.com.",
+        "For cookie-related questions, email agencygrg@gmail.com.",
     },
   },
   projectPage: {

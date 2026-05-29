@@ -94,7 +94,7 @@ cp .env.example .env.local
 | `RESEND_FROM_EMAIL` | Remitente verificado (sandbox: `GRG Solutions <onboarding@resend.dev>`) |
 | `RESEND_NOTIFY_EMAIL` | Bandeja donde llegan las consultas del formulario |
 
-**Sandbox:** con `onboarding@resend.dev` solo podés enviar al email de tu cuenta Resend hasta verificar el dominio `agenciawebgmg.com`. En producción usá `GRG Solutions <hola@agenciawebgmg.com>`.
+**Sandbox:** con `onboarding@resend.dev` solo podés enviar al email de tu cuenta Resend hasta verificar un dominio propio en Resend. Las consultas del formulario llegan a `agencygrg@gmail.com` (`RESEND_NOTIFY_EMAIL`).
 
 Configurá las mismas variables en Vercel (Production y Preview).
 

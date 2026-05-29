@@ -185,9 +185,9 @@ export const es = {
     description:
       "Somos una agencia de diseño y desarrollo web: convertimos ideas en sitios rápidos, claros y pensados para que tu marca convierta visitas en clientes.",
     contact: "Contacto",
-    email: "hola@agenciawebgmg.com",
-    phone: "+54 11 5555-0100",
-    address: "Av. Corrientes 1234, CABA, Buenos Aires, Argentina",
+    email: "agencygrg@gmail.com",
+    phone: "+54 115989 7869",
+    address: "Ciudad Autónoma de Buenos Aires, Argentina",
     quickLinks: "Enlaces rápidos",
     copyrightBefore: "Copyright © {{year}} ",
     copyrightAfter: ". Todos los derechos reservados.",
@@ -209,7 +209,7 @@ export const es = {
         "En GRG Solutions respetamos tu privacidad. Esta política describe qué datos podemos tratar cuando visitás nuestro sitio o nos escribís.",
       s1Title: "Responsable del tratamiento",
       s1Body:
-        "El responsable es GRG Solutions. Podés contactarnos en hola@agenciawebgmg.com para consultas sobre tus datos.",
+        "El responsable es GRG Solutions. Podés contactarnos en agencygrg@gmail.com para consultas sobre tus datos.",
       s2Title: "Datos que recopilamos",
       s2Body:
         "Podemos recibir nombre, correo electrónico, empresa y el mensaje que envíes por el formulario de contacto. También registramos datos técnicos básicos de navegación (por ejemplo, cookies necesarias o preferencias de idioma y tema).",
@@ -221,7 +221,7 @@ export const es = {
         "Conservamos los datos el tiempo necesario para atender tu solicitud y obligaciones legales. Aplicamos medidas razonables para proteger la información frente a accesos no autorizados.",
       s5Title: "Tus derechos",
       s5Body:
-        "Podés solicitar acceso, rectificación o eliminación de tus datos escribiendo a hola@agenciawebgmg.com. También podés presentar un reclamo ante la autoridad de protección de datos de tu jurisdicción.",
+        "Podés solicitar acceso, rectificación o eliminación de tus datos escribiendo a agencygrg@gmail.com. También podés presentar un reclamo ante la autoridad de protección de datos de tu jurisdicción.",
     },
     terms: {
       metaTitle: "Términos y condiciones",
@@ -269,7 +269,7 @@ export const es = {
         "Podemos actualizar esta política para reflejar cambios técnicos o legales. Publicaremos la fecha de revisión en esta página.",
       s5Title: "Contacto",
       s5Body:
-        "Para consultas sobre cookies escribinos a hola@agenciawebgmg.com.",
+        "Para consultas sobre cookies escribinos a agencygrg@gmail.com.",
     },
   },
   projectPage: {
