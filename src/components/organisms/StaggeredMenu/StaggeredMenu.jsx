@@ -822,7 +822,13 @@ const StaggeredMenu = ({
         ) : null}
         <div className="sm-panel-inner">
           <div className={mobileBottomNav ? 'sm-panel-nav-mobile' : undefined}>
-            <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
+            <ul
+              className="sm-panel-list"
+              role="list"
+              data-numbering={
+                displayItemNumbering && !mobileBottomNav ? true : undefined
+              }
+            >
               {items && items.length ? (
                 items.map((it, idx) => (
                   <li className="sm-panel-itemWrap" key={it.label + idx}>

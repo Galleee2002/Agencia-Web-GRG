@@ -183,152 +183,183 @@ export function WorkWithUsSection() {
     const pin = pinRef.current;
     if (!section || !pin) return;
 
-    const ctx = gsap.context(() => {
+    let ctx: gsap.Context | undefined;
+    let teardownEyebrow: (() => void) | undefined;
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const teardownScrollFx = () => {
+      scrollTriggerRef.current?.kill();
+      scrollTriggerRef.current = null;
+      registerWorkWithUsScrollTrigger(null);
+      teardownEyebrow?.();
+      teardownEyebrow = undefined;
+      ctx?.revert();
+      ctx = undefined;
+    };
+
+    const setupScrollFx = () => {
+      teardownScrollFx();
+
+      const layout = getWorkWithUsLayoutMode();
       const panels = stepRefs.current.filter(
         (el): el is HTMLElement => el != null,
       );
-
       if (!panels.length) return;
 
-      if (isReducedLayout) {
-        panels.forEach((panel) => {
-          gsap.set(panel, { autoAlpha: 1, clearProps: "transform" });
-          setPanelContentVisible(panel);
-        });
-        registerWorkWithUsScrollTrigger(null);
-        return;
-      }
-
-      if (isMobileLayout) {
-        setupMobileStackReveal(panels);
-        const header = headerRef.current;
-        const lastPanel = panels[panels.length - 1];
-        const teardownEyebrow =
-          header && lastPanel
-            ? setupMobileEyebrowVisibility(header, lastPanel)
-            : undefined;
-        registerWorkWithUsScrollTrigger(null);
-        return () => {
-          teardownEyebrow?.();
-        };
-      }
-
-      panels.forEach((panel, index) => {
-        if (index === 0) {
-          setPanelVisible(panel, true);
-          setPanelContentVisible(panel);
+      ctx = gsap.context(() => {
+        if (layout === "reduced") {
+          panels.forEach((panel) => {
+            gsap.set(panel, { autoAlpha: 1, clearProps: "transform" });
+            setPanelContentVisible(panel);
+          });
           return;
         }
-        setPanelVisible(panel, false);
-        const image = panel.querySelector<HTMLElement>("[data-step-image]");
-        const text = panel.querySelector<HTMLElement>("[data-step-text]");
-        const meta = panel.querySelector<HTMLElement>("[data-step-meta]");
-        if (image) gsap.set(image, { opacity: 0, y: 18, scale: 0.98 });
-        if (text) gsap.set(text, { opacity: 0, y: 12 });
-        if (meta) gsap.set(meta, { opacity: 0, x: -8 });
-      });
 
-      const tl = gsap.timeline({
-        defaults: { ease: "power2.inOut" },
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: `+=${scrollPanels}%`,
-          pin,
-          scrub: 0.25,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          ...(stepCount > 1
-            ? {
-                snap: {
-                  snapTo: (progress: number) => {
-                    if (progress >= 0.92) return 1;
-                    const idx = Math.min(
-                      stepCount - 1,
-                      Math.round(progress * (stepCount - 1)),
-                    );
-                    return stepProgressForIndex(idx, stepCount);
+        if (layout === "mobile") {
+          panels.forEach((panel) => {
+            setPanelVisible(panel, true);
+            setPanelContentVisible(panel);
+          });
+          setupMobileStackReveal(panels);
+          const header = headerRef.current;
+          const lastPanel = panels[panels.length - 1];
+          if (header && lastPanel) {
+            teardownEyebrow = setupMobileEyebrowVisibility(header, lastPanel);
+          }
+          return;
+        }
+
+        /* Guardia extra: nunca pin/snap si el viewport es móvil (hidratación SSR). */
+        if (window.matchMedia(MOBILE_LAYOUT_MQ).matches) return;
+
+        panels.forEach((panel, index) => {
+          if (index === 0) {
+            setPanelVisible(panel, true);
+            setPanelContentVisible(panel);
+            return;
+          }
+          setPanelVisible(panel, false);
+          const image = panel.querySelector<HTMLElement>("[data-step-image]");
+          const text = panel.querySelector<HTMLElement>("[data-step-text]");
+          const meta = panel.querySelector<HTMLElement>("[data-step-meta]");
+          if (image) gsap.set(image, { opacity: 0, y: 18, scale: 0.98 });
+          if (text) gsap.set(text, { opacity: 0, y: 12 });
+          if (meta) gsap.set(meta, { opacity: 0, x: -8 });
+        });
+
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.inOut" },
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: `+=${scrollPanels}%`,
+            pin,
+            scrub: 0.25,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            ...(stepCount > 1
+              ? {
+                  snap: {
+                    snapTo: (progress: number) => {
+                      if (progress >= 0.92) return 1;
+                      const idx = Math.min(
+                        stepCount - 1,
+                        Math.round(progress * (stepCount - 1)),
+                      );
+                      return stepProgressForIndex(idx, stepCount);
+                    },
+                    duration: { min: 0.12, max: 0.32 },
+                    delay: 0,
+                    ease: "power1.out",
                   },
-                  duration: { min: 0.12, max: 0.32 },
-                  delay: 0,
-                  ease: "power1.out",
-                },
-              }
-            : {}),
-        },
-      });
-
-      const st = tl.scrollTrigger ?? null;
-      scrollTriggerRef.current = st;
-      registerWorkWithUsScrollTrigger(st);
-
-      for (let i = 1; i < panels.length; i++) {
-        const prev = panels[i - 1];
-        const curr = panels[i];
-        const fadeStart = i - CROSSFADE_SPAN;
-
-        tl.to(
-          prev,
-          {
-            autoAlpha: 0,
-            duration: CROSSFADE_SPAN,
-            ease: "power2.inOut",
-            onStart: () => setPanelVisible(prev, false),
+                }
+              : {}),
           },
-          fadeStart,
-        );
+        });
 
-        tl.fromTo(
-          curr,
-          { autoAlpha: 0 },
-          {
-            autoAlpha: 1,
-            duration: CROSSFADE_SPAN,
-            ease: "power2.inOut",
-            onStart: () => setPanelVisible(curr, true),
-          },
-          fadeStart,
-        );
+        const st = tl.scrollTrigger ?? null;
+        scrollTriggerRef.current = st;
+        registerWorkWithUsScrollTrigger(st);
 
-        const image = curr.querySelector<HTMLElement>("[data-step-image]");
-        const text = curr.querySelector<HTMLElement>("[data-step-text]");
-        const meta = curr.querySelector<HTMLElement>("[data-step-meta]");
+        for (let i = 1; i < panels.length; i++) {
+          const prev = panels[i - 1];
+          const curr = panels[i];
+          const fadeStart = i - CROSSFADE_SPAN;
 
-        if (image) {
           tl.to(
-            image,
+            prev,
             {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: CROSSFADE_SPAN * 0.9,
-              ease: "power3.out",
+              autoAlpha: 0,
+              duration: CROSSFADE_SPAN,
+              ease: "power2.inOut",
+              onStart: () => setPanelVisible(prev, false),
             },
-            fadeStart + 0.03,
+            fadeStart,
           );
-        }
-        if (text) {
-          tl.to(
-            text,
-            { opacity: 1, y: 0, duration: CROSSFADE_SPAN * 0.85, ease: "power3.out" },
-            fadeStart + 0.06,
-          );
-        }
-        if (meta) {
-          tl.to(
-            meta,
-            { opacity: 1, x: 0, duration: CROSSFADE_SPAN * 0.75, ease: "power2.out" },
-            fadeStart + 0.04,
-          );
-        }
-      }
 
-      if (panels.length > 0) {
-        tl.to({}, { duration: 1 - CROSSFADE_SPAN * 0.5 }, panels.length - 1);
-      }
-    }, section);
+          tl.fromTo(
+            curr,
+            { autoAlpha: 0 },
+            {
+              autoAlpha: 1,
+              duration: CROSSFADE_SPAN,
+              ease: "power2.inOut",
+              onStart: () => setPanelVisible(curr, true),
+            },
+            fadeStart,
+          );
 
-    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+          const image = curr.querySelector<HTMLElement>("[data-step-image]");
+          const text = curr.querySelector<HTMLElement>("[data-step-text]");
+          const meta = curr.querySelector<HTMLElement>("[data-step-meta]");
+
+          if (image) {
+            tl.to(
+              image,
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: CROSSFADE_SPAN * 0.9,
+                ease: "power3.out",
+              },
+              fadeStart + 0.03,
+            );
+          }
+          if (text) {
+            tl.to(
+              text,
+              { opacity: 1, y: 0, duration: CROSSFADE_SPAN * 0.85, ease: "power3.out" },
+              fadeStart + 0.06,
+            );
+          }
+          if (meta) {
+            tl.to(
+              meta,
+              { opacity: 1, x: 0, duration: CROSSFADE_SPAN * 0.75, ease: "power2.out" },
+              fadeStart + 0.04,
+            );
+          }
+        }
+
+        if (panels.length > 0) {
+          tl.to({}, { duration: 1 - CROSSFADE_SPAN * 0.5 }, panels.length - 1);
+        }
+      }, section);
+
+      if (layout !== "desktop") {
+        registerWorkWithUsScrollTrigger(null);
+      }
+    };
+
+    setupScrollFx();
+
+    const onLayoutModeChange = () => setupScrollFx();
+    const mobileMq = window.matchMedia(MOBILE_LAYOUT_MQ);
+    const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mobileMq.addEventListener("change", onLayoutModeChange);
+    reducedMq.addEventListener("change", onLayoutModeChange);
+
     const refresh = () => {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
@@ -338,11 +369,12 @@ export function WorkWithUsSection() {
     return () => {
       if (resizeTimer) clearTimeout(resizeTimer);
       window.removeEventListener("resize", refresh);
-      scrollTriggerRef.current = null;
-      registerWorkWithUsScrollTrigger(null);
-      ctx.revert();
+      mobileMq.removeEventListener("change", onLayoutModeChange);
+      reducedMq.removeEventListener("change", onLayoutModeChange);
+      teardownScrollFx();
+      ScrollTrigger.refresh();
     };
-  }, [isMobileLayout, isReducedLayout, scrollPanels, stepCount]);
+  }, [scrollPanels, stepCount]);
 
   return (
     <section
