@@ -90,7 +90,7 @@ export const es = {
     showDetails: "Mostrar detalles del proyecto",
     hideDetails: "Ocultar detalles del proyecto",
     lightboxGalleryLabel: "Galería de imágenes: {{name}}",
-    viewCaseStudy: "Ver caso de estudio",
+    viewCaseStudy: "Detalles del proyecto",
     closeGallery: "Cerrar galería",
     close: "Cerrar",
     prevImage: "Imagen anterior",
@@ -99,26 +99,38 @@ export const es = {
       "1": {
         description:
           "Ecommerce desarrollado para una marca argentina de indumentaria orientada a la venta online de ropa. La plataforma incorpora catálogo de productos, base de datos, servidor, carrito de compras y pagos online, ofreciendo una experiencia clara para clientes y administradores.",
+        caseStudyDescription:
+          "La marca vendía por redes y mensajes sin un canal propio que transmitiera identidad ni simplificara el checkout. Diseñamos una tienda online con catálogo, carrito y pagos integrados para que el equipo gestione stock y pedidos desde un solo panel, sin perder la estética de la marca.",
       },
       "2": {
         description:
           "Sistema web administrativo desarrollado para una organización financiera internacional con base en las British Virgin Islands. La plataforma centraliza la gestión de eventos, noticias, newsletters, membresías, miembros, legislación y publicaciones, ofreciendo una experiencia completa tanto para usuarios como para administradores.",
+        caseStudyDescription:
+          "La organización publicaba eventos, noticias y documentación con procesos manuales y herramientas desconectadas. Centralizamos todo en un panel administrativo único, con flujos claros para editar contenido y mantener actualizada la información visible para socios y visitantes.",
       },
       "3": {
         description:
           "Tienda virtual y sitio web desarrollado para un emprendimiento argentino especializado en filtros de agua para cultivo. La plataforma presenta sus productos de forma clara y profesional, destacando la importancia de la calidad del agua en el crecimiento, cuidado y mantenimiento de cultivos.",
+        caseStudyDescription:
+          "El emprendimiento necesitaba explicar por qué importa la calidad del agua en cultivo y convertir esa explicación en ventas online. Creamos un sitio y tienda que presenta los filtros con claridad, guía al comprador y habilita checkout sin fricción para el equipo argentino.",
       },
       "4": {
         description:
           "Plataforma educativa con inteligencia artificial integrada desarrollada para una institución vinculada a China y Estados Unidos. El sistema permite que docentes creen tareas y que alumnos suban videos hablando en inglés para recibir feedback automático orientado a mejorar su desempeño oral.",
+        caseStudyDescription:
+          "Docentes y alumnos carecían de una forma escalable de practicar inglés hablado con retroalimentación útil entre China y Estados Unidos. La plataforma permite crear tareas, subir videos y recibir feedback automático con IA, alineado al flujo educativo de cada institución.",
       },
       "5": {
         description:
           "Plataforma educativa internacional desarrollada para un equipo con presencia en China, Japón y Estados Unidos. El sistema centraliza cursos, webinars, seminarios y contenido sobre nutrición, vida fitness y formación profesional, ofreciendo una experiencia organizada para usuarios y administradores.",
+        caseStudyDescription:
+          "El equipo distribuía formación en nutrición y fitness en varios formatos sin un hub coherente para audiencias de distintos países. Desarrollamos una plataforma que organiza cursos, seminarios y webinars en un solo lugar, con administración clara para equipos en China, Japón y EE. UU.",
       },
       "6": {
         description:
           "Ecommerce desarrollado para un emprendimiento argentino dedicado a la venta de objetos impresos en 3D. La plataforma cuenta con catálogo de productos, base de datos, servidor, carrito de compras y pagos online, permitiendo gestionar y vender productos de forma profesional.",
+        caseStudyDescription:
+          "El negocio vendía piezas impresas en 3D de forma informal, sin catálogo digital ni cobros online estructurados. Implementamos ecommerce con catálogo, stock y pagos integrados para profesionalizar las ventas y liberar tiempo al fundador argentino.",
       },
     },
   },

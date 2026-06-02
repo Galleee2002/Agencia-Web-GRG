@@ -6,7 +6,7 @@ import { SITE_NAME } from "@/config/site";
 import {
   getAllProjectSlugs,
   getProjectBySlug,
-  getProjectDescriptionEs,
+  getProjectCaseStudyDescriptionEs,
 } from "@/lib/projects/projectBySlug";
 import { buildProjectJsonLd } from "@/lib/seo/projectJsonLd";
 
@@ -31,7 +31,7 @@ export async function generateMetadata({
     };
   }
 
-  const description = getProjectDescriptionEs(project.id);
+  const description = getProjectCaseStudyDescriptionEs(project.id);
   const title = `${project.name} — caso de estudio`;
 
   return {
@@ -61,7 +61,7 @@ export default async function ProjectPage({ params }: PageProps) {
     notFound();
   }
 
-  const description = getProjectDescriptionEs(project.id);
+  const description = getProjectCaseStudyDescriptionEs(project.id);
   const jsonLd = buildProjectJsonLd(project, description);
 
   return (

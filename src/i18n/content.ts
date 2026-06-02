@@ -135,12 +135,18 @@ export function getWorkWithUsSteps(t: TranslateFn): WorkWithUsStep[] {
 }
 
 export function getPortfolioProjects(t: TranslateFn): PortfolioProject[] {
-  return portfolioProjectsBase.map((project) => ({
-    ...project,
-    description: t(
-      `projects.items.${String(project.id)}.description` as TranslationKey,
-    ),
-  }));
+  return portfolioProjectsBase.map((project) => {
+    const id = String(project.id);
+    return {
+      ...project,
+      description: t(
+        `projects.items.${id}.description` as TranslationKey,
+      ),
+      caseStudyDescription: t(
+        `projects.items.${id}.caseStudyDescription` as TranslationKey,
+      ),
+    };
+  });
 }
 
 export type DisplayLinePart = { text: string; accent?: boolean };

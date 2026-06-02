@@ -27,3 +27,9 @@ export function getProjectDescriptionEs(projectId: number): string {
   const key = String(projectId) as keyof typeof es.projects.items;
   return es.projects.items[key]?.description ?? "";
 }
+
+/** Problema y solución en español para la página de detalle y metadata. */
+export function getProjectCaseStudyDescriptionEs(projectId: number): string {
+  const key = String(projectId) as keyof typeof es.projects.items;
+  return es.projects.items[key]?.caseStudyDescription ?? "";
+}

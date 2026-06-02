@@ -47,31 +47,9 @@ export function ProjectCaseStudyPage({ slug }: ProjectCaseStudyPageProps) {
           <Link href="/#proyectos" className={styles.backLink}>
             ← {t("legal.backProjects")}
           </Link>
-          <Link href="/" className={styles.backLink}>
-            {t("legal.backHome")}
-          </Link>
         </nav>
 
         <h1 className={styles.title}>{project.name}</h1>
-        <p className={styles.description}>{project.description}</p>
-
-        <dl className={styles.meta}>
-          <div>
-            <dt className={styles.metaLabel}>{t("projectPage.clientLabel")}</dt>
-            <dd>{getClientLabel(project.clientType)}</dd>
-          </div>
-        </dl>
-
-        <div>
-          <p className={styles.metaLabel}>{t("projectPage.technologiesLabel")}</p>
-          <ul className={styles.techList}>
-            {project.technologies.map((tech) => (
-              <li key={tech} className={styles.techItem}>
-                {tech}
-              </li>
-            ))}
-          </ul>
-        </div>
 
         <section
           className={styles.gallery}
@@ -105,9 +83,25 @@ export function ProjectCaseStudyPage({ slug }: ProjectCaseStudyPageProps) {
           )}
         </section>
 
-        <Link href="/#contact" className={styles.cta}>
-          {t("legal.contactCta")}
-        </Link>
+        <p className={styles.description}>{project.caseStudyDescription}</p>
+
+        <dl className={styles.meta}>
+          <div>
+            <dt className={styles.metaLabel}>{t("projectPage.clientLabel")}</dt>
+            <dd>{getClientLabel(project.clientType)}</dd>
+          </div>
+        </dl>
+
+        <div className={styles.technologies}>
+          <p className={styles.metaLabel}>{t("projectPage.technologiesLabel")}</p>
+          <ul className={styles.techList}>
+            {project.technologies.map((tech) => (
+              <li key={tech} className={styles.techItem}>
+                {tech}
+              </li>
+            ))}
+          </ul>
+        </div>
       </article>
     </div>
   );

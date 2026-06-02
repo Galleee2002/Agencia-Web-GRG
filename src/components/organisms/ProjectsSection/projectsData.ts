@@ -7,7 +7,10 @@ export interface PortfolioProject {
   /** Acento visual del slide (1–6), enlazado a selectores `[data-project-theme]` en SCSS */
   themeId: 1 | 2 | 3 | 4 | 5 | 6;
   name: string;
+  /** Resumen del producto en carrusel y listados. */
   description: string;
+  /** Problema del cliente y solución en la página de detalle del proyecto. */
+  caseStudyDescription: string;
   clientType: ProjectClientType;
   technologies: string[];
   /**
@@ -18,7 +21,10 @@ export interface PortfolioProject {
   href: string;
 }
 
-export type PortfolioProjectBase = Omit<PortfolioProject, "description">;
+export type PortfolioProjectBase = Omit<
+  PortfolioProject,
+  "description" | "caseStudyDescription"
+>;
 
 const PROJECT_IMAGES_BASE = "/projects/resize-imgs";
 

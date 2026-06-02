@@ -92,7 +92,7 @@ export const en = {
     showDetails: "Show project details",
     hideDetails: "Hide project details",
     lightboxGalleryLabel: "Image gallery: {{name}}",
-    viewCaseStudy: "View case study",
+    viewCaseStudy: "Project details",
     closeGallery: "Close gallery",
     close: "Close",
     prevImage: "Previous image",
@@ -101,26 +101,38 @@ export const en = {
       "1": {
         description:
           "E-commerce built for an Argentine apparel brand focused on online clothing sales. The platform includes a product catalog, database, server, shopping cart, and online payments, offering a clear experience for customers and administrators.",
+        caseStudyDescription:
+          "The brand sold through social media and DMs without a owned channel that conveyed identity or streamlined checkout. We built an online store with catalog, cart, and integrated payments so the team manages stock and orders from one panel while keeping the brand look and feel.",
       },
       "2": {
         description:
           "Administrative web system built for an international financial organization based in the British Virgin Islands. The platform centralizes events, news, newsletters, memberships, members, legislation, and publications, offering a complete experience for users and administrators.",
+        caseStudyDescription:
+          "The organization published events, news, and documentation through manual workflows and disconnected tools. We centralized everything in a single admin panel with clear flows to edit content and keep member- and visitor-facing information up to date.",
       },
       "3": {
         description:
           "Online store and website built for an Argentine venture specialized in water filters for cultivation. The platform presents its products clearly and professionally, highlighting the importance of water quality in growing, caring for, and maintaining crops.",
+        caseStudyDescription:
+          "The venture needed to explain why water quality matters for cultivation and turn that message into online sales. We created a site and store that present filters clearly, guide buyers, and enable frictionless checkout for the Argentine team.",
       },
       "4": {
         description:
           "Educational platform with integrated artificial intelligence built for an institution linked to China and the United States. The system lets teachers create assignments and students upload videos speaking English to receive automatic feedback aimed at improving oral performance.",
+        caseStudyDescription:
+          "Teachers and students lacked a scalable way to practice spoken English with useful feedback across China and the United States. The platform lets them create assignments, upload videos, and receive AI-powered feedback aligned with each institution's educational workflow.",
       },
       "5": {
         description:
           "International educational platform built for a team with presence in China, Japan, and the United States. The system centralizes courses, webinars, seminars, and content on nutrition, fitness lifestyle, and professional training, offering an organized experience for users and administrators.",
+        caseStudyDescription:
+          "The team distributed nutrition and fitness training across formats without a coherent hub for audiences in different countries. We built a platform that organizes courses, seminars, and webinars in one place, with clear administration for teams in China, Japan, and the U.S.",
       },
       "6": {
         description:
           "E-commerce built for an Argentine venture dedicated to selling 3D-printed objects. The platform includes a product catalog, database, server, shopping cart, and online payments, enabling professional product management and sales.",
+        caseStudyDescription:
+          "The business sold 3D-printed pieces informally, without a digital catalog or structured online payments. We implemented e-commerce with catalog, inventory, and integrated payments to professionalize sales and free up time for the Argentine founder.",
       },
     },
   },
