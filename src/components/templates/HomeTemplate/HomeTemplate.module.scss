@@ -7,6 +7,12 @@
   min-width: 0;
 }
 
+@media (max-width: 899px) {
+  .container {
+    min-height: auto;
+  }
+}
+
 /* Apila el hero y el overlay del menú en una celda. La barra superior (logo + CTA + menú) es position:fixed en StaggeredMenu. */
 .pageHeroStack {
   display: grid;
