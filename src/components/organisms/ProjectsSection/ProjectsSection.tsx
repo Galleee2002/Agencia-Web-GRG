@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ChevronUp,
   Globe,
+  Plus,
   X,
 } from "lucide-react";
 import { gsap } from "gsap";
@@ -21,6 +22,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
@@ -105,11 +107,24 @@ const GalleryImage = memo(function GalleryImage({
 });
 
 const GALLERY_SLICES = 3;
+const PROJECTS_MOBILE_MQ = "(max-width: 899px)";
 
 const SLIDE_OUT_DURATION = 0.34;
 const SLIDE_IN_DURATION = 0.5;
+const SLIDE_OFFSET_PX = 32;
+const SWIPE_THRESHOLD_PX = 50;
 const LIGHTBOX_FADE_OUT = 0.14;
 const LIGHTBOX_FADE_IN = 0.2;
+
+function subscribeProjectsMobileMq(onStoreChange: () => void) {
+  const mq = window.matchMedia(PROJECTS_MOBILE_MQ);
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getProjectsMobileMqSnapshot() {
+  return window.matchMedia(PROJECTS_MOBILE_MQ).matches;
+}
 
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
@@ -119,9 +134,11 @@ function prefersReducedMotion(): boolean {
 const ShowcaseCard = memo(function ShowcaseCard({
   project,
   headingId,
+  suppressEntranceMotion = false,
 }: {
   project: PortfolioProject;
   headingId: string;
+  suppressEntranceMotion?: boolean;
 }) {
   const { t } = useI18n();
   const getClientLabel = useClientLabel();
@@ -151,9 +168,25 @@ const ShowcaseCard = memo(function ShowcaseCard({
   const showcaseStageRef = useRef<HTMLDivElement>(null);
   const lightboxLabelId = useId();
 
+  const isMobileDetails = useSyncExternalStore(
+    subscribeProjectsMobileMq,
+    getProjectsMobileMqSnapshot,
+    () => false,
+  );
+
+  useLayoutEffect(() => {
+    if (isMobileDetails) {
+      setDetailsCompact(true);
+      setOverlayHidden(false);
+    } else {
+      setDetailsCompact(false);
+      setOverlayHidden(false);
+    }
+  }, [isMobileDetails, project.id]);
+
   useLayoutEffect(() => {
     const stage = showcaseStageRef.current;
-    if (!stage || prefersReducedMotion()) return;
+    if (!stage || prefersReducedMotion() || suppressEntranceMotion) return;
 
     const ctx = gsap.context(() => {
       const targets = stage.querySelectorAll<HTMLElement>("[data-fade-in]");
@@ -175,7 +208,7 @@ const ShowcaseCard = memo(function ShowcaseCard({
     return () => {
       ctx.revert();
     };
-  }, [project.id]);
+  }, [project.id, suppressEntranceMotion]);
 
   const openLightbox = useCallback((index: number) => {
     lightboxReturnFocusRef.current =
@@ -327,6 +360,18 @@ const ShowcaseCard = memo(function ShowcaseCard({
     e.stopPropagation();
     setDetailsCompact(true);
   }, []);
+
+  const toggleDetailsMobile = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (detailsCompact) {
+        expandDetails();
+      } else {
+        setDetailsCompact(true);
+      }
+    },
+    [detailsCompact, expandDetails],
+  );
 
   const handleDetailsCardClick = useCallback(
     (e: React.MouseEvent) => {
@@ -496,12 +541,15 @@ const ShowcaseCard = memo(function ShowcaseCard({
             className={clsx(
               styles.detailsCard,
               detailsCompact && styles.detailsCardCompact,
+              isMobileDetails && styles.detailsCardMobileLayout,
             )}
-            role={detailsCompact ? "button" : undefined}
-            tabIndex={detailsCompact ? 0 : undefined}
+            role={detailsCompact && !isMobileDetails ? "button" : undefined}
+            tabIndex={detailsCompact && !isMobileDetails ? 0 : undefined}
             aria-expanded={!detailsCompact}
             aria-label={
-              detailsCompact ? t("projects.showDetails") : undefined
+              detailsCompact && !isMobileDetails
+                ? t("projects.showDetails")
+                : undefined
             }
             onClick={handleDetailsCardClick}
             onKeyDown={handleDetailsCardKeyDown}
@@ -511,9 +559,11 @@ const ShowcaseCard = memo(function ShowcaseCard({
                 <h3 id={titleId} className={styles.projectNameCompact}>
                   {project.name}
                 </h3>
-                <span className={styles.detailsChevronIcon} aria-hidden>
-                  <ChevronUp size={22} strokeWidth={2} />
-                </span>
+                {!isMobileDetails ? (
+                  <span className={styles.detailsChevronIcon} aria-hidden>
+                    <ChevronUp size={22} strokeWidth={2} />
+                  </span>
+                ) : null}
               </div>
             ) : (
               <>
@@ -541,18 +591,41 @@ const ShowcaseCard = memo(function ShowcaseCard({
                 >
                   {t("projects.viewCaseStudy")}
                 </Link>
-                <button
-                  type="button"
-                  className={styles.collapseDetailsBtn}
-                  onClick={collapseDetails}
-                  aria-expanded
-                  aria-controls={titleId}
-                  aria-label={t("projects.hideDetails")}
-                >
-                  <ChevronDown size={22} strokeWidth={2} aria-hidden />
-                </button>
+                {!isMobileDetails ? (
+                  <button
+                    type="button"
+                    className={styles.collapseDetailsBtn}
+                    onClick={collapseDetails}
+                    aria-expanded="true"
+                    aria-controls={titleId}
+                    aria-label={t("projects.hideDetails")}
+                  >
+                    <ChevronDown size={22} strokeWidth={2} aria-hidden />
+                  </button>
+                ) : null}
               </>
             )}
+            {isMobileDetails ? (
+              <button
+                type="button"
+                className={styles.detailsCardToggle}
+                onClick={toggleDetailsMobile}
+                aria-expanded={!detailsCompact}
+                aria-controls={titleId}
+                aria-label={
+                  detailsCompact
+                    ? t("projects.showDetails")
+                    : t("projects.hideDetails")
+                }
+              >
+                <Plus
+                  className={styles.detailsToggleIcon}
+                  size={22}
+                  strokeWidth={2}
+                  aria-hidden
+                />
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
@@ -560,6 +633,93 @@ const ShowcaseCard = memo(function ShowcaseCard({
     </article>
   );
 });
+
+function useProjectsMobileSwipe(
+  targetRef: RefObject<HTMLElement | null>,
+  enabled: boolean,
+  onSwipe: (delta: -1 | 1) => void,
+  isAnimatingRef: RefObject<boolean>,
+) {
+  const onSwipeRef = useRef(onSwipe);
+  onSwipeRef.current = onSwipe;
+
+  useEffect(() => {
+    if (!enabled) return;
+    const el = targetRef.current;
+    if (!el) return;
+
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+    let axisLocked = false;
+
+    const resetTracking = () => {
+      tracking = false;
+      axisLocked = false;
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (isAnimatingRef.current || e.touches.length !== 1) return;
+
+      const target = e.target;
+      if (target instanceof Element) {
+        if (target.closest("button, a, input, textarea, select")) return;
+      }
+
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      tracking = true;
+      axisLocked = false;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!tracking || axisLocked || e.touches.length !== 1) return;
+
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+
+      if (Math.abs(dy) > Math.abs(dx)) {
+        resetTracking();
+        return;
+      }
+
+      axisLocked = true;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!tracking) return;
+      resetTracking();
+
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
+      if (Math.abs(dx) < Math.abs(dy)) return;
+
+      if (dx < 0) onSwipeRef.current(1);
+      else onSwipeRef.current(-1);
+    };
+
+    const onTouchCancel = () => {
+      resetTracking();
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: true });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchCancel, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchCancel);
+    };
+  }, [enabled, isAnimatingRef, targetRef]);
+}
 
 function useProjectsScrollPerf(sectionRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -603,7 +763,15 @@ export function ProjectsSection() {
   const count = projects.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const introRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
   const sliderMainRef = useRef<HTMLDivElement>(null);
+  const slideAnimatingRef = useRef(false);
+
+  const isMobileCarousel = useSyncExternalStore(
+    subscribeProjectsMobileMq,
+    getProjectsMobileMqSnapshot,
+    () => false,
+  );
 
   useProjectsScrollPerf(sectionRef);
 
@@ -638,7 +806,7 @@ export function ProjectsSection() {
   const changeProject = useCallback(
     (delta: -1 | 1) => {
       const nextIndex = (activeIndex + delta + count) % count;
-      if (nextIndex === activeIndex) return;
+      if (nextIndex === activeIndex || slideAnimatingRef.current) return;
 
       const el = sliderMainRef.current;
       if (!el || prefersReducedMotion()) {
@@ -646,12 +814,49 @@ export function ProjectsSection() {
         return;
       }
 
+      slideAnimatingRef.current = true;
       gsap.killTweensOf(el);
+
+      const finishIn = () => {
+        slideAnimatingRef.current = false;
+      };
+
+      if (isMobileCarousel) {
+        const outX = delta === 1 ? -SLIDE_OFFSET_PX : SLIDE_OFFSET_PX;
+        const inX = delta === 1 ? SLIDE_OFFSET_PX : -SLIDE_OFFSET_PX;
+
+        gsap.to(el, {
+          opacity: 0,
+          x: outX,
+          duration: SLIDE_OUT_DURATION,
+          ease: "power2.in",
+          onInterrupt: finishIn,
+          onComplete: () => {
+            setActiveIndex(nextIndex);
+            gsap.fromTo(
+              el,
+              { opacity: 0, x: inX },
+              {
+                opacity: 1,
+                x: 0,
+                duration: SLIDE_IN_DURATION,
+                ease: "power3.out",
+                clearProps: "transform,opacity",
+                onComplete: finishIn,
+                onInterrupt: finishIn,
+              },
+            );
+          },
+        });
+        return;
+      }
+
       gsap.to(el, {
         opacity: 0,
         y: 16,
         duration: SLIDE_OUT_DURATION,
         ease: "power2.in",
+        onInterrupt: finishIn,
         onComplete: () => {
           setActiveIndex(nextIndex);
           gsap.fromTo(
@@ -662,13 +867,22 @@ export function ProjectsSection() {
               y: 0,
               duration: SLIDE_IN_DURATION,
               ease: "power3.out",
-              clearProps: "transform",
+              clearProps: "transform,opacity",
+              onComplete: finishIn,
+              onInterrupt: finishIn,
             },
           );
         },
       });
     },
-    [activeIndex, count],
+    [activeIndex, count, isMobileCarousel],
+  );
+
+  useProjectsMobileSwipe(
+    shellRef,
+    isMobileCarousel && !prefersReducedMotion(),
+    changeProject,
+    slideAnimatingRef,
   );
 
   const goPrev = () => {
@@ -687,7 +901,11 @@ export function ProjectsSection() {
       aria-labelledby={headingId}
       data-project-theme={active.themeId}
     >
-      <div className={styles.shell}>
+      <div
+        ref={shellRef}
+        className={styles.shell}
+        data-swipe-carousel={isMobileCarousel ? "true" : undefined}
+      >
         <div className={styles.shellIntro}>
           <header ref={introRef} className={styles.header} data-intro-display>
             <p className={styles.introEyebrow}>{t("projects.eyebrow")}</p>
@@ -728,6 +946,7 @@ export function ProjectsSection() {
                   key={active.id}
                   project={active}
                   headingId={baseId}
+                  suppressEntranceMotion={isMobileCarousel}
                 />
               </div>
 

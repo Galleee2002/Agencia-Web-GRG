@@ -111,7 +111,9 @@ $grg-cyan-bright: #7ae0ff;
   }
 
   .detailsChevronIcon,
-  .collapseDetailsBtn {
+  .collapseDetailsBtn,
+  .detailsCardToggle,
+  .detailsToggleIcon {
     color: color-mix(in srgb, var(--site-ink-graphite) 82%, transparent);
   }
 }
@@ -420,6 +422,10 @@ $grg-cyan-bright: #7ae0ff;
     padding-top: 0;
   }
 
+  .shell[data-swipe-carousel="true"] {
+    touch-action: pan-y;
+  }
+
   .displayLinesMobile {
     display: block;
   }
@@ -481,6 +487,10 @@ $grg-cyan-bright: #7ae0ff;
     align-self: center;
     min-height: 52px;
     width: clamp(44px, 11vw, 52px);
+  }
+
+  .sliderMain {
+    overflow: hidden;
   }
 }
 
@@ -837,7 +847,27 @@ $grg-cyan-bright: #7ae0ff;
   transition: color 0.2s ease;
 }
 
+.detailsToggleIcon {
+  display: block;
+  transform-origin: center center;
+  transition:
+    transform 0.48s cubic-bezier(0.33, 1, 0.45, 1),
+    color 0.22s ease;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detailsToggleIcon {
+    transition-duration: 0.01ms;
+    will-change: auto;
+  }
+}
+
 .detailsCardCompact:hover .detailsChevronIcon {
+  color: $grg-cyan-bright;
+}
+
+.detailsCardCompact:hover .detailsToggleIcon {
   color: $grg-cyan-bright;
 }
 
@@ -888,7 +918,43 @@ $grg-cyan-bright: #7ae0ff;
   color: $grg-cyan-bright;
 }
 
+.collapseDetailsBtn:hover .detailsToggleIcon {
+  color: inherit;
+}
+
 .collapseDetailsBtn:focus-visible {
+  outline: none;
+  color: $grg-cyan-bright;
+  box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.45);
+  border-radius: 4px;
+}
+
+.detailsCardToggle {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 11px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(37, 37, 37, 0.65);
+  cursor: pointer;
+  transition: color 0.22s ease;
+}
+
+.detailsCardToggle[aria-expanded="true"] .detailsToggleIcon {
+  transform: rotate(45deg);
+}
+
+.detailsCardToggle:hover {
+  color: $grg-cyan-bright;
+}
+
+.detailsCardToggle:focus-visible {
   outline: none;
   color: $grg-cyan-bright;
   box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.45);
@@ -941,12 +1007,60 @@ $grg-cyan-bright: #7ae0ff;
     border: 1px solid var(--projects-border);
   }
 
-  .detailsCard:not(.detailsCardCompact) {
+  .detailsCard:not(.detailsCardCompact):not(.detailsCardMobileLayout) {
     padding-bottom: clamp(40px, 4vw, 48px);
   }
 
   .detailsCardCompact {
     max-width: min(100%, 400px);
+  }
+
+  .detailsCardMobileLayout {
+    --details-card-pad-x: clamp(12px, 1.6vw, 16px);
+    --details-card-pad-y: clamp(10px, 1.4vw, 14px);
+    --details-toggle-size: 44px;
+    --details-mobile-title-size: clamp(1.125rem, 4.2vw + 0.6rem, 1.3125rem);
+    padding: var(--details-card-pad-y) var(--details-card-pad-x) !important;
+    padding-inline-end: calc(
+      var(--details-card-pad-x) + var(--details-toggle-size)
+    ) !important;
+    gap: clamp(10px, 2.5vw, 14px);
+    transition:
+      padding 0.42s cubic-bezier(0.33, 1, 0.53, 1),
+      gap 0.42s cubic-bezier(0.33, 1, 0.53, 1),
+      max-width 0.42s cubic-bezier(0.33, 1, 0.53, 1),
+      background 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .detailsCardMobileLayout:not(.detailsCardCompact) {
+    padding-block-end: calc(
+      var(--details-card-pad-y) + var(--details-toggle-size)
+    ) !important;
+  }
+
+  .detailsCardMobileLayout.detailsCardCompact {
+    gap: 0;
+    padding-block-end: var(--details-card-pad-y) !important;
+    min-height: calc(
+      var(--details-card-pad-y) * 2 + var(--details-toggle-size)
+    );
+  }
+
+  .detailsCardMobileLayout .detailsCompactBar {
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: var(--details-toggle-size);
+    padding-inline-end: 0;
+  }
+
+  .detailsCardToggle {
+    right: var(--details-card-pad-x);
+    bottom: var(--details-card-pad-y);
+    width: var(--details-toggle-size);
+    height: var(--details-toggle-size);
+    min-width: var(--details-toggle-size);
+    min-height: var(--details-toggle-size);
   }
 }
 
@@ -1267,6 +1381,15 @@ $grg-cyan-bright: #7ae0ff;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.15;
+}
+
+@media (max-width: 899px) {
+  .detailsCardMobileLayout .projectName,
+  .detailsCardMobileLayout .projectNameCompact {
+    font-size: var(--details-mobile-title-size, clamp(1.125rem, 4.2vw + 0.6rem, 1.3125rem));
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
 }
 
 .detailsCard .projectDescription {
