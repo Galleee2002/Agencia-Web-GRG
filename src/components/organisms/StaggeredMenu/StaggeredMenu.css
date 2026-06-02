@@ -1029,6 +1029,14 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
     box-sizing: border-box;
   }
 
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-list[data-numbering] .sm-panel-item::after {
+    display: none !important;
+  }
+
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-item {
+    padding-right: 0;
+  }
+
   .staggered-menu-wrapper[data-sm-animating] .staggered-menu-panel {
     will-change: opacity, transform;
   }
