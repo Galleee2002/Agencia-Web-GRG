@@ -727,9 +727,10 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   visibility: hidden;
 }
 
-/* Cerrado: no interceptar rueda/touch; el panel queda fuera de pantalla con GSAP (xPercent). */
+/* Cerrado: oculto por atributo (evita flash en móvil si GSAP tarda o revierte). */
 .staggered-menu-panel[aria-hidden='true'] {
   pointer-events: none;
+  visibility: hidden;
 }
 
 .staggered-menu-wrapper.fixed-wrapper .staggered-menu-panel {
@@ -994,12 +995,43 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 }
 
 @media (max-width: 1024px) {
-  .staggered-menu-panel {
-    width: 100%;
-    left: 0;
-    right: 0;
+  .staggered-menu-wrapper.fixed-wrapper .sm-prelayers {
+    display: none !important;
   }
 
+  .staggered-menu-panel {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    --sm-panel-bg: var(--site-menu-panel-bg, #ffffff);
+    border-left: none;
+    border-right: none;
+    box-sizing: border-box;
+  }
+
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-inner,
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-nav-mobile,
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-list,
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-itemWrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    box-sizing: border-box;
+  }
+
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-item,
+  .staggered-menu-wrapper.fixed-wrapper .sm-panel-itemLabel {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .staggered-menu-wrapper[data-sm-animating] .staggered-menu-panel {
+    will-change: opacity, transform;
+  }
 }
 
 /* Móvil / tablet: logo en pill arriba; dock inferior (iconos, sin fondo de barra) */
