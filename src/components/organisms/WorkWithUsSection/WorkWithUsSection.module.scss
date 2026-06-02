@@ -256,17 +256,19 @@ $pure-white: #ffffff;
 
 .sectionMobile {
   overflow-x: clip;
+  overflow-anchor: none;
 }
 
 .viewportMobile {
   min-height: auto;
   width: 100%;
   padding-inline: 0;
+  /* rem en lugar de vh: la barra de URL no debe redimensionar el padding al scrollear. */
   padding-block: max(
-      calc(var(--site-sticky-nav-offset) + clamp(16px, 2.5vh, 24px)),
-      clamp(28px, 4vh, 40px)
+      calc(var(--site-sticky-nav-offset) + 1rem),
+      1.75rem
     )
-    clamp(32px, 5vh, 48px);
+    2rem;
 }
 
 .sectionMobile .sectionHeader {
@@ -291,7 +293,7 @@ $pure-white: #ffffff;
   flex-direction: column;
   gap: 0;
   width: 100%;
-  padding-block-end: clamp(18vh, 22vh, 28vh);
+  padding-block-end: clamp(5rem, 6rem, 7rem);
 }
 
 .sectionMobile .stepMobile {
@@ -306,10 +308,10 @@ $pure-white: #ffffff;
   width: 100%;
   max-width: none;
   min-height: calc(100vh - var(--wwu-mobile-sticky-top));
-  min-height: calc(100dvh - var(--wwu-mobile-sticky-top));
+  min-height: calc(100svh - var(--wwu-mobile-sticky-top));
   margin-inline: 0;
   margin-bottom: 0;
-  padding-block: clamp(16px, 3vh, 28px);
+  padding-block: clamp(1rem, 1.25rem, 1.75rem);
   padding-inline: 0;
   overflow: hidden;
   border-radius: 0;
@@ -338,11 +340,11 @@ $pure-white: #ffffff;
 .sectionMobile .stepImageFrame {
   width: min(100%, 20rem);
   max-width: 20rem;
-  max-height: min(40dvh, 340px);
+  max-height: min(40svh, 340px);
 }
 
 .sectionMobile .stepImageRight .stepImageFrame {
-  max-height: min(40dvh, 340px);
+  max-height: min(40svh, 340px);
 }
 
 @media (max-width: 808px) {
@@ -418,7 +420,7 @@ $pure-white: #ffffff;
   .stepImageFrame {
     width: min(100%, 20rem);
     max-width: 20rem;
-    max-height: min(42vh, 380px);
+    max-height: min(42svh, 380px);
     margin-inline: auto;
   }
 
@@ -427,7 +429,7 @@ $pure-white: #ffffff;
   }
 
   .stepImageRight .stepImageFrame {
-    max-height: min(44vh, 400px);
+    max-height: min(44svh, 400px);
     width: min(100%, 20rem);
     max-width: 20rem;
     transform: none;
