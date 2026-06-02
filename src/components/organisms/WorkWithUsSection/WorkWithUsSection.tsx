@@ -6,7 +6,7 @@ import {
   useCallback,
   useLayoutEffect,
   useRef,
-  useState,
+  useSyncExternalStore,
 } from "react";
 
 import { prefersReducedMotion } from "@/lib/smoothScroll";
@@ -22,6 +22,55 @@ ensureGsapPlugins();
 const SCROLL_PER_STEP_VH = 110;
 /** Porción de cada tramo dedicada al crossfade (scroll y visual van juntos) */
 const CROSSFADE_SPAN = 0.42;
+const MOBILE_LAYOUT_MQ = "(max-width: 808px)";
+
+type WorkWithUsLayoutMode = "desktop" | "mobile" | "reduced";
+
+function getWorkWithUsLayoutMode(): WorkWithUsLayoutMode {
+  if (typeof window === "undefined") return "desktop";
+  if (prefersReducedMotion()) return "reduced";
+  if (window.matchMedia(MOBILE_LAYOUT_MQ).matches) return "mobile";
+  return "desktop";
+}
+
+function subscribeWorkWithUsLayoutMode(onStoreChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  const mobileMq = window.matchMedia(MOBILE_LAYOUT_MQ);
+  const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const notify = () => onStoreChange();
+  mobileMq.addEventListener("change", notify);
+  reducedMq.addEventListener("change", notify);
+
+  return () => {
+    mobileMq.removeEventListener("change", notify);
+    reducedMq.removeEventListener("change", notify);
+  };
+}
+
+function setupMobileStackReveal(panels: HTMLElement[]) {
+  panels.forEach((panel) => {
+    setPanelVisible(panel, true);
+    setPanelContentVisible(panel);
+
+    gsap.fromTo(
+      panel,
+      { y: 72 },
+      {
+        y: 0,
+        duration: 0.65,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: panel,
+          start: "top 94%",
+          toggleActions: "play none none none",
+          once: true,
+        },
+      },
+    );
+  });
+}
 
 function stepProgressForIndex(index: number, stepCount: number): number {
   if (stepCount <= 1) return 0;
@@ -55,10 +104,13 @@ export function WorkWithUsSection() {
   const pinRef = useRef<HTMLDivElement>(null);
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(
-    () =>
-      typeof window !== "undefined" && prefersReducedMotion(),
+  const layoutMode = useSyncExternalStore(
+    subscribeWorkWithUsLayoutMode,
+    getWorkWithUsLayoutMode,
+    () => "desktop" as WorkWithUsLayoutMode,
   );
+  const isMobileLayout = layoutMode === "mobile";
+  const isReducedLayout = layoutMode === "reduced";
 
   const setStepRef = useCallback(
     (index: number) => (el: HTMLElement | null) => {
@@ -72,15 +124,6 @@ export function WorkWithUsSection() {
     const pin = pinRef.current;
     if (!section || !pin) return;
 
-    const reduced = prefersReducedMotion();
-
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onMqChange = () => {
-      setReducedMotion(mq.matches);
-      ScrollTrigger.refresh();
-    };
-    mq.addEventListener("change", onMqChange);
-
     const ctx = gsap.context(() => {
       const panels = stepRefs.current.filter(
         (el): el is HTMLElement => el != null,
@@ -88,11 +131,18 @@ export function WorkWithUsSection() {
 
       if (!panels.length) return;
 
-      if (reduced) {
+      if (isReducedLayout) {
         panels.forEach((panel) => {
           gsap.set(panel, { autoAlpha: 1, clearProps: "transform" });
           setPanelContentVisible(panel);
         });
+        registerWorkWithUsScrollTrigger(null);
+        return;
+      }
+
+      if (isMobileLayout) {
+        setupMobileStackReveal(panels);
+        registerWorkWithUsScrollTrigger(null);
         return;
       }
 
@@ -220,13 +270,12 @@ export function WorkWithUsSection() {
 
     return () => {
       if (resizeTimer) clearTimeout(resizeTimer);
-      mq.removeEventListener("change", onMqChange);
       window.removeEventListener("resize", refresh);
       scrollTriggerRef.current = null;
       registerWorkWithUsScrollTrigger(null);
       ctx.revert();
     };
-  }, [scrollPanels, stepCount]);
+  }, [isMobileLayout, isReducedLayout, scrollPanels, stepCount]);
 
   return (
     <section
@@ -234,7 +283,8 @@ export function WorkWithUsSection() {
       id="trabajar-con-nosotros"
       className={cn(
         styles.section,
-        reducedMotion && styles.sectionReduced,
+        isReducedLayout && styles.sectionReduced,
+        isMobileLayout && styles.sectionMobile,
       )}
       aria-labelledby="work-with-us-heading"
     >
@@ -242,7 +292,8 @@ export function WorkWithUsSection() {
         ref={pinRef}
         className={cn(
           styles.viewport,
-          reducedMotion && styles.viewportReduced,
+          isReducedLayout && styles.viewportReduced,
+          isMobileLayout && styles.viewportMobile,
         )}
       >
         <header className={styles.sectionHeader}>
@@ -262,7 +313,7 @@ export function WorkWithUsSection() {
                 step.imageFirst
                   ? styles.stepImageLeft
                   : styles.stepImageRight,
-                reducedMotion && styles.stepReduced,
+                (isReducedLayout || isMobileLayout) && styles.stepMobile,
               )}
               aria-labelledby={`${step.id}-title`}
             >
