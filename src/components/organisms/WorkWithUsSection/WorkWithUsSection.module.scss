@@ -83,7 +83,7 @@ $pure-white: #ffffff;
     color: var(--site-ink-graphite);
   }
 
-  .stepReduced:not(:last-child) {
+  .stepMobile:not(:last-child) {
     border-bottom-color: var(--site-hairline);
   }
 }
@@ -121,12 +121,16 @@ $pure-white: #ffffff;
   }
 }
 
-.stepReduced {
+.stepMobile {
   position: relative;
   inset: auto;
   visibility: visible;
-  min-height: 100vh;
-  min-height: 100dvh;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sectionReduced .stepMobile {
+  min-height: auto;
   padding-block: clamp(40px, 8vh, 80px);
 
   &:not(:last-child) {
@@ -250,10 +254,89 @@ $pure-white: #ffffff;
   color: $muted;
 }
 
+.sectionMobile {
+  overflow-x: clip;
+}
+
+.viewportMobile {
+  min-height: auto;
+  width: 100%;
+  padding-inline: 0;
+  padding-block: max(
+      calc(var(--site-sticky-nav-offset) + clamp(16px, 2.5vh, 24px)),
+      clamp(28px, 4vh, 40px)
+    )
+    clamp(32px, 5vh, 48px);
+}
+
+.sectionMobile .sectionHeader {
+  padding-inline: max(env(safe-area-inset-left, 0px), clamp(16px, 4vw, 24px))
+    max(env(safe-area-inset-right, 0px), clamp(16px, 4vw, 24px));
+}
+
+.sectionMobile .stepsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  padding-block-end: clamp(18vh, 22vh, 28vh);
+}
+
+.sectionMobile .stepMobile {
+  --wwu-mobile-sticky-top: calc(var(--site-sticky-nav-offset, 0px) + 10px);
+
+  position: sticky;
+  top: var(--wwu-mobile-sticky-top);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - var(--wwu-mobile-sticky-top));
+  min-height: calc(100dvh - var(--wwu-mobile-sticky-top));
+  margin-inline: 0;
+  margin-bottom: 0;
+  padding-block: clamp(16px, 3vh, 28px);
+  padding-inline: 0;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      z-index: $i;
+    }
+  }
+}
+
+.sectionMobile .stepGrid {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  padding-inline: max(env(safe-area-inset-left, 0px), clamp(16px, 4vw, 24px))
+    max(env(safe-area-inset-right, 0px), clamp(16px, 4vw, 24px));
+}
+
+.sectionMobile .stepImageFrame {
+  width: min(100%, 20rem);
+  max-width: 20rem;
+  max-height: min(40dvh, 340px);
+}
+
+.sectionMobile .stepImageRight .stepImageFrame {
+  max-height: min(40dvh, 340px);
+}
+
 @media (max-width: 808px) {
   .viewport {
     padding-inline: max(env(safe-area-inset-left, 0px), clamp(16px, 4vw, 24px))
       max(env(safe-area-inset-right, 0px), clamp(16px, 4vw, 24px));
+  }
+
+  .viewportMobile {
+    padding-inline: 0;
   }
 
   .sectionHeader {
@@ -267,7 +350,7 @@ $pure-white: #ffffff;
     text-wrap: balance;
   }
 
-  .step {
+  .step:not(.stepMobile) {
     inset: clamp(40px, 7vh, 56px) 0 0;
     align-items: stretch;
     justify-content: flex-start;
@@ -419,7 +502,7 @@ $pure-white: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .step {
+  .step:not(.stepMobile) {
     opacity: 1;
     pointer-events: auto;
   }
