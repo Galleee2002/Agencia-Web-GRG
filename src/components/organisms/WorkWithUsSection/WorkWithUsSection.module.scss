@@ -270,8 +270,20 @@ $pure-white: #ffffff;
 }
 
 .sectionMobile .sectionHeader {
+  --wwu-mobile-sticky-top: calc(var(--site-sticky-nav-offset, 0px) + 10px);
+
+  position: sticky;
+  top: var(--wwu-mobile-sticky-top);
+  /* Por debajo del paso 03: al subir, la tarjeta tapa el eyebrow (sin animación aparte). */
+  z-index: 10;
   padding-inline: max(env(safe-area-inset-left, 0px), clamp(16px, 4vw, 24px))
     max(env(safe-area-inset-right, 0px), clamp(16px, 4vw, 24px));
+  background: var(--site-surface);
+
+  &[data-wwu-eyebrow-hidden] {
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 .sectionMobile .stepsStack {
@@ -307,6 +319,10 @@ $pure-white: #ffffff;
     &:nth-child(#{$i}) {
       z-index: $i;
     }
+  }
+
+  &:last-child {
+    z-index: 20;
   }
 }
 

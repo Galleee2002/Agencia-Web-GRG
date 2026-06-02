@@ -172,7 +172,12 @@ const StaggeredMenu = ({
       preLayerElsRef.current = preLayers;
 
       const offscreen = position === 'left' ? -100 : 100;
-      gsap.set(panel, { xPercent: offscreen, force3D: true });
+      const { compact: compactMotion } = readMotionProfile();
+      if (compactMotion) {
+        gsap.set(panel, { xPercent: 0, autoAlpha: 0, y: 0, force3D: true });
+      } else {
+        gsap.set(panel, { xPercent: offscreen, autoAlpha: 1, y: 0, force3D: true });
+      }
       panel.classList.add('sm-gsap-ready');
       if (preLayers.length) {
         gsap.set(preLayers, { xPercent: offscreen, opacity: 1, force3D: true });
@@ -190,7 +195,7 @@ const StaggeredMenu = ({
       }
     });
     return () => ctx.revert();
-  }, [menuButtonColor, position]);
+  }, [menuButtonColor, position, mobileBottomNav]);
 
   useEffect(() => {
     const btn = toggleBtnRef.current;
@@ -234,8 +239,12 @@ const StaggeredMenu = ({
     resetPanelMotionState(panel);
 
     const finishInstantOpen = () => {
-      gsap.set(panel, { xPercent: 0, force3D: true });
-      if (layers.length) gsap.set(layers, { xPercent: 0, force3D: true });
+      if (compactMotion) {
+        gsap.set(panel, { xPercent: 0, autoAlpha: 1, y: 0, force3D: true });
+      } else {
+        gsap.set(panel, { xPercent: 0, autoAlpha: 1, force3D: true });
+        if (layers.length) gsap.set(layers, { xPercent: 0, force3D: true });
+      }
       if (itemEls.length) gsap.set(itemEls, { yPercent: 0, force3D: true });
       numberEls.forEach(el => el.classList.add('sm-num-ready'));
       if (socialTitle) gsap.set(socialTitle, { opacity: 1 });
@@ -255,22 +264,23 @@ const StaggeredMenu = ({
     const itemStagger = compactMotion ? 0.05 : 0.07;
     const itemDuration = compactMotion ? 0.58 : 0.72;
 
-    gsap.set(panel, { xPercent: offscreen, force3D: true });
-    if (layers.length) {
-      gsap.set(layers, { xPercent: offscreen, force3D: true });
+    if (compactMotion) {
+      gsap.set(panel, { xPercent: 0, autoAlpha: 1, y: 18, force3D: true });
+    } else {
+      gsap.set(panel, { xPercent: offscreen, force3D: true });
+      if (layers.length) {
+        gsap.set(layers, { xPercent: offscreen, force3D: true });
+      }
     }
 
     const tl = gsap.timeline({ paused: true });
 
     if (compactMotion) {
-      /* Pantalla completa: una sola capa en movimiento evita 3 repaints con blur. */
-      if (layers.length) {
-        gsap.set(layers, { xPercent: 0, force3D: true });
-      }
+      /* Móvil: solo el panel blanco (fade + ligero slide Y), sin prelayers ni slide horizontal. */
       tl.fromTo(
         panel,
-        { xPercent: offscreen },
-        { xPercent: 0, duration: panelDuration, ease: 'power2.out', force3D: true },
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: panelDuration, ease: 'power2.out', force3D: true },
         0
       );
     } else {
@@ -369,7 +379,7 @@ const StaggeredMenu = ({
     const layers = preLayerElsRef.current;
     if (!panel) return;
 
-    const { reduced: reducedMotion } = readMotionProfile();
+    const { reduced: reducedMotion, compact: compactMotion } = readMotionProfile();
     const offscreen = position === 'left' ? -100 : 100;
 
     closeTweenRef.current?.kill();
@@ -377,8 +387,13 @@ const StaggeredMenu = ({
     busyRef.current = true;
 
     const onCloseSettled = () => {
-      if (layers.length) {
-        gsap.set(layers, { xPercent: offscreen, force3D: true });
+      if (compactMotion) {
+        gsap.set(panel, { xPercent: 0, autoAlpha: 0, y: 0, force3D: true });
+      } else {
+        gsap.set(panel, { xPercent: offscreen, force3D: true });
+        if (layers.length) {
+          gsap.set(layers, { xPercent: offscreen, force3D: true });
+        }
       }
       resetPanelMotionState(panel);
       clearPillMorphClose();
@@ -387,9 +402,13 @@ const StaggeredMenu = ({
     };
 
     if (reducedMotion) {
-      gsap.set(panel, { xPercent: offscreen, force3D: true });
-      if (layers.length) {
-        gsap.set(layers, { xPercent: offscreen, force3D: true });
+      if (compactMotion) {
+        gsap.set(panel, { xPercent: 0, autoAlpha: 0, y: 0, force3D: true });
+      } else {
+        gsap.set(panel, { xPercent: offscreen, force3D: true });
+        if (layers.length) {
+          gsap.set(layers, { xPercent: offscreen, force3D: true });
+        }
       }
       onCloseSettled();
       return;
@@ -397,14 +416,26 @@ const StaggeredMenu = ({
 
     beginPillMorphClose();
 
-    closeTweenRef.current = gsap.to(panel, {
-      xPercent: offscreen,
-      duration: 0.3,
-      ease: 'power2.in',
-      overwrite: 'auto',
-      force3D: true,
-      onComplete: onCloseSettled,
-    });
+    if (compactMotion) {
+      closeTweenRef.current = gsap.to(panel, {
+        autoAlpha: 0,
+        y: 12,
+        duration: 0.28,
+        ease: 'power2.in',
+        overwrite: 'auto',
+        force3D: true,
+        onComplete: onCloseSettled,
+      });
+    } else {
+      closeTweenRef.current = gsap.to(panel, {
+        xPercent: offscreen,
+        duration: 0.3,
+        ease: 'power2.in',
+        overwrite: 'auto',
+        force3D: true,
+        onComplete: onCloseSettled,
+      });
+    }
   }, [position, resetPanelMotionState, setMotionPhase, beginPillMorphClose, clearPillMorphClose]);
 
   const animateIcon = useCallback(() => {
@@ -756,17 +787,19 @@ const StaggeredMenu = ({
   const overlayBody = (
     <>
       <div className="staggered-menu-backdrop" aria-hidden="true" />
-      <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
-        {(() => {
-          const raw = colors && colors.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c'];
-          let arr = [...raw];
-          if (arr.length >= 3) {
-            const mid = Math.floor(arr.length / 2);
-            arr.splice(mid, 1);
-          }
-          return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
-        })()}
-      </div>
+      {!mobileBottomNav ? (
+        <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
+          {(() => {
+            const raw = colors && colors.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c'];
+            let arr = [...raw];
+            if (arr.length >= 3) {
+              const mid = Math.floor(arr.length / 2);
+              arr.splice(mid, 1);
+            }
+            return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
+          })()}
+        </div>
+      ) : null}
       {!isFixed ? (
         <header className="staggered-menu-header" aria-label="Main navigation header">
           {menuLeftColumn}

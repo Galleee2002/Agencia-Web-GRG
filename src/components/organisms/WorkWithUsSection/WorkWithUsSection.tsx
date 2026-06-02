@@ -49,6 +49,64 @@ function subscribeWorkWithUsLayoutMode(onStoreChange: () => void): () => void {
   };
 }
 
+function getWwuMobileStickyTopPx(): number {
+  const root = document.documentElement;
+  const nav =
+    parseFloat(
+      getComputedStyle(root).getPropertyValue("--site-sticky-nav-offset"),
+    ) || 0;
+  return nav + 10;
+}
+
+const MOBILE_EYEBROW_HIDE_AFTER_STEP3 = 0.4;
+const MOBILE_EYEBROW_SHOW_BEFORE_STEP3 = 0.12;
+
+function applyMobileEyebrowVisible(header: HTMLElement, visible: boolean) {
+  header.toggleAttribute("data-wwu-eyebrow-hidden", !visible);
+  gsap.set(header, { autoAlpha: visible ? 1 : 0, opacity: visible ? 1 : 0 });
+}
+
+/**
+ * Oculta el eyebrow al superar el 40 % del recorrido del paso 03 y lo mantiene
+ * oculto aunque el paso siga subiendo (sticky no reactiva el header).
+ */
+function setupMobileEyebrowVisibility(
+  header: HTMLElement,
+  lastPanel: HTMLElement,
+): () => void {
+  let passedStep3Threshold = false;
+
+  const apply = () => {
+    applyMobileEyebrowVisible(header, !passedStep3Threshold);
+  };
+
+  apply();
+
+  const st = ScrollTrigger.create({
+    trigger: lastPanel,
+    start: () => `top ${getWwuMobileStickyTopPx()}px`,
+    end: () => `bottom ${getWwuMobileStickyTopPx()}px`,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      if (self.progress >= MOBILE_EYEBROW_HIDE_AFTER_STEP3) {
+        passedStep3Threshold = true;
+      } else if (self.progress <= MOBILE_EYEBROW_SHOW_BEFORE_STEP3) {
+        passedStep3Threshold = false;
+      }
+      apply();
+    },
+    onLeave: (self) => {
+      if (self.direction === 1) passedStep3Threshold = true;
+      apply();
+    },
+    onEnterBack: apply,
+  });
+
+  return () => {
+    st.kill();
+  };
+}
+
 function setupMobileStackReveal(panels: HTMLElement[]) {
   panels.forEach((panel) => {
     setPanelVisible(panel, true);
@@ -102,6 +160,7 @@ export function WorkWithUsSection() {
   const scrollPanels = stepCount * SCROLL_PER_STEP_VH;
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const layoutMode = useSyncExternalStore(
@@ -142,8 +201,16 @@ export function WorkWithUsSection() {
 
       if (isMobileLayout) {
         setupMobileStackReveal(panels);
+        const header = headerRef.current;
+        const lastPanel = panels[panels.length - 1];
+        const teardownEyebrow =
+          header && lastPanel
+            ? setupMobileEyebrowVisibility(header, lastPanel)
+            : undefined;
         registerWorkWithUsScrollTrigger(null);
-        return;
+        return () => {
+          teardownEyebrow?.();
+        };
       }
 
       panels.forEach((panel, index) => {
@@ -296,7 +363,7 @@ export function WorkWithUsSection() {
           isMobileLayout && styles.viewportMobile,
         )}
       >
-        <header className={styles.sectionHeader}>
+        <header ref={headerRef} className={styles.sectionHeader}>
           <h2 id="work-with-us-heading" className={styles.eyebrow}>
             {t("workWithUs.eyebrow")}
           </h2>
