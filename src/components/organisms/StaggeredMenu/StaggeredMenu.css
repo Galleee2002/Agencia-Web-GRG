@@ -54,7 +54,7 @@
 .staggered-menu-wrapper[data-sm-animating] .staggered-menu-backdrop {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  transition: opacity 0.22s ease;
+  transition: none;
 }
 
 .staggered-menu-wrapper[data-open] .staggered-menu-backdrop {

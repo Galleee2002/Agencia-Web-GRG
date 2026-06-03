@@ -395,8 +395,13 @@ const StaggeredMenu = ({
           gsap.set(layers, { xPercent: offscreen, force3D: true });
         }
       }
+      const backdrop = wrapperRef.current?.querySelector('.staggered-menu-backdrop');
+      if (backdrop) {
+        gsap.set(backdrop, { clearProps: 'opacity' });
+      }
       resetPanelMotionState(panel);
       clearPillMorphClose();
+      setOpen(false);
       setMotionPhase(false);
       busyRef.current = false;
     };
@@ -416,26 +421,40 @@ const StaggeredMenu = ({
 
     beginPillMorphClose();
 
+    const backdrop = wrapperRef.current?.querySelector('.staggered-menu-backdrop');
+    const closeDuration = compactMotion ? 0.28 : 0.3;
+    const closeEase = 'power2.in';
+
+    const closeTl = gsap.timeline({
+      onComplete: onCloseSettled,
+      defaults: { ease: closeEase, overwrite: 'auto', force3D: true },
+    });
+
     if (compactMotion) {
-      closeTweenRef.current = gsap.to(panel, {
-        autoAlpha: 0,
-        y: 12,
-        duration: 0.28,
-        ease: 'power2.in',
-        overwrite: 'auto',
-        force3D: true,
-        onComplete: onCloseSettled,
-      });
+      closeTl.to(
+        panel,
+        { autoAlpha: 0, y: 12, duration: closeDuration },
+        0,
+      );
+      if (backdrop) {
+        closeTl.to(backdrop, { opacity: 0, duration: closeDuration }, 0);
+      }
     } else {
-      closeTweenRef.current = gsap.to(panel, {
-        xPercent: offscreen,
-        duration: 0.3,
-        ease: 'power2.in',
-        overwrite: 'auto',
-        force3D: true,
-        onComplete: onCloseSettled,
+      /* Panel y prelayers salen juntos (espejo del open). */
+      closeTl.to(panel, { xPercent: offscreen, duration: closeDuration }, 0);
+      layers.forEach((layer, i) => {
+        closeTl.to(
+          layer,
+          { xPercent: offscreen, duration: closeDuration },
+          i * 0.06,
+        );
       });
+      if (backdrop) {
+        closeTl.to(backdrop, { opacity: 0, duration: closeDuration }, 0);
+      }
     }
+
+    closeTweenRef.current = closeTl;
   }, [position, resetPanelMotionState, setMotionPhase, beginPillMorphClose, clearPillMorphClose]);
 
   const animateIcon = useCallback(() => {
@@ -516,8 +535,8 @@ const StaggeredMenu = ({
   const toggleMenu = useCallback(() => {
     const target = !openRef.current;
     openRef.current = target;
-    setOpen(target);
     if (target) {
+      setOpen(true);
       onMenuOpen?.();
       playOpen();
     } else {
@@ -534,7 +553,6 @@ const StaggeredMenu = ({
   const closeMenu = useCallback(() => {
     if (openRef.current) {
       openRef.current = false;
-      setOpen(false);
       onMenuClose?.();
       playClose();
       if (!mobileBottomNavRef.current) {
