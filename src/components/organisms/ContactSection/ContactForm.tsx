@@ -4,6 +4,10 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from
 import { Building2, Mail, MessageSquare, Send, User } from "lucide-react";
 
 import { useI18n, useServiceOptions } from "@/components/providers/I18nProvider";
+import {
+  CONTACT_NAME_MIN_LENGTH,
+  CONTACT_PROJECT_MIN_LENGTH,
+} from "@/lib/email/contactSchema";
 
 import { ServiceSelect } from "./ServiceSelect";
 import styles from "./ContactSection.module.scss";
@@ -21,6 +25,10 @@ const INITIAL_FORM = {
 };
 
 const FORM_ROW_COUNT = 3;
+const URL_PATTERN = /https?:\/\//i;
+
+type FormField = keyof typeof INITIAL_FORM;
+type FieldErrors = Partial<Record<FormField, string>>;
 
 type FormRevealRowProps = {
   index: number;
@@ -62,6 +70,7 @@ export function ContactForm() {
   const [visibleRows, setVisibleRows] = useState<Set<number>>(() => new Set());
   const [status, setStatus] = useState<FormStatus>("idle");
   const [form, setForm] = useState(INITIAL_FORM);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const isRowVisible = (index: number) => visibleRows.has(index);
 
@@ -141,9 +150,75 @@ export function ContactForm() {
     };
   }, [status]);
 
-  const handleChange = (field: keyof typeof INITIAL_FORM, value: string) => {
+  const handleChange = (field: FormField, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
   };
+
+  const validateClient = useCallback((): FieldErrors => {
+    const errors: FieldErrors = {};
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const project = form.project.trim();
+
+    if (name.length < CONTACT_NAME_MIN_LENGTH) {
+      errors.name = t("contact.validation.nameMin");
+    } else if (URL_PATTERN.test(name)) {
+      errors.name = t("contact.validation.noUrls");
+    }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = t("contact.validation.emailInvalid");
+    }
+
+    if (!form.service) {
+      errors.service = t("contact.validation.serviceRequired");
+    }
+
+    if (project.length < CONTACT_PROJECT_MIN_LENGTH) {
+      errors.project = t("contact.validation.projectMin");
+    } else if (URL_PATTERN.test(project)) {
+      errors.project = t("contact.validation.noUrls");
+    }
+
+    return errors;
+  }, [form, t]);
+
+  const mapServerFieldErrors = useCallback(
+    (issues: Record<string, string[] | undefined>): FieldErrors => {
+      const errors: FieldErrors = {};
+
+      if (issues.name?.length) {
+        errors.name =
+          issues.name[0] === "Contenido no permitido"
+            ? t("contact.validation.noUrls")
+            : t("contact.validation.nameMin");
+      }
+
+      if (issues.email?.length) {
+        errors.email = t("contact.validation.emailInvalid");
+      }
+
+      if (issues.service?.length) {
+        errors.service = t("contact.validation.serviceRequired");
+      }
+
+      if (issues.project?.length) {
+        errors.project =
+          issues.project[0] === "Contenido no permitido"
+            ? t("contact.validation.noUrls")
+            : t("contact.validation.projectMin");
+      }
+
+      return errors;
+    },
+    [t],
+  );
 
   const syncProjectTextareaHeight = useCallback(() => {
     const el = projectTextareaRef.current;
@@ -173,6 +248,13 @@ export function ContactForm() {
     const formElement = formRef.current;
     if (!formElement || !formElement.reportValidity()) return;
 
+    const clientErrors = validateClient();
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
+      return;
+    }
+
+    setFieldErrors({});
     setStatus("submitting");
 
     try {
@@ -180,14 +262,27 @@ export function ContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          company: form.company || undefined,
+          name: form.name.trim(),
+          email: form.email.trim(),
+          company: form.company.trim() || undefined,
           service: form.service,
-          project: form.project,
+          project: form.project.trim(),
           locale,
         }),
       });
+
+      if (response.status === 400) {
+        const data = (await response.json()) as {
+          error?: string;
+          issues?: Record<string, string[] | undefined>;
+        };
+
+        if (data.error === "validation_error" && data.issues) {
+          setFieldErrors(mapServerFieldErrors(data.issues));
+          setStatus("idle");
+          return;
+        }
+      }
 
       if (!response.ok) {
         setStatus("error");
@@ -202,6 +297,7 @@ export function ContactForm() {
 
   const handleReset = () => {
     setForm(INITIAL_FORM);
+    setFieldErrors({});
     setStatus("idle");
     formRef.current?.reset();
   };
@@ -265,11 +361,25 @@ export function ContactForm() {
                   name="name"
                   placeholder={t("contact.namePlaceholder")}
                   required
+                  minLength={CONTACT_NAME_MIN_LENGTH}
                   autoComplete="name"
                   value={form.name}
+                  aria-invalid={fieldErrors.name ? true : undefined}
+                  aria-describedby={
+                    fieldErrors.name ? `${formId}-name-error` : undefined
+                  }
                   onChange={(e) => handleChange("name", e.target.value)}
                 />
               </div>
+              {fieldErrors.name ? (
+                <p
+                  id={`${formId}-name-error`}
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.name}
+                </p>
+              ) : null}
             </div>
 
             <div className={styles.field}>
@@ -291,9 +401,22 @@ export function ContactForm() {
                   required
                   autoComplete="email"
                   value={form.email}
+                  aria-invalid={fieldErrors.email ? true : undefined}
+                  aria-describedby={
+                    fieldErrors.email ? `${formId}-email-error` : undefined
+                  }
                   onChange={(e) => handleChange("email", e.target.value)}
                 />
               </div>
+              {fieldErrors.email ? (
+                <p
+                  id={`${formId}-email-error`}
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.email}
+                </p>
+              ) : null}
             </div>
           </FormRevealRow>
 
@@ -341,6 +464,11 @@ export function ContactForm() {
                 options={serviceOptions}
                 onChange={(value) => handleChange("service", value)}
               />
+              {fieldErrors.service ? (
+                <p className={styles.fieldError} role="alert">
+                  {fieldErrors.service}
+                </p>
+              ) : null}
             </div>
           </FormRevealRow>
 
@@ -366,11 +494,25 @@ export function ContactForm() {
                   name="project"
                   placeholder={t("contact.projectPlaceholder")}
                   required
+                  minLength={CONTACT_PROJECT_MIN_LENGTH}
                   rows={1}
                   value={form.project}
+                  aria-invalid={fieldErrors.project ? true : undefined}
+                  aria-describedby={
+                    fieldErrors.project ? `${formId}-project-error` : undefined
+                  }
                   onChange={(e) => handleChange("project", e.target.value)}
                 />
               </div>
+              {fieldErrors.project ? (
+                <p
+                  id={`${formId}-project-error`}
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.project}
+                </p>
+              ) : null}
             </div>
 
             <div className={styles.submitWrap}>

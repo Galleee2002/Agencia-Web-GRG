@@ -183,6 +183,13 @@ export const en = {
     errorText:
       "There was a problem submitting the form. Please try again in a few minutes.",
     retry: "Try again",
+    validation: {
+      nameMin: "Name must be at least 2 characters.",
+      projectMin: "Describe your project in at least 10 characters.",
+      noUrls: "Do not include links (http:// or https://) in this field.",
+      emailInvalid: "Enter a valid email address.",
+      serviceRequired: "Select a service.",
+    },
     services: {
       corporate: "Corporate website",
       ecommerce: "E-commerce",

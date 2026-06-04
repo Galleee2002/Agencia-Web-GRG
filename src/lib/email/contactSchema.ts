@@ -9,6 +9,9 @@ const SERVICE_VALUES = [
   "other",
 ] as const;
 
+export const CONTACT_NAME_MIN_LENGTH = 2;
+export const CONTACT_PROJECT_MIN_LENGTH = 10;
+
 const suspiciousUrlPattern = /https?:\/\//i;
 
 function noSuspiciousUrls(value: string) {
@@ -19,7 +22,7 @@ export const contactSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Nombre demasiado corto")
+    .min(CONTACT_NAME_MIN_LENGTH, "Nombre demasiado corto")
     .max(120)
     .refine(noSuspiciousUrls, "Contenido no permitido"),
   email: z.string().trim().email("Email inválido").max(254),
@@ -28,7 +31,7 @@ export const contactSchema = z.object({
   project: z
     .string()
     .trim()
-    .min(10, "Describe tu proyecto con más detalle")
+    .min(CONTACT_PROJECT_MIN_LENGTH, "Describe tu proyecto con más detalle")
     .max(4000)
     .refine(noSuspiciousUrls, "Contenido no permitido"),
   locale: z.enum(["es", "en"]).default("es"),

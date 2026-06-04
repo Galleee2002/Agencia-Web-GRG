@@ -181,6 +181,13 @@ export const es = {
     errorText:
       "Hubo un problema al enviar el formulario. Intentá de nuevo en unos minutos.",
     retry: "Reintentar",
+    validation: {
+      nameMin: "El nombre debe tener al menos 2 caracteres.",
+      projectMin: "Describe tu proyecto con al menos 10 caracteres.",
+      noUrls: "No incluyas enlaces (http:// o https://) en este campo.",
+      emailInvalid: "Ingresá un email válido.",
+      serviceRequired: "Seleccioná un servicio.",
+    },
     services: {
       corporate: "Sitio web corporativo",
       ecommerce: "E-commerce",

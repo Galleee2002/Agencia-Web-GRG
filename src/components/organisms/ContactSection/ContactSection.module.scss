@@ -235,6 +235,14 @@ $form-reveal-offset-item: -28px;
   min-width: 0;
 }
 
+.fieldError {
+  margin: 0;
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #c62828;
+}
+
 .label {
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: 0.8125rem;
