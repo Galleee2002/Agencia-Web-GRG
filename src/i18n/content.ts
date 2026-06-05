@@ -184,7 +184,10 @@ export function getProjectsDisplayLinesDesktop(t: TranslateFn): DisplayLine[] {
     { key: "l3", parts: [{ text: t("projects.displayDesktop.line3") }] },
     {
       key: "l4",
-      parts: [{ text: t("projects.displayDesktop.line4"), accent: true }],
+      parts: [
+        { text: t("projects.displayDesktop.line4a") },
+        { text: t("projects.displayDesktop.line4b"), accent: true },
+      ],
     },
   ];
 }
@@ -193,6 +196,7 @@ export function clientLabel(
   t: TranslateFn,
   type: PortfolioProject["clientType"],
 ): string {
+  if (type === "grg-tool") return t("projects.clientGrgTool");
   return type === "national"
     ? t("projects.clientNational")
     : t("projects.clientInternational");

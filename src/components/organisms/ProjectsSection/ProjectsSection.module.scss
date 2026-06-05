@@ -72,7 +72,7 @@ $grg-cyan-bright: #7ae0ff;
   --p-surface: #252525;
   --p-spot1: rgba(0, 153, 255, 0.14);
   --p-spot2: rgba(0, 80, 140, 0.22);
-  --p-title-accent: #7ae0ff;
+  /* --p-title-accent: lo define cada data-project-theme (igual que en light). */
   --projects-glass-bg: rgba(22, 26, 34, 0.92);
   --projects-card-bg: rgba(28, 32, 42, 0.97);
   --projects-border: rgba(255, 255, 255, 0.1);
@@ -165,7 +165,8 @@ $grg-cyan-bright: #7ae0ff;
 .section[data-project-theme="3"],
 .section[data-project-theme="4"],
 .section[data-project-theme="5"],
-.section[data-project-theme="6"] {
+.section[data-project-theme="6"],
+.section[data-project-theme="7"] {
   --p-surface: #ffffff;
 }
 
@@ -209,6 +210,48 @@ $grg-cyan-bright: #7ae0ff;
   --p-spot1: rgba(16, 20, 24, 0.42);
   --p-spot2: rgba(0, 104, 201, 0.34);
   --p-title-accent: #0068c9;
+}
+
+/* themeId 7 — leadScope: celeste/azul GRG del sitio */
+.section[data-project-theme="7"] {
+  --p-spot1: rgba(0, 153, 255, 0.22);
+  --p-spot2: rgba(0, 80, 140, 0.28);
+  --p-title-accent: #0099ff;
+}
+
+/* Dark: mismos acentos por proyecto (html.dark .section no debe pisar --p-title-accent). */
+:global(html.dark) .section[data-project-theme="1"] {
+  --p-title-accent: #e52629;
+}
+
+:global(html.dark) .section[data-project-theme="2"] {
+  --p-title-accent: #3fcfa4;
+}
+
+:global(html.dark) .section[data-project-theme="3"] {
+  --p-title-accent: #5b9aff;
+}
+
+:global(html.dark) .section[data-project-theme="4"] {
+  --p-title-accent: #ffc400;
+}
+
+:global(html.dark) .section[data-project-theme="5"] {
+  --p-title-accent: #ffe83d;
+}
+
+:global(html.dark) .section[data-project-theme="6"] {
+  --p-title-accent: #33b0ff;
+}
+
+:global(html.dark) .section[data-project-theme="7"] {
+  --p-title-accent: #7ae0ff;
+}
+
+/* leadScope: acentos del encabezado — mismo celeste GRG (#0099ff) en light y dark. */
+.section[data-project-theme="7"] .displayAccent,
+:global(html.dark) .section[data-project-theme="7"] .displayAccent {
+  color: $grg-cyan;
 }
 
 .shell {
@@ -1415,6 +1458,23 @@ $grg-cyan-bright: #7ae0ff;
   flex-shrink: 0;
   opacity: 0.85;
   color: rgba(37, 37, 37, 0.4);
+}
+
+.detailsCard .grgToolClient {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detailsCard .grgToolLabel {
+  font-weight: 500;
+  color: inherit;
+}
+
+.detailsCard .grgToolLogo {
+  width: auto;
+  height: 1.1rem;
+  flex-shrink: 0;
 }
 
 .imagePlaceholder {

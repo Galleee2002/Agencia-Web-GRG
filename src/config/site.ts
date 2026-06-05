@@ -13,7 +13,7 @@ export const SITE_OG_IMAGE_PATH = "/GRG-banner.webp";
 
 export const SITE_CONTACT = {
   email: "agencygrg@gmail.com",
-  phone: "+54 115989 7869",
+  phone: "+54 11 5989 7869",
   streetAddress: "Ciudad Autónoma de Buenos Aires",
   addressLocality: "Ciudad Autónoma de Buenos Aires",
   addressRegion: "Buenos Aires",

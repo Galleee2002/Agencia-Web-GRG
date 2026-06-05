@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ThemeLogo } from "@/components/atoms/ThemeLogo";
 import {
   useClientLabel,
   useI18n,
@@ -88,7 +89,22 @@ export function ProjectCaseStudyPage({ slug }: ProjectCaseStudyPageProps) {
         <dl className={styles.meta}>
           <div>
             <dt className={styles.metaLabel}>{t("projectPage.clientLabel")}</dt>
-            <dd>{getClientLabel(project.clientType)}</dd>
+            <dd className={styles.metaValue}>
+              {project.clientType === "grg-tool" ? (
+                <span className={styles.grgToolClient}>
+                  <span className={styles.grgToolLabel}>
+                    {t("projectPage.grgToolPrefix")}
+                  </span>
+                  <ThemeLogo
+                    className={styles.grgToolLogo}
+                    width={72}
+                    height={26}
+                  />
+                </span>
+              ) : (
+                getClientLabel(project.clientType)
+              )}
+            </dd>
           </div>
         </dl>
 
