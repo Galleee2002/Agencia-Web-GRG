@@ -72,7 +72,8 @@ export const es = {
       line2a: "tus ",
       line2b: "ideas",
       line3: "en proyectos",
-      line4: "exitosos",
+      line4a: "",
+      line4b: "exitosos",
     },
     carouselLabel: "Proyectos destacados",
     carouselRole: "carrusel",
@@ -87,6 +88,7 @@ export const es = {
     clientType: "Tipo de cliente: {{type}}",
     clientNational: "Nacional",
     clientInternational: "Internacional",
+    clientGrgTool: "Herramienta de GRG",
     showDetails: "Mostrar detalles del proyecto",
     hideDetails: "Ocultar detalles del proyecto",
     lightboxGalleryLabel: "Galería de imágenes: {{name}}",
@@ -131,6 +133,12 @@ export const es = {
           "Ecommerce desarrollado para un emprendimiento argentino dedicado a la venta de objetos impresos en 3D. La plataforma cuenta con catálogo de productos, base de datos, servidor, carrito de compras y pagos online, permitiendo gestionar y vender productos de forma profesional.",
         caseStudyDescription:
           "El negocio vendía piezas impresas en 3D de forma informal, sin catálogo digital ni cobros online estructurados. Implementamos ecommerce con catálogo, stock y pagos integrados para profesionalizar las ventas y liberar tiempo al fundador argentino.",
+      },
+      "7": {
+        description:
+          "Herramienta interna desarrollada por GRG para detectar oportunidades comerciales y recopilar datos de contacto de potenciales clientes. La plataforma permite identificar negocios, organizar leads y centralizar información clave para optimizar el proceso de prospección comercial.",
+        caseStudyDescription:
+          "GRG necesitaba una forma más ordenada y eficiente de encontrar potenciales clientes sin depender de búsquedas manuales dispersas. Desarrollamos leadScope como una herramienta interna para detectar negocios, recopilar datos de contacto y organizar oportunidades comerciales desde un solo lugar.",
       },
     },
   },
@@ -205,7 +213,7 @@ export const es = {
       "Somos una agencia de diseño y desarrollo web: convertimos ideas en sitios rápidos, claros y pensados para que tu marca convierta visitas en clientes.",
     contact: "Contacto",
     email: "agencygrg@gmail.com",
-    phone: "+54 115989 7869",
+    phone: "+54 11 5989 7869",
     address: "Ciudad Autónoma de Buenos Aires, Argentina",
     quickLinks: "Enlaces rápidos",
     copyrightBefore: "Copyright © {{year}} ",
@@ -292,6 +300,7 @@ export const es = {
     },
   },
   projectPage: {
+    grgToolPrefix: "Herramienta de",
     clientLabel: "Cliente",
     technologiesLabel: "Tecnologías",
     galleryLabel: "Galería del proyecto",

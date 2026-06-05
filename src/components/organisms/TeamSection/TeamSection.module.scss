@@ -150,7 +150,10 @@ $illustration-max: 336px; // 80% de 420px
 
 .originText {
   margin: 0;
+  align-self: stretch;
+  width: 100%;
   max-width: min(52ch, 100%);
+  text-align: left;
   font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
   font-size: clamp(0.9375rem, 0.35vw + 0.85rem, 1.0625rem);
   font-weight: 400;
@@ -162,8 +165,9 @@ $illustration-max: 336px; // 80% de 420px
   }
 
   @media (min-width: $team-breakpoint) {
+    align-self: auto;
+    width: auto;
     max-width: none;
-    text-align: left;
     font-size: clamp(1rem, 0.25vw + 0.9rem, 1.125rem);
   }
 }

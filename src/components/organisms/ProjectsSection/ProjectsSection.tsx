@@ -27,6 +27,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { ThemeLogo } from "@/components/atoms/ThemeLogo";
 import {
   useClientLabel,
   useI18n,
@@ -572,17 +573,32 @@ const ShowcaseCard = memo(function ShowcaseCard({
                 </h3>
                 <p className={styles.projectDescription}>{project.description}</p>
                 <p className={styles.clientLine}>
-                  <Globe
-                    className={styles.clientIcon}
-                    size={18}
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                  <span>
-                    {t("projects.clientType", {
-                      type: getClientLabel(project.clientType),
-                    })}
-                  </span>
+                  {project.clientType === "grg-tool" ? (
+                    <span className={styles.grgToolClient}>
+                      <span className={styles.grgToolLabel}>
+                        {t("projectPage.grgToolPrefix")}
+                      </span>
+                      <ThemeLogo
+                        className={styles.grgToolLogo}
+                        width={56}
+                        height={20}
+                      />
+                    </span>
+                  ) : (
+                    <>
+                      <Globe
+                        className={styles.clientIcon}
+                        size={18}
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                      <span>
+                        {t("projects.clientType", {
+                          type: getClientLabel(project.clientType),
+                        })}
+                      </span>
+                    </>
+                  )}
                 </p>
                 <Link
                   href={project.href}

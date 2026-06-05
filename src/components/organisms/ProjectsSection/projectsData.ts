@@ -1,11 +1,11 @@
 import { publicAssetUrl } from "@/lib/publicAssetUrl";
 
-export type ProjectClientType = "national" | "international";
+export type ProjectClientType = "national" | "international" | "grg-tool";
 
 export interface PortfolioProject {
   id: number;
-  /** Acento visual del slide (1–6), enlazado a selectores `[data-project-theme]` en SCSS */
-  themeId: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Acento visual del slide (1–7), enlazado a selectores `[data-project-theme]` en SCSS */
+  themeId: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   name: string;
   /** Resumen del producto en carrusel y listados. */
   description: string;
@@ -37,7 +37,7 @@ function projectImage(file: string): string {
 
 /**
  * Proyectos de ejemplo. Imágenes WebP bajo `public/projects/resize-imgs/`.
- * `themeId` (1–6) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
+ * `themeId` (1–7) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
  * Las descripciones visibles se resuelven vía i18n (`getPortfolioProjects`).
  */
 export const portfolioProjectsBase: PortfolioProjectBase[] = [
@@ -53,6 +53,32 @@ export const portfolioProjectsBase: PortfolioProjectBase[] = [
       projectImage("FUERA3.webp"),
     ],
     href: "/proyectos/fuera-de-contexto",
+  },
+  {
+    id: 3,
+    themeId: 2,
+    name: "The Coral Garden",
+    clientType: "national",
+    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Stripe"],
+    images: [
+      projectImage("GARDEN1.webp"),
+      projectImage("GARDEN2.webp"),
+      projectImage("GARDEN3.webp"),
+    ],
+    href: "/proyectos/the-coral-garden",
+  },
+  {
+    id: 7,
+    themeId: 7,
+    name: "leadScope",
+    clientType: "grg-tool",
+    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL"],
+    images: [
+      projectImage("leadScope1.webp"),
+      projectImage("leadScope2.webp"),
+      projectImage("leadScope3.webp"),
+    ],
+    href: "/proyectos/leadscope",
   },
   {
     id: 2,
@@ -75,17 +101,17 @@ export const portfolioProjectsBase: PortfolioProjectBase[] = [
     href: "/proyectos/bvi-finance",
   },
   {
-    id: 3,
-    themeId: 2,
-    name: "The Coral Garden",
-    clientType: "national",
-    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Stripe"],
+    id: 5,
+    themeId: 3,
+    name: "GPNi",
+    clientType: "international",
+    technologies: ["React", "D3.js", "Node.js", "Kafka", "AWS"],
     images: [
-      projectImage("GARDEN1.webp"),
-      projectImage("GARDEN2.webp"),
-      projectImage("GARDEN3.webp"),
+      projectImage("gpni.webp"),
+      projectImage("gpni2.webp"),
+      projectImage("gpni3.webp"),
     ],
-    href: "/proyectos/the-coral-garden",
+    href: "/proyectos/gpni",
   },
   {
     id: 4,
@@ -99,19 +125,6 @@ export const portfolioProjectsBase: PortfolioProjectBase[] = [
       projectImage("CIL3.webp"),
     ],
     href: "/proyectos/cil-labs",
-  },
-  {
-    id: 5,
-    themeId: 3,
-    name: "GPNi",
-    clientType: "international",
-    technologies: ["React", "D3.js", "Node.js", "Kafka", "AWS"],
-    images: [
-      projectImage("gpni.webp"),
-      projectImage("gpni2.webp"),
-      projectImage("gpni3.webp"),
-    ],
-    href: "/proyectos/gpni",
   },
   {
     id: 6,

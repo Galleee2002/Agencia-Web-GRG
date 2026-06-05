@@ -71,6 +71,27 @@
   color: var(--site-ink-strong);
 }
 
+.metaValue {
+  margin: 0;
+}
+
+.grgToolClient {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.grgToolLabel {
+  font-weight: 500;
+  color: var(--site-ink);
+}
+
+.grgToolLogo {
+  width: auto;
+  height: 1.35rem;
+  flex-shrink: 0;
+}
+
 .technologies {
   display: flex;
   flex-direction: column;

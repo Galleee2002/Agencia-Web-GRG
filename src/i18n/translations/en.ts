@@ -62,19 +62,20 @@ export const en = {
   },
   projects: {
     eyebrow: "Projects",
-    displayFull: "We turn your ideas into successful projects",
+    displayFull: "We create web solutions made for real growth",
     displayMobile: {
-      line1a: "We turn your ",
-      line1b: "ideas",
-      line2a: "into successful ",
-      line2b: "projects",
+      line1a: "We create web ",
+      line1b: "solutions",
+      line2a: "made for real ",
+      line2b: "growth",
     },
     displayDesktop: {
-      line1: "We turn",
-      line2a: "your ",
-      line2b: "ideas",
-      line3: "into successful",
-      line4: "projects",
+      line1: "We create",
+      line2a: "web ",
+      line2b: "solutions",
+      line3: "made for",
+      line4a: "real ",
+      line4b: "growth",
     },
     carouselLabel: "Featured projects",
     carouselRole: "carousel",
@@ -89,6 +90,7 @@ export const en = {
     clientType: "Client type: {{type}}",
     clientNational: "National",
     clientInternational: "International",
+    clientGrgTool: "GRG internal tool",
     showDetails: "Show project details",
     hideDetails: "Hide project details",
     lightboxGalleryLabel: "Image gallery: {{name}}",
@@ -133,6 +135,12 @@ export const en = {
           "E-commerce built for an Argentine venture dedicated to selling 3D-printed objects. The platform includes a product catalog, database, server, shopping cart, and online payments, enabling professional product management and sales.",
         caseStudyDescription:
           "The business sold 3D-printed pieces informally, without a digital catalog or structured online payments. We implemented e-commerce with catalog, inventory, and integrated payments to professionalize sales and free up time for the Argentine founder.",
+      },
+      "7": {
+        description:
+          "Internal tool developed by GRG to identify business opportunities and collect contact data from potential clients. The platform helps detect businesses, organize leads and centralize key information to optimize the commercial prospecting process.",
+        caseStudyDescription:
+          "GRG needed a more organized and efficient way to find potential clients without relying on scattered manual searches. We developed leadScope as an internal tool to detect businesses, collect contact data and manage commercial opportunities from one place.",
       },
     },
   },
@@ -207,7 +215,7 @@ export const en = {
       "We are a web design and development agency: we turn ideas into fast, clear sites built to help your brand turn visits into customers.",
     contact: "Contact",
     email: "agencygrg@gmail.com",
-    phone: "+54 115989 7869",
+    phone: "+54 11 5989 7869",
     address: "Autonomous City of Buenos Aires, Argentina",
     quickLinks: "Quick links",
     copyrightBefore: "Copyright © {{year}} ",
@@ -294,6 +302,7 @@ export const en = {
     },
   },
   projectPage: {
+    grgToolPrefix: "Tool by",
     clientLabel: "Client",
     technologiesLabel: "Technologies",
     galleryLabel: "Project gallery",
