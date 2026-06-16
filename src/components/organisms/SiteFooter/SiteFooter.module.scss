@@ -130,6 +130,26 @@ $footer-breakpoint: 809px;
   }
 }
 
+.contactPhoneRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contactPhoneRow .contactIcon {
+  margin-top: 0;
+}
+
+.contactPhoneNumbers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contactPhoneNumbers .contactLink {
+  display: block;
+}
+
 .contactAddressRow {
   display: flex;
   align-items: flex-start;

@@ -15,7 +15,7 @@ export function buildOrganizationJsonLd() {
     url: SITE_URL,
     image: imageUrl,
     email: SITE_CONTACT.email,
-    telephone: SITE_CONTACT.phone,
+    telephone: [SITE_CONTACT.phone, SITE_CONTACT.phone2],
     address: {
       "@type": "PostalAddress",
       streetAddress: SITE_CONTACT.streetAddress,
