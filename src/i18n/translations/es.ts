@@ -214,6 +214,7 @@ export const es = {
     contact: "Contacto",
     email: "agencygrg@gmail.com",
     phone: "+54 11 5989 7869",
+    phone2: "+54 11 3889 9722",
     address: "Ciudad Autónoma de Buenos Aires, Argentina",
     quickLinks: "Enlaces rápidos",
     copyrightBefore: "Copyright © {{year}} ",

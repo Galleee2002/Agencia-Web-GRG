@@ -24,6 +24,7 @@ export function SiteFooterContent() {
   const year = new Date().getFullYear();
   const email = t("footer.email");
   const phone = t("footer.phone");
+  const phone2 = t("footer.phone2");
 
   return (
     <div className={styles.inner}>
@@ -54,15 +55,20 @@ export function SiteFooterContent() {
                 <span>{email}</span>
               </a>
             </li>
-            <li>
-              <a href={phoneToTelUri(phone)} className={styles.contactLink}>
-                <Phone
-                  className={styles.contactIcon}
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
-                <span>{phone}</span>
-              </a>
+            <li className={styles.contactPhoneRow}>
+              <Phone
+                className={styles.contactIcon}
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <div className={styles.contactPhoneNumbers}>
+                <a href={phoneToTelUri(phone)} className={styles.contactLink}>
+                  {phone}
+                </a>
+                <a href={phoneToTelUri(phone2)} className={styles.contactLink}>
+                  {phone2}
+                </a>
+              </div>
             </li>
             <li className={styles.contactAddressRow}>
               <MapPin
