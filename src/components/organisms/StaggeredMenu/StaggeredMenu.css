@@ -50,10 +50,8 @@
   transition: opacity 0.28s ease;
 }
 
-/* Durante el slide: sin blur del scrim (muy costoso en cada frame). */
+/* Durante slide del panel: sin transición CSS en el scrim (GSAP puede tweenear opacity al cerrar). */
 .staggered-menu-wrapper[data-sm-animating] .staggered-menu-backdrop {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
   transition: none;
 }
 
