@@ -34,11 +34,8 @@ function useMaxWidth(maxWidthPx) {
 const COMPACT_NAV_AFTER = 72;
 
 /**
- * `hasResolvedScroll` actúa como flag: una vez que el navegador asentó el
- * scroll real (sea por F5 sobre `/#contact` o por interacción del usuario)
- * dejamos de consultar el hash y nos guiamos solo por `scrollY`. Esto evita
- * que la pill compacta quede visible al volver al tope solo porque la URL
- * conserva un hash anterior.
+ * `hasResolvedScroll`: una vez asentado el scroll real, solo miramos `scrollY`.
+ * Al tope → padding-top grande; al scrollear → padding compacto (efecto “achique”).
  */
 function readCompactNavState({ hasResolvedScroll } = {}) {
   if (typeof window === 'undefined') return false;
@@ -58,7 +55,7 @@ const StaggeredMenu = ({
   items = [],
   socialItems = [],
   displaySocials = true,
-  displayItemNumbering = true,
+  displayItemNumbering = false,
   className,
   logoHref = '/#inicio',
   menuButtonColor = '#fff',
@@ -81,7 +78,9 @@ const StaggeredMenu = ({
    * Nodo opcional que reemplaza el CTA del header en la columna derecha de la sticky bar.
    * Útil para inyectar, por ejemplo, un botón de ajustes inline en lugar del CTA.
    */
-  rightSlot = null
+  rightSlot = null,
+  panelFooterSlot = null,
+  dockSlot = null,
 }) => {
   const [open, setOpen] = useState(false);
   /* SSR siempre arranca en false para coincidir con la salida del server.
@@ -163,7 +162,7 @@ const StaggeredMenu = ({
       const preContainer = preLayersRef.current;
       const icon = iconRef.current;
       const textInner = textInnerRef.current;
-      if (!panel || !icon) return;
+      if (!panel) return;
 
       let preLayers = [];
       if (preContainer) {
@@ -176,7 +175,7 @@ const StaggeredMenu = ({
       if (compactMotion) {
         gsap.set(panel, { xPercent: 0, autoAlpha: 0, y: 0, force3D: true });
       } else {
-        gsap.set(panel, { xPercent: offscreen, autoAlpha: 1, y: 0, force3D: true });
+        gsap.set(panel, { xPercent: offscreen, autoAlpha: 0, y: 0, force3D: true });
       }
       panel.classList.add('sm-gsap-ready');
       if (preLayers.length) {
@@ -186,7 +185,9 @@ const StaggeredMenu = ({
         gsap.set(preContainer, { xPercent: 0, opacity: 1 });
         preContainer.classList.add('sm-gsap-ready');
       }
-      gsap.set(icon, { scale: 1, transformOrigin: '50% 50%' });
+      if (icon) {
+        gsap.set(icon, { scale: 1, transformOrigin: '50% 50%' });
+      }
       if (textInner) {
         gsap.set(textInner, { yPercent: 0 });
       }
@@ -265,9 +266,20 @@ const StaggeredMenu = ({
     const itemDuration = compactMotion ? 0.58 : 0.72;
 
     if (compactMotion) {
-      gsap.set(panel, { xPercent: 0, autoAlpha: 1, y: 18, force3D: true });
+      gsap.set(panel, {
+        xPercent: 0,
+        autoAlpha: 1,
+        y: 18,
+        visibility: 'visible',
+        force3D: true,
+      });
     } else {
-      gsap.set(panel, { xPercent: offscreen, force3D: true });
+      gsap.set(panel, {
+        xPercent: offscreen,
+        autoAlpha: 1,
+        visibility: 'visible',
+        force3D: true,
+      });
       if (layers.length) {
         gsap.set(layers, { xPercent: offscreen, force3D: true });
       }
@@ -349,13 +361,26 @@ const StaggeredMenu = ({
   }, [position, resetPanelMotionState]);
 
   const playOpen = useCallback(() => {
-    if (busyRef.current) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    // Evita quedar trabado si una animación previa no completó
+    busyRef.current = false;
+    openTlRef.current?.kill();
+    closeTweenRef.current?.kill();
+
     busyRef.current = true;
     setMotionPhase(true);
+    panel.classList.add('sm-gsap-ready', 'sm-panel-opening');
+    // Forzar visible YA: setOpen aún no re-renderizó (aria-hidden sigue true)
+    wrapperRef.current?.setAttribute('data-open', '');
+    gsap.set(panel, { visibility: 'visible', opacity: 1 });
+
     const tl = buildOpenTimeline();
     if (tl) {
       const { reduced: reducedMotion } = readMotionProfile();
       tl.eventCallback('onComplete', () => {
+        panel.classList.remove('sm-panel-opening');
         setMotionPhase(false);
         busyRef.current = false;
       });
@@ -365,6 +390,7 @@ const StaggeredMenu = ({
         tl.play(0);
       }
     } else {
+      panel.classList.remove('sm-panel-opening');
       setMotionPhase(false);
       busyRef.current = false;
     }
@@ -399,6 +425,7 @@ const StaggeredMenu = ({
       if (backdrop) {
         gsap.set(backdrop, { clearProps: 'opacity' });
       }
+      panel.classList.remove('sm-panel-opening');
       resetPanelMotionState(panel);
       clearPillMorphClose();
       setOpen(false);
@@ -737,17 +764,16 @@ const StaggeredMenu = ({
 
   const menuLeftColumnFixed = (
     <button
-      ref={toggleBtnRef}
       type="button"
       className="sm-header-left sm-toggle sm-toggle--fixedBar"
       aria-label={open ? ariaMenuOpen : ariaOpenMenu}
       aria-expanded={open}
       aria-controls="staggered-menu-panel"
-      aria-hidden={open}
-      tabIndex={open ? -1 : undefined}
+      aria-hidden="true"
+      tabIndex={-1}
       onClick={toggleMenu}
     >
-      <span ref={iconRef} className="sm-icon" aria-hidden="true">
+      <span className="sm-icon" aria-hidden="true">
         <Menu className="sm-icon-svg" size={20} strokeWidth={1.75} />
       </span>
     </button>
@@ -757,13 +783,16 @@ const StaggeredMenu = ({
     <button
       ref={toggleBtnRef}
       type="button"
-      className="sm-header-left sm-toggle sm-toggle--fixedBar sm-toggle--dock"
+      className="sm-toggle sm-toggle--dock"
       aria-label={ariaOpenMenu}
       aria-expanded={open}
       aria-controls="staggered-menu-panel"
       onClick={toggleMenu}
     >
-      <span className="sm-icon" aria-hidden="true">
+      <span className="sm-dock-label" aria-hidden="true">
+        {toggleLabelMenu}
+      </span>
+      <span ref={iconRef} className="sm-icon" aria-hidden="true">
         <Menu className="sm-icon-svg" size={20} strokeWidth={1.75} />
       </span>
     </button>
@@ -778,27 +807,18 @@ const StaggeredMenu = ({
         className="sm-sticky-brand-host"
         data-open={open || undefined}
         data-compact={compactNav || undefined}
-        aria-label="Marca y contacto"
+        aria-label="Marca"
       >
-        <div className="sm-sticky-brand-inner">
-          {!mobileBottomNav ? (
-            <div className="sm-brand-col sm-brand-col--start">{menuLeftColumn}</div>
-          ) : null}
-          <div className="sm-brand-col sm-brand-col--center">{logoBlock}</div>
-          {!mobileBottomNav ? (
-            <div className="sm-brand-col sm-brand-col--end">{rightColumn}</div>
-          ) : null}
-        </div>
+        {logoBlock}
       </header>
-      {mobileBottomNav ? (
-        <nav
-          ref={mobileDockRef}
-          className="sm-mobile-bottom-dock"
-          aria-label="Acciones principales"
-        >
-          {menuMobileDockToggle}
-        </nav>
-      ) : null}
+      <nav
+        ref={mobileDockRef}
+        className="sm-mobile-bottom-dock"
+        aria-label="Acciones principales"
+      >
+        {menuMobileDockToggle}
+        {mobileBottomNav ? dockSlot : null}
+      </nav>
     </>
   ) : null;
 
@@ -878,6 +898,9 @@ const StaggeredMenu = ({
               </ul>
             </div>
           )}
+          {panelFooterSlot && open && !mobileBottomNav ? (
+            <div className="sm-panel-footer">{panelFooterSlot}</div>
+          ) : null}
         </div>
         {mobileBottomNav ? (
           <button

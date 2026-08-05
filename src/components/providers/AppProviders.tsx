@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 
 import { FloatingContactCta } from "@/components/organisms/FloatingContactCta/FloatingContactCta";
-import { FloatingSettings } from "@/components/organisms/FloatingSettings/FloatingSettings";
 import type { Theme } from "@/components/providers/ThemeProvider";
 
 import { I18nProvider } from "./I18nProvider";
@@ -23,8 +22,7 @@ export function AppProviders({
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
         {/* CTA flotante visible solo en desktop (esquina inferior derecha) */}
         <FloatingContactCta />
-        {/* Settings flotante visible solo en mobile (en desktop va inline en el nav) */}
-        <FloatingSettings placement="floating" />
+        {/* Settings: desktop inline en el nav; mobile en el dock del menú */}
       </I18nProvider>
     </ThemeProvider>
   );

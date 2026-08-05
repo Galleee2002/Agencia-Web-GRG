@@ -1,22 +1,32 @@
 "use client";
 
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useCallback, type PointerEvent as ReactPointerEvent } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 
 import { useI18n } from "@/components/providers/I18nProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import type { TranslateFn } from "@/i18n/content";
 import { publicAssetUrl } from "@/lib/publicAssetUrl";
+import { cn } from "@/lib/utils";
 
 import { HeroBeamsBackground } from "./HeroBeamsBackground";
+import {
+  HERO_SERVICE_CARDS,
+  HERO_VISUAL_IMAGE_SRC,
+  HERO_VISUAL_IMAGE_SRC_DARK,
+  type HeroServiceId,
+} from "./heroServicesData";
+import {
+  HeroServiceCard,
+  type HeroServiceCardContent,
+} from "./HeroServiceCard";
 import styles from "./Hero.module.scss";
-
-const HERO_BANNER_SRC = publicAssetUrl("/GRG-banner.webp");
 
 /**
  * Setea las CSS vars --cta-mx/--cta-my con la posición del puntero relativa al
- * botón. El `::before` usa estas vars como origen del círculo de relleno que
- * crece (enter) o se contrae (leave) hacia el punto exacto donde está el cursor.
+ * botón. El `::before` usa estas vars como origen del círculo de relleno.
  */
 function syncCtaPointerPosition(event: ReactPointerEvent<HTMLAnchorElement>) {
   const el = event.currentTarget;
@@ -25,50 +35,121 @@ function syncCtaPointerPosition(event: ReactPointerEvent<HTMLAnchorElement>) {
   el.style.setProperty("--cta-my", `${event.clientY - rect.top}px`);
 }
 
+function getServiceContent(
+  id: HeroServiceId,
+  t: TranslateFn,
+): HeroServiceCardContent {
+  switch (id) {
+    case "management":
+      return {
+        title: t("hero.services.management.title"),
+        description: t("hero.services.management.description"),
+        imageAlt: t("hero.services.management.imageAlt"),
+      };
+    case "websites":
+      return {
+        title: t("hero.services.websites.title"),
+        description: t("hero.services.websites.description"),
+        imageAlt: t("hero.services.websites.imageAlt"),
+      };
+    case "invoicing":
+      return {
+        title: t("hero.services.invoicing.title"),
+        description: t("hero.services.invoicing.description"),
+        imageAlt: t("hero.services.invoicing.imageAlt"),
+      };
+    case "ecommerce":
+      return {
+        title: t("hero.services.ecommerce.title"),
+        description: t("hero.services.ecommerce.description"),
+        imageAlt: t("hero.services.ecommerce.imageAlt"),
+      };
+    default: {
+      const _exhaustive: never = id;
+      return _exhaustive;
+    }
+  }
+}
+
+function slotClass(slot: (typeof HERO_SERVICE_CARDS)[number]["slot"]): string {
+  switch (slot) {
+    case "topLeft":
+      return styles.cardSlotTopLeft;
+    case "topRight":
+      return styles.cardSlotTopRight;
+    case "bottomLeft":
+      return styles.cardSlotBottomLeft;
+    case "bottomRight":
+      return styles.cardSlotBottomRight;
+    default: {
+      const _exhaustive: never = slot;
+      return _exhaustive;
+    }
+  }
+}
+
 export function Hero() {
   const { t } = useI18n();
-
-  const handleCtaPointerEnter = useCallback(syncCtaPointerPosition, []);
-  const handleCtaPointerLeave = useCallback(syncCtaPointerPosition, []);
+  const { theme } = useTheme();
+  const visualSrc = publicAssetUrl(
+    theme === "dark" ? HERO_VISUAL_IMAGE_SRC_DARK : HERO_VISUAL_IMAGE_SRC,
+  );
 
   return (
     <section id="inicio" className={styles.hero} aria-label={t("hero.ariaLabel")}>
       <HeroBeamsBackground />
       <div className={styles.inner}>
-        <div className={styles.bannerMedia}>
-          <div className={styles.bannerImageWrap}>
-            <Image
-              src={HERO_BANNER_SRC}
-              alt={t("hero.bannerAlt")}
-              width={960}
-              height={720}
-              priority
-              quality={72}
-              className={styles.bannerImage}
-              sizes="(max-width: 809px) min(88vw, 420px), min(68vw, 728px)"
-            />
-          </div>
-        </div>
-
         <div className={styles.content}>
           <h1 className={styles.title}>
-            <span className={styles.titleWord}>{t("hero.titleDevelop")}</span>
-            <span className={`${styles.titleWord} ${styles.titleWordAccent}`}>
-              {t("hero.titleExperiences")}
+            <span className={styles.titleWord}>{t("hero.titleLine1")}</span>
+            <span className={`${styles.titleWord} ${styles.titleAccent}`}>
+              {t("hero.titleAccent")}
             </span>
-            <span className={styles.titleWord}>{t("hero.titleDigital")}</span>
           </h1>
+
           <p className={styles.description}>{t("hero.description")}</p>
+
           <Link
             className={styles.cta}
-            href="#trabajar-con-nosotros"
+            href="#contact"
             scroll={false}
-            onPointerEnter={handleCtaPointerEnter}
-            onPointerLeave={handleCtaPointerLeave}
+            onPointerEnter={syncCtaPointerPosition}
+            onPointerLeave={syncCtaPointerPosition}
           >
             <span>{t("hero.cta")}</span>
             <ArrowRight size={18} strokeWidth={2} aria-hidden />
           </Link>
+        </div>
+
+        <div className={styles.visualStage} aria-label={t("hero.visualAria")}>
+          <div className={styles.visualCore}>
+            <Image
+              src={visualSrc}
+              alt={t("hero.visualAlt")}
+              width={960}
+              height={960}
+              priority
+              quality={75}
+              className={styles.visualImage}
+              sizes="(max-width: 808px) min(100vw, 432px), (max-width: 1199px) min(52dvh, 540px), min(58dvh, 630px)"
+            />
+          </div>
+
+          <div className={styles.visualCards} role="list">
+            {HERO_SERVICE_CARDS.map((card, index) => (
+              <div
+                key={card.id}
+                className={cn(styles.cardSlot, slotClass(card.slot))}
+                role="listitem"
+                style={{ "--card-index": index } as CSSProperties}
+              >
+                <HeroServiceCard
+                  card={card}
+                  content={getServiceContent(card.id, t)}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

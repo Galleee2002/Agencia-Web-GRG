@@ -27,7 +27,8 @@ export function AgencyStaggeredMenu() {
       changeMenuColorOnOpen={false}
       ctaLabel={t("nav.cta")}
       showHeaderCta={false}
-      rightSlot={<FloatingSettings placement="inline" />}
+      panelFooterSlot={<FloatingSettings placement="panel" />}
+      dockSlot={<FloatingSettings placement="dock" />}
       toggleLabelMenu={t("nav.menu")}
       toggleLabelClose={t("nav.close")}
       ariaOpenMenu={t("nav.openMenu")}

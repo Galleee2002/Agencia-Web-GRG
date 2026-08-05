@@ -96,6 +96,33 @@
     }
   }
 
+  &[data-placement="dock"] {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template: 1fr / 1fr;
+    place-items: center;
+    flex-direction: unset;
+    align-items: unset;
+    justify-content: unset;
+    gap: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 2.75rem;
+    margin: 0;
+    padding: 0;
+    pointer-events: auto;
+    bottom: auto;
+    top: auto;
+    right: auto;
+    left: auto;
+    transform: none;
+
+    @media (min-width: 1025px) {
+      display: none !important;
+    }
+  }
+
   :global(html.dark) & {
     --fs-menu-bg: var(--site-surface);
     --fs-menu-ink: var(--site-ink);
@@ -140,6 +167,10 @@
         border-color: transparent;
       }
     }
+  }
+
+  :global(html.dark) &[data-placement="dock"] .trigger:hover {
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -193,6 +224,10 @@
   }
 }
 
+.triggerLabel {
+  display: none;
+}
+
 
 .menu {
   display: flex;
@@ -215,10 +250,6 @@
     transform 0.22s ease,
     visibility 0.22s ease;
 
-  /* En modo inline el menú vive in-flow junto al cog y se anima cambiando
-   * su ancho desde 0 hasta el ancho natural (calculado vía CSS var sobre el
-   * tamaño del toggle). Esto le permite a `.root` envolver tanto al menú
-   * como al cog en un único pill cuando está abierto. */
   .root[data-placement="inline"] & {
     position: static;
     inset: auto;
@@ -257,6 +288,150 @@
     visibility: visible;
     pointer-events: auto;
   }
+}
+
+.root[data-placement="dock"] .trigger {
+  position: relative;
+  z-index: 1;
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  line-height: 0;
+  align-self: unset;
+  transform: none;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: transparent;
+  }
+}
+
+.root[data-placement="dock"] .triggerIcon {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  transform: none;
+
+  svg {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.root[data-placement="dock"] .menu {
+  position: absolute;
+  grid-area: 1 / 1;
+  bottom: calc(100% + 0.55rem);
+  left: 50%;
+  z-index: 2;
+  margin: 0;
+  transform-origin: bottom center;
+  transform: translateX(-50%) translateY(8px) scale(0.96);
+
+  &:not([data-open="true"]) {
+    display: none !important;
+  }
+
+  &[data-open="true"] {
+    display: flex;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.root[data-placement="panel"] {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  pointer-events: auto;
+  z-index: 2;
+
+  /* Mobile: oculto (ajustes en la solapa del dock) */
+  @media (max-width: 1024px) {
+    display: none;
+  }
+
+  .trigger {
+    display: none;
+  }
+
+  .menu {
+    position: static;
+    inset: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.85rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  .menuSection {
+    align-items: center;
+  }
+
+  .menuSection + .menuSection {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .menuLabel {
+    display: none;
+  }
+
+  .toggleGroup {
+    --toggle-inset: 0.3rem;
+    --toggle-option-size: 2.25rem;
+    --toggle-gap: 0.3rem;
+  }
+
+  .toggleOption {
+    font-size: 0.8125rem;
+  }
+}
+
+.root[data-placement="panel"] .menu[data-open="true"],
+.root[data-placement="panel"] .menu:not([data-open="true"]) {
+  display: flex;
+  width: 100%;
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  margin: 0;
 }
 
 .menuSection {
@@ -524,7 +699,7 @@
 }
 
 @media (max-width: 809px) {
-  .root {
+  .root[data-placement="floating"] {
     bottom: calc(clamp(0.75rem, 3vw, 1.25rem) + env(safe-area-inset-bottom, 0px));
   }
 }

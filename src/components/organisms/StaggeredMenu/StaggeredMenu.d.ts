@@ -40,6 +40,10 @@ export type StaggeredMenuProps = {
   onMenuClose?: () => void;
   /** Nodo opcional que reemplaza el CTA de la columna derecha de la sticky bar. */
   rightSlot?: React.ReactNode;
+  /** Nodo al pie del panel del menú (p. ej. ajustes). */
+  panelFooterSlot?: React.ReactNode;
+  /** Nodo opcional junto al botón de menú en el dock mobile (esquina inferior). */
+  dockSlot?: React.ReactNode;
 };
 
 export declare const StaggeredMenu: React.FC<StaggeredMenuProps>;

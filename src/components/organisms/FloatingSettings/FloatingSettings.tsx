@@ -15,10 +15,12 @@ import styles from "./FloatingSettings.module.scss";
 
 type FloatingSettingsProps = {
   /**
-   * "floating": botón flotante esquina inferior derecha (default, visible solo en mobile).
-   * "inline": se integra en el contenedor padre (sin position:fixed), visible solo en desktop.
+   * "floating": botón flotante esquina inferior derecha (legacy).
+   * "inline": se integra en el nav desktop.
+   * "dock": junto al menú en el dock mobile (esquina inferior izquierda).
+   * "panel": toggles de idioma/tema siempre visibles al pie del menú lateral.
    */
-  placement?: "floating" | "inline";
+  placement?: "floating" | "inline" | "dock" | "panel";
 };
 
 export function FloatingSettings({
@@ -30,11 +32,13 @@ export function FloatingSettings({
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const isDark = theme === "dark";
+  const isPanel = placement === "panel";
+  const menuOpen = isPanel || open;
 
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isPanel) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
@@ -58,7 +62,7 @@ export function FloatingSettings({
       document.removeEventListener("mousedown", onPointerDown);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [close, open]);
+  }, [close, open, isPanel]);
 
   const cycleLocale = () => {
     setLocale(locale === "es" ? "en" : "es");
@@ -68,23 +72,28 @@ export function FloatingSettings({
     setTheme(isDark ? "light" : "dark");
   };
 
+  const sunSize = isPanel ? 20 : 16;
+  const moonSize = isPanel ? 20 : 16;
+
   return (
     <div
       ref={rootRef}
       className={styles.root}
       data-placement={placement}
-      data-open={open ? "true" : "false"}
+      data-open={menuOpen ? "true" : "false"}
     >
       <div
         id={menuId}
         className={styles.menu}
-        data-open={open ? "true" : "false"}
+        data-open={menuOpen ? "true" : "false"}
         role="region"
         aria-label={`${t("settings.language")}, ${t("settings.theme")}`}
-        aria-hidden={!open}
+        aria-hidden={!menuOpen}
       >
         <div className={styles.menuSection}>
-          <p className={styles.menuLabel}>{t("settings.language")}</p>
+          {!isPanel ? (
+            <p className={styles.menuLabel}>{t("settings.language")}</p>
+          ) : null}
           <button
             type="button"
             className={styles.toggleGroup}
@@ -111,7 +120,9 @@ export function FloatingSettings({
         </div>
 
         <div className={styles.menuSection}>
-          <p className={styles.menuLabel}>{t("settings.theme")}</p>
+          {!isPanel ? (
+            <p className={styles.menuLabel}>{t("settings.theme")}</p>
+          ) : null}
           <button
             type="button"
             className={styles.toggleGroup}
@@ -129,31 +140,33 @@ export function FloatingSettings({
               data-active={!isDark ? "true" : "false"}
               aria-hidden
             >
-              <Sun size={16} strokeWidth={1.75} />
+              <Sun size={sunSize} strokeWidth={1.75} />
             </span>
             <span
               className={styles.toggleOption}
               data-active={isDark ? "true" : "false"}
               aria-hidden
             >
-              <Moon size={16} strokeWidth={1.75} />
+              <Moon size={moonSize} strokeWidth={1.75} />
             </span>
           </button>
         </div>
       </div>
 
-      <button
-        type="button"
-        className={styles.trigger}
-        aria-label={open ? t("settings.closeMenu") : t("settings.openMenu")}
-        aria-expanded={open}
-        aria-controls={menuId}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span className={styles.triggerIcon} aria-hidden>
-          <Settings size={20} strokeWidth={1.75} />
-        </span>
-      </button>
+      {!isPanel ? (
+        <button
+          type="button"
+          className={styles.trigger}
+          aria-label={open ? t("settings.closeMenu") : t("settings.openMenu")}
+          aria-expanded={open}
+          aria-controls={menuId}
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span className={styles.triggerIcon} aria-hidden>
+            <Settings size={20} strokeWidth={1.75} />
+          </span>
+        </button>
+      ) : null}
     </div>
   );
 }

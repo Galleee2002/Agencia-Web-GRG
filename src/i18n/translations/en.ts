@@ -4,6 +4,7 @@ export const en = {
   settings: {
     openMenu: "Open settings",
     closeMenu: "Close settings",
+    button: "Settings",
     language: "Language",
     theme: "Theme",
     langEs: "Español",
@@ -31,13 +32,35 @@ export const en = {
   },
   hero: {
     ariaLabel: "Home",
-    titleDevelop: "We build",
-    titleExperiences: "Digital",
-    titleDigital: "Experiences",
+    titleLine1: "We grow",
+    titleAccent: "your business",
     description:
-      "We build professional websites that reflect your brand identity and help turn visits into real opportunities.",
-    cta: "Learn More",
-    bannerAlt: "GRG three-dimensional logo",
+      "We build custom sites and systems to simplify your work and unlock new opportunities.",
+    cta: "Tell us about your project",
+    visualAria: "Services and main illustration",
+    visualAlt: "3D illustration of a digital platform on a pedestal",
+    services: {
+      management: {
+        title: "Organize your\nbusiness",
+        description: "Centralize clients, payments, and processes.",
+        imageAlt: "3D illustration of business management",
+      },
+      websites: {
+        title: "Your business\non the web",
+        description: "Show what you do and get more inquiries.",
+        imageAlt: "3D illustration of a professional website",
+      },
+      invoicing: {
+        title: "Invoice\nmore simply",
+        description: "Issue and organize receipts online.",
+        imageAlt: "3D illustration of digital invoicing",
+      },
+      ecommerce: {
+        title: "Sell\nonline",
+        description: "Showcase products and manage your sales.",
+        imageAlt: "3D illustration of ecommerce",
+      },
+    },
   },
   workWithUs: {
     eyebrow: "What's it like working with us?",
