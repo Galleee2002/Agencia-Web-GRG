@@ -14,7 +14,6 @@ import {
   SITE_OG_IMAGE_PATH,
   SITE_URL,
 } from "@/config/site";
-import { HERO_ENTRANCE_BOOT_SCRIPT } from "@/lib/heroEntranceBoot";
 import { parseThemeCookie, THEME_COOKIE_NAME } from "@/lib/themeCookie";
 import { cn } from "@/lib/utils";
 
@@ -108,11 +107,6 @@ export default async function RootLayout({
         colorScheme: initialTheme,
       }}
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{ __html: HERO_ENTRANCE_BOOT_SCRIPT }}
-        />
-      </head>
       <body className="min-h-full min-w-0 flex flex-col">
         <OrganizationJsonLd />
         <AppProviders initialTheme={initialTheme}>{children}</AppProviders>

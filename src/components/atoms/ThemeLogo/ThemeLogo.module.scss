@@ -3,13 +3,13 @@
 }
 
 .img.dark {
-  display: none;
+  display: none !important;
 }
 
 :global(html.dark) .img.light {
-  display: none;
+  display: none !important;
 }
 
 :global(html.dark) .img.dark {
-  display: block;
+  display: block !important;
 }

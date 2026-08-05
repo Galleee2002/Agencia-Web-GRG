@@ -1,35 +1,38 @@
 .pill {
   --fc-bg: #ffffff;
   --fc-ink: #252525;
-  --fc-border: transparent;
-  --fc-hover-bg: #ffffff;
-  --fc-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --fc-hover-ink: #252525;
 
   position: fixed;
-  right: clamp(0.75rem, 3vw, 1.25rem);
-  bottom: clamp(0.75rem, 3vw, 1.25rem);
+  right: 0;
+  bottom: 0;
+  left: auto;
   z-index: 48;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(2.75rem, 10vw, 3rem);
-  height: clamp(2.75rem, 10vw, 3rem);
-  border: 1px solid var(--fc-border);
-  border-radius: 999px;
+  gap: 0.45rem;
+  height: calc(2.75rem + 1.4rem);
+  min-height: calc(2.75rem + 1.4rem);
+  padding: 0.7rem 0.85rem;
+  padding-bottom: max(0.7rem, env(safe-area-inset-bottom));
+  padding-right: max(0.85rem, env(safe-area-inset-right));
+  border: none;
+  border-radius: 1.35rem 0 0 0;
   background: var(--fc-bg);
   color: var(--fc-ink);
   text-decoration: none;
-  backdrop-filter: blur(14px);
-  box-shadow: var(--fc-shadow);
+  box-shadow:
+    -4px -4px 18px rgba(0, 0, 0, 0.08),
+    -10px -8px 32px rgba(0, 0, 0, 0.07),
+    0 -1px 0 rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  pointer-events: auto;
+  transition: color 0.2s ease;
 
   &:hover {
-    background: var(--fc-hover-bg);
+    color: var(--fc-hover-ink);
   }
 
   &:focus-visible {
@@ -43,8 +46,22 @@
   }
 }
 
-/* Ocultar mientras el panel del StaggeredMenu está abierto: no compite con el
- * panel ni con su botón de cierre. */
+.label {
+  display: none;
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+
+  @media (min-width: 1025px) {
+    display: inline-block;
+  }
+}
+
+/* Ocultar mientras el panel del StaggeredMenu está abierto */
 :global(body:has(.staggered-menu-wrapper[data-open])) .pill {
   opacity: 0;
   visibility: hidden;
@@ -56,16 +73,14 @@
     visibility 0.2s ease;
 }
 
-/* Apilamos ambos iconos en el mismo punto para hacer un crossfade limpio
- * en hover. El icono de estado normal se muestra por defecto y el de hover
- * se intercala encima cuando el usuario pasa el cursor por el botón. */
 .iconStack {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
   line-height: 0;
 }
 
@@ -105,7 +120,9 @@
 :global(html.dark) .pill {
   --fc-bg: #252525;
   --fc-ink: #ffffff;
-  --fc-border: rgba(255, 255, 255, 0.14);
-  --fc-hover-bg: #2f2f2f;
-  --fc-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --fc-hover-ink: #ffffff;
+  box-shadow:
+    -4px -4px 20px rgba(0, 0, 0, 0.35),
+    -10px -8px 36px rgba(0, 0, 0, 0.28),
+    0 -1px 0 rgba(255, 255, 255, 0.06);
 }

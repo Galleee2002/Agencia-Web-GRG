@@ -123,6 +123,7 @@ export function FloatingContactCta() {
           strokeWidth={1.75}
         />
       </span>
+      <span className={styles.label}>{label}</span>
     </a>
   );
 }

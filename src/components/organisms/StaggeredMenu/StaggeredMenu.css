@@ -35,7 +35,10 @@
 }
 
 .staggered-menu-wrapper.fixed-wrapper .staggered-menu-panel {
-  z-index: 25;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .staggered-menu-backdrop {
@@ -87,46 +90,57 @@
   z-index: 20;
 }
 
-/* Barra global: fija en viewport (z-index solo dentro de .fixed-wrapper; ver reglas arriba). */
+/* Barra global: logo centrado arriba (sin pill). */
 .sm-sticky-brand-host {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  z-index: 12;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   width: 100%;
-  padding: max(1.25rem, env(safe-area-inset-top)) clamp(1.25rem, 4vw, 2rem) 0;
+  padding: max(1.5rem, calc(env(safe-area-inset-top) + 1rem))
+    clamp(1.25rem, 4vw, 2rem) 0;
   pointer-events: none;
-  transition: padding 0.85s cubic-bezier(0.33, 1, 0.32, 1);
+  transition: padding 0.7s cubic-bezier(0.33, 1, 0.32, 1);
 }
 
+/* Al scrollear: menos padding superior */
 .sm-sticky-brand-host[data-compact] {
   padding-top: max(0.65rem, env(safe-area-inset-top));
 }
 
-.sm-sticky-brand-host:not([data-compact]):not([data-open]) {
-  padding-top: 0;
-  padding-inline: 0;
-}
-
 .sm-sticky-brand-host[data-open]:not([data-compact]) {
   padding-top: max(1.25rem, env(safe-area-inset-top));
-  padding-inline: clamp(1.25rem, 4vw, 2rem);
 }
 
-.sm-sticky-brand-host:not([data-compact]):not([data-open]) .sm-sticky-brand-inner {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translate3d(0, -0.65rem, 0);
+.sm-sticky-brand-host .sm-logo {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
 }
 
-.sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner,
-.sm-sticky-brand-host[data-open] .sm-sticky-brand-inner {
+.sm-sticky-brand-host .sm-logo-img {
+  height: 32px;
+  width: auto;
+  transition: height 0.45s cubic-bezier(0.33, 1, 0.32, 1);
+}
+
+.sm-sticky-brand-host[data-compact] .sm-logo-img {
+  height: 26px;
+}
+
+/* Legacy pill (solo si algún layout no-fixed aún lo usa) */
+.sm-sticky-brand-host .sm-sticky-brand-inner {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translate3d(0, 0, 0);
+  transform: none;
 }
 
 .sm-sticky-brand-inner {
@@ -137,30 +151,21 @@
   align-items: center;
   gap: 0.75rem;
   min-height: 0;
-  width: 100%;
+  width: min(1200px, calc(100% - 3rem));
   max-width: 100%;
   margin-inline: auto;
   padding: 0.5rem;
   pointer-events: auto;
-  border-radius: 0;
-  background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  box-shadow: none;
-  transition:
-    opacity 0.45s cubic-bezier(0.33, 1, 0.32, 1),
-    transform 0.45s cubic-bezier(0.33, 1, 0.32, 1),
-    visibility 0.45s cubic-bezier(0.33, 1, 0.32, 1),
-    width 0.85s cubic-bezier(0.33, 1, 0.32, 1),
-    padding 0.85s cubic-bezier(0.33, 1, 0.32, 1),
-    background 0.85s cubic-bezier(0.33, 1, 0.32, 1),
-    border-radius 0.85s cubic-bezier(0.33, 1, 0.32, 1),
-    box-shadow 0.85s cubic-bezier(0.33, 1, 0.32, 1);
-  /* backdrop-filter sin transición: el blur en cada frame del morph es muy costoso */
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    rgba(0, 0, 0, 0.06) 0 0.5px 0 0.5px inset,
+    rgba(0, 0, 0, 0.08) 0 12px 40px;
 }
 
 .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
-  /* Mismo ancho que .inner de TeamSection/ContactSection/etc. */
   width: min(1200px, calc(100% - 3rem));
   padding: 0.5rem;
   border-radius: 100px;
@@ -312,11 +317,9 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   }
 
   /* Blur entra un instante después del morph (no se interpola frame a frame) */
-  .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
+  .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner,
+  .sm-sticky-brand-host:not([data-open]) .sm-sticky-brand-inner {
     transition:
-      opacity 0.45s cubic-bezier(0.33, 1, 0.32, 1),
-      transform 0.45s cubic-bezier(0.33, 1, 0.32, 1),
-      visibility 0.45s cubic-bezier(0.33, 1, 0.32, 1),
       width 0.85s cubic-bezier(0.33, 1, 0.32, 1),
       padding 0.85s cubic-bezier(0.33, 1, 0.32, 1),
       background 0.85s cubic-bezier(0.33, 1, 0.32, 1),
@@ -326,15 +329,9 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
       backdrop-filter 0s 0.72s;
   }
 
-  .sm-sticky-brand-host:not([data-compact]) .sm-sticky-brand-inner {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    transition-delay: 0s;
-  }
-
   .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner,
   .sm-sticky-brand-host[data-open] .sm-sticky-brand-inner {
-    will-change: transform, opacity, width;
+    will-change: width;
   }
 
   .sm-sticky-brand-host:not([data-compact]):not([data-open]) .sm-sticky-brand-inner {
@@ -583,7 +580,6 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 }
 
 .sm-logo-img {
-  display: block;
   height: 32px;
   width: auto;
   max-width: min(100%, 220px);
@@ -722,13 +718,23 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 
 /* Oculto hasta que GSAP fije la posición inicial (evita flash sin pisar transform). */
 .staggered-menu-panel:not(.sm-gsap-ready) {
-  visibility: hidden;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
-/* Cerrado: oculto por atributo (evita flash en móvil si GSAP tarda o revierte). */
-.staggered-menu-panel[aria-hidden='true'] {
-  pointer-events: none;
-  visibility: hidden;
+/* Cerrado: siempre oculto (vence estilos inline de GSAP autoAlpha). */
+.staggered-menu-wrapper:not([data-open]) .staggered-menu-panel {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  clip-path: inset(50%);
+}
+
+/* Abierto: visible para que GSAP anime transform/opacity. */
+.staggered-menu-wrapper[data-open] .staggered-menu-panel {
+  visibility: visible !important;
+  pointer-events: auto;
+  clip-path: none;
 }
 
 .staggered-menu-wrapper.fixed-wrapper .staggered-menu-panel {
@@ -816,6 +822,23 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-height: 0;
+}
+
+.sm-panel-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+  width: 100%;
+  padding-top: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* En mobile los ajustes viven en la solapa inferior; no duplicar en el panel */
+@media (max-width: 1024px) {
+  .sm-panel-footer {
+    display: none;
+  }
 }
 
 .sm-socials {
@@ -1050,56 +1073,23 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
     z-index: 52;
   }
   .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host {
-    padding-top: max(0.85rem, env(safe-area-inset-top));
+    padding-top: max(1.25rem, calc(env(safe-area-inset-top) + 0.75rem));
     padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
   }
 
-  .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host:not([data-compact]):not([data-open]) {
-    padding-top: 0;
-    padding-inline: 0;
+  .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host[data-compact] {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
   }
 
   .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host[data-open]:not([data-compact]) {
-    padding-top: max(0.85rem, env(safe-area-inset-top));
-    padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+    padding-top: max(0.75rem, env(safe-area-inset-top));
   }
 
   .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host .sm-logo-img {
-    height: 24px;
+    height: 28px;
   }
 
-  .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    max-width: calc(100% - 1.5rem);
-    min-height: 0;
-    margin-inline: auto;
-    padding: 0.5rem;
-    border-radius: 100px;
-    background: transparent;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
-  }
-
-  .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
-    width: fit-content;
-    max-width: calc(100% - 1.5rem);
-    background: rgba(255, 255, 255, 0.92);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    box-shadow:
-      rgba(0, 0, 0, 0.06) 0 0.5px 0 0.5px inset,
-      rgba(0, 0, 0, 0.08) 0 12px 40px;
-  }
-
-  .staggered-menu-wrapper.fixed-wrapper .sm-brand-col--center {
-    flex: 0 0 auto;
-  }
-
-  /* Panel a pantalla completa: logo negro legible sobre fondo blanco */
+  /* Panel móvil a pantalla completa: logo negro legible sobre fondo blanco */
   .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host .sm-logo-img {
     filter: none;
   }
@@ -1110,100 +1100,205 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 }
 
 .sm-mobile-bottom-dock {
+  display: flex;
+  position: fixed;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  z-index: 50;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  height: calc(2.75rem + 1.4rem);
+  min-height: calc(2.75rem + 1.4rem);
+  padding: 0.7rem 0.85rem;
+  padding-bottom: max(0.7rem, env(safe-area-inset-bottom));
+  padding-left: max(0.7rem, env(safe-area-inset-left));
+  background: #ffffff;
+  border: none;
+  border-radius: 0 1.35rem 0 0;
+  box-shadow:
+    4px -4px 18px rgba(0, 0, 0, 0.08),
+    10px -8px 32px rgba(0, 0, 0, 0.07),
+    0 -1px 0 rgba(0, 0, 0, 0.04);
+  pointer-events: auto;
+}
+
+/* Menú vive en el dock; en mobile también se oculta el slot de settings del header */
+.staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host .sm-brand-col--start {
   display: none;
 }
 
+.sm-mobile-bottom-dock .sm-toggle--dock .sm-dock-label {
+  display: none;
+}
+
+.sm-mobile-bottom-dock > .sm-toggle--dock,
+.sm-mobile-bottom-dock > [data-placement="dock"] {
+  pointer-events: auto;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  align-self: center;
+}
+
+.sm-mobile-bottom-dock > [data-placement="dock"] {
+  display: grid;
+  place-items: center;
+}
+
+.sm-mobile-bottom-dock .sm-toggle--dock {
+  --sm-dock-trigger-bg: transparent;
+  --sm-dock-trigger-ink: #252525;
+  --sm-dock-trigger-border: transparent;
+  --sm-dock-trigger-hover-bg: rgba(0, 0, 0, 0.05);
+  --sm-dock-trigger-shadow: none;
+
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  border-radius: 0.65rem;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: var(--sm-dock-trigger-ink) !important;
+  background: var(--sm-dock-trigger-bg);
+  border: 1px solid var(--sm-dock-trigger-border);
+  box-shadow: none;
+  line-height: 0;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.sm-mobile-bottom-dock .sm-toggle--dock .sm-icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  line-height: 0;
+}
+
+.sm-mobile-bottom-dock .sm-toggle--dock .sm-icon-svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: inherit;
+  stroke: currentColor;
+}
+
 @media (max-width: 1024px) {
-  .staggered-menu-wrapper.fixed-wrapper .sm-mobile-bottom-dock {
-    display: flex;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-sizing: border-box;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding:
-      0.65rem
-      max(1.25rem, env(safe-area-inset-left))
-      max(1rem, env(safe-area-inset-bottom))
-      max(1.25rem, env(safe-area-inset-right));
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    pointer-events: none;
+  .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host .sm-brand-col--end {
+    display: none;
   }
+}
 
-  .staggered-menu-wrapper.fixed-wrapper .sm-mobile-bottom-dock > * {
-    pointer-events: auto;
-    flex: 0 0 auto;
-  }
-
-  .staggered-menu-wrapper.fixed-wrapper .sm-mobile-bottom-dock .sm-toggle--dock {
-    --sm-dock-trigger-bg: #ffffff;
-    --sm-dock-trigger-ink: #252525;
-    --sm-dock-trigger-border: transparent;
-    --sm-dock-trigger-hover-bg: #ffffff;
-    --sm-dock-trigger-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: clamp(2.75rem, 10vw, 3rem);
-    min-width: clamp(2.75rem, 10vw, 3rem);
-    height: clamp(2.75rem, 10vw, 3rem);
+@media (min-width: 1025px) {
+  /* La solapa es el propio botón (en flujo) para que el click cubra todo */
+  .sm-mobile-bottom-dock {
     padding: 0;
-    gap: 0;
-    border-radius: 999px;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-    color: var(--sm-dock-trigger-ink) !important;
-    background: var(--sm-dock-trigger-bg);
-    border: 1px solid var(--sm-dock-trigger-border);
-    box-shadow: var(--sm-dock-trigger-shadow);
-    transition:
-      background 0.2s ease,
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      color 0.2s ease;
+    cursor: pointer;
   }
 
-  .staggered-menu-wrapper.fixed-wrapper:not([data-open]) .sm-mobile-bottom-dock .sm-toggle--dock:hover,
-  .staggered-menu-wrapper.fixed-wrapper:not([data-open]) .sm-mobile-bottom-dock .sm-toggle--dock:active {
-    color: var(--sm-dock-trigger-ink) !important;
-    background: var(--sm-dock-trigger-hover-bg);
-    border-color: var(--sm-dock-trigger-border);
+  .sm-mobile-bottom-dock > .sm-toggle--dock {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    height: calc(2.75rem + 1.4rem);
+    min-height: calc(2.75rem + 1.4rem);
   }
 
-  .staggered-menu-wrapper.fixed-wrapper:not([data-open]) .sm-mobile-bottom-dock .sm-toggle--dock:focus-visible {
-    color: var(--sm-dock-trigger-ink) !important;
-    background: var(--sm-dock-trigger-bg);
-    border-color: var(--sm-dock-trigger-border);
-    outline: 2px solid #0099ff;
-    outline-offset: 3px;
-    box-shadow: var(--sm-dock-trigger-shadow);
-  }
-
-  .staggered-menu-wrapper.fixed-wrapper .sm-mobile-bottom-dock .sm-toggle--dock .sm-icon {
+  .sm-mobile-bottom-dock .sm-toggle--dock {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.45rem;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    min-height: 100%;
+    padding: 0.7rem 1rem 0.7rem 0.85rem;
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    padding-bottom: max(0.7rem, env(safe-area-inset-bottom));
+    border-radius: inherit;
+    cursor: pointer;
+  }
+
+  .sm-mobile-bottom-dock .sm-toggle--dock .sm-dock-label {
+    display: inline-block;
+    font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
     color: inherit;
   }
 
-  .staggered-menu-wrapper.fixed-wrapper .sm-mobile-bottom-dock .sm-toggle--dock .sm-icon-svg {
-    display: block;
-    color: inherit;
-    stroke: currentColor;
+  .sm-mobile-bottom-dock .sm-toggle--dock .sm-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: 0 0 1.25rem;
   }
 
-  .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-mobile-bottom-dock .sm-toggle--dock {
-    visibility: hidden;
-    pointer-events: none;
+  /* Settings del dock solo en mobile */
+  .sm-mobile-bottom-dock [data-placement="dock"] {
+    display: none !important;
   }
+}
+
+.staggered-menu-wrapper.fixed-wrapper:not([data-open]) .sm-mobile-bottom-dock .sm-toggle--dock:hover,
+.staggered-menu-wrapper.fixed-wrapper:not([data-open]) .sm-mobile-bottom-dock .sm-toggle--dock:active {
+  color: var(--sm-dock-trigger-ink) !important;
+  background: transparent;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+.staggered-menu-wrapper.fixed-wrapper:not([data-open]) .sm-mobile-bottom-dock .sm-toggle--dock:focus-visible {
+  color: var(--sm-dock-trigger-ink) !important;
+  background: transparent;
+  border-color: transparent;
+  outline: 2px solid #0099ff;
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.staggered-menu-wrapper.fixed-wrapper[data-open] .sm-mobile-bottom-dock {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+html.dark .sm-mobile-bottom-dock {
+  background: #252525;
+  box-shadow:
+    4px -4px 20px rgba(0, 0, 0, 0.35),
+    10px -8px 36px rgba(0, 0, 0, 0.28),
+    0 -1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html.dark .sm-mobile-bottom-dock .sm-toggle--dock {
+  --sm-dock-trigger-bg: transparent;
+  --sm-dock-trigger-ink: #ffffff;
+  --sm-dock-trigger-border: transparent;
+  --sm-dock-trigger-hover-bg: rgba(255, 255, 255, 0.08);
+  --sm-dock-trigger-shadow: none;
+}
+
+@media (max-width: 1024px) {
+  /* Estilos mobile del panel / close siguen abajo */
 
   .staggered-menu-wrapper.fixed-wrapper .sm-panel-close {
     display: none;
@@ -1314,6 +1409,14 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 }
 
 /* Tema oscuro global (toggle en FloatingSettings → clase .dark en <html>) */
+html.dark .sm-sticky-brand-host:not([data-open]) .sm-sticky-brand-inner {
+  background: #252525;
+  box-shadow:
+    rgba(255, 255, 255, 0.06) 0 0.5px 0 0.5px inset,
+    var(--site-nav-pill-shadow) 0 12px 40px;
+}
+
+html.dark .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host .sm-sticky-brand-inner,
 html.dark .staggered-menu-wrapper.fixed-wrapper .sm-sticky-brand-host[data-compact] .sm-sticky-brand-inner {
   background: #252525;
   box-shadow:
@@ -1367,16 +1470,4 @@ html.dark [data-position='left'] .staggered-menu-panel {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     12px 0 48px var(--site-menu-panel-shadow, rgba(0, 0, 0, 0.35));
-}
-
-@media (max-width: 1024px) {
-  html.dark .staggered-menu-wrapper.fixed-wrapper .sm-mobile-bottom-dock .sm-toggle--dock {
-    --sm-dock-trigger-bg: #252525;
-    --sm-dock-trigger-ink: #ffffff;
-    --sm-dock-trigger-border: rgba(255, 255, 255, 0.14);
-    --sm-dock-trigger-hover-bg: #2f2f2f;
-    --sm-dock-trigger-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
 }
