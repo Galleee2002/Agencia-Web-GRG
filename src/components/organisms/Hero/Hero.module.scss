@@ -676,6 +676,23 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
+/* Notebooks: imagen un poco mayor y card inferior izquierda más al centro de la foto
+ * (evita solaparse con la descripción de la columna izquierda). */
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .visualCore {
+    width: min(114%, 64dvh, 680px);
+  }
+
+  .cardSlotBottomLeft {
+    bottom: 8%;
+    left: -4%;
+  }
+  .cardSlotBottomRight {
+    bottom: 8%;
+    right: -6%;
+  }
+}
+
 @media (max-width: 808px) {
   .hero {
     height: auto;

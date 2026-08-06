@@ -123,6 +123,12 @@ export const en = {
     prevImage: "Previous image",
     nextImage: "Next image",
     items: {
+      "8": {
+        description:
+          "Web system for Rothamel Repuestos that centralizes catalogs of parts for trucks, heavy vehicles, and agricultural machinery. It replaces Excel and manual updates with search, organization, and orderly product updates.",
+        caseStudyDescription:
+          "Rothamel managed parts catalogs with Excel and manual updates, which made search and data maintenance difficult. We built a web platform that centralizes loading, organization, and product lookup for trucks, heavy vehicles, and agricultural machinery, cutting repetitive work and keeping information up to date more simply.",
+      },
       "1": {
         description:
           "E-commerce built for an Argentine apparel brand focused on online clothing sales. The platform includes a product catalog, database, server, shopping cart, and online payments, offering a clear experience for customers and administrators.",

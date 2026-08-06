@@ -121,6 +121,12 @@ export const es = {
     prevImage: "Imagen anterior",
     nextImage: "Imagen siguiente",
     items: {
+      "8": {
+        description:
+          "Sistema web para Rothamel Repuestos que centraliza catálogos de repuestos para camiones, vehículos pesados y maquinaria agrícola. Reemplaza Excel y cargas manuales por búsqueda, organización y actualización ordenada de productos.",
+        caseStudyDescription:
+          "Rothamel gestionaba catálogos de repuestos con Excel y actualizaciones manuales, lo que dificultaba la búsqueda y el mantenimiento de datos. Desarrollamos una plataforma web que centraliza carga, organización y consulta de productos para camiones, vehículos pesados y maquinaria agrícola, reduciendo tareas repetitivas y manteniendo la información actualizada de forma más simple.",
+      },
       "1": {
         description:
           "Ecommerce desarrollado para una marca argentina de indumentaria orientada a la venta online de ropa. La plataforma incorpora catálogo de productos, base de datos, servidor, carrito de compras y pagos online, ofreciendo una experiencia clara para clientes y administradores.",

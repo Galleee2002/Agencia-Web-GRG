@@ -4,8 +4,8 @@ export type ProjectClientType = "national" | "international" | "grg-tool";
 
 export interface PortfolioProject {
   id: number;
-  /** Acento visual del slide (1–7), enlazado a selectores `[data-project-theme]` en SCSS */
-  themeId: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  /** Acento visual del slide (1–8), enlazado a selectores `[data-project-theme]` en SCSS */
+  themeId: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   name: string;
   /** Resumen del producto en carrusel y listados. */
   description: string;
@@ -37,10 +37,23 @@ function projectImage(file: string): string {
 
 /**
  * Proyectos de ejemplo. Imágenes WebP bajo `public/projects/resize-imgs/`.
- * `themeId` (1–7) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
+ * `themeId` (1–8) define acentos en ProjectsSection.module.scss (flechas, bordes suaves).
  * Las descripciones visibles se resuelven vía i18n (`getPortfolioProjects`).
  */
 export const portfolioProjectsBase: PortfolioProjectBase[] = [
+  {
+    id: 8,
+    themeId: 8,
+    name: "Rothamel Repuestos",
+    clientType: "national",
+    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL"],
+    images: [
+      projectImage("rothamel1.webp"),
+      projectImage("rothamel2.webp"),
+      projectImage("rothamel3.webp"),
+    ],
+    href: "/proyectos/rothamel-repuestos",
+  },
   {
     id: 1,
     themeId: 6,
