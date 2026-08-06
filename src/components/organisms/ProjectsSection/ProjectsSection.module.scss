@@ -166,7 +166,8 @@ $grg-cyan-bright: #7ae0ff;
 .section[data-project-theme="4"],
 .section[data-project-theme="5"],
 .section[data-project-theme="6"],
-.section[data-project-theme="7"] {
+.section[data-project-theme="7"],
+.section[data-project-theme="8"] {
   --p-surface: #ffffff;
 }
 
@@ -219,6 +220,13 @@ $grg-cyan-bright: #7ae0ff;
   --p-title-accent: #0099ff;
 }
 
+/* themeId 8 — Rothamel Repuestos: azul marca · verde CTA */
+.section[data-project-theme="8"] {
+  --p-spot1: rgba(0, 51, 153, 0.36);
+  --p-spot2: rgba(37, 168, 66, 0.28);
+  --p-title-accent: #003399;
+}
+
 /* Dark: mismos acentos por proyecto (html.dark .section no debe pisar --p-title-accent). */
 :global(html.dark) .section[data-project-theme="1"] {
   --p-title-accent: #e52629;
@@ -246,6 +254,10 @@ $grg-cyan-bright: #7ae0ff;
 
 :global(html.dark) .section[data-project-theme="7"] {
   --p-title-accent: #7ae0ff;
+}
+
+:global(html.dark) .section[data-project-theme="8"] {
+  --p-title-accent: #5b8fff;
 }
 
 /* leadScope: acentos del encabezado — mismo celeste GRG (#0099ff) en light y dark. */
