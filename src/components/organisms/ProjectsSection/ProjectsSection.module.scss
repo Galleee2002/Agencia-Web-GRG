@@ -1184,19 +1184,16 @@ $grg-cyan-bright: #7ae0ff;
   height: 44px;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: none;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.35);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .lightboxClose:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(122, 224, 255, 0.35);
 }
 
 .lightboxClose:focus-visible {
@@ -1215,20 +1212,18 @@ $grg-cyan-bright: #7ae0ff;
   height: clamp(44px, 5vw, 52px);
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: none;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.38);
   color: rgba(255, 255, 255, 0.92);
   cursor: pointer;
   transition:
     background 0.2s ease,
-    border-color 0.2s ease,
     opacity 0.2s ease;
 }
 
 .lightboxNav:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(122, 224, 255, 0.35);
 }
 
 .lightboxNav:focus-visible {

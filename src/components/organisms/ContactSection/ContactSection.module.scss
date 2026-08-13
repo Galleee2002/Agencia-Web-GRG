@@ -99,13 +99,13 @@ $contact-control-height: 46px;
 $form-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
 $form-reveal-card-duration: 0.9s;
 $form-reveal-item-duration: 0.72s;
-$form-reveal-offset-card: -60px;
-$form-reveal-offset-item: -28px;
+$form-reveal-offset-card: 48px;
+$form-reveal-offset-item: 24px;
 
 @keyframes formRevealItem {
   from {
     opacity: 0;
-    transform: translate3d($form-reveal-offset-item, 0, 0);
+    transform: translate3d(0, $form-reveal-offset-item, 0);
   }
 
   to {
@@ -125,7 +125,7 @@ $form-reveal-offset-item: -28px;
   box-shadow: none;
   contain: layout style;
   opacity: 0;
-  transform: translate3d($form-reveal-offset-card, 0, 0);
+  transform: translate3d(0, $form-reveal-offset-card, 0);
   filter: blur(8px);
   transition:
     opacity $form-reveal-card-duration $form-reveal-ease,
@@ -133,7 +133,7 @@ $form-reveal-offset-item: -28px;
     filter $form-reveal-card-duration $form-reveal-ease;
 
   @media (max-width: $contact-breakpoint) {
-    transform: translate3d(-40px, 0, 0);
+    transform: translate3d(0, 36px, 0);
   }
 
   &[data-form-visible="true"] {
@@ -144,11 +144,11 @@ $form-reveal-offset-item: -28px;
 
   &[data-form-visible="false"] {
     opacity: 0;
-    transform: translate3d($form-reveal-offset-card, 0, 0);
+    transform: translate3d(0, $form-reveal-offset-card, 0);
     filter: blur(8px);
 
     @media (max-width: $contact-breakpoint) {
-      transform: translate3d(-40px, 0, 0);
+      transform: translate3d(0, 36px, 0);
     }
   }
 }
@@ -159,7 +159,7 @@ $form-reveal-offset-item: -28px;
   gap: 6px;
   min-width: 0;
   opacity: 0;
-  transform: translate3d($form-reveal-offset-item, 0, 0);
+  transform: translate3d(0, $form-reveal-offset-item, 0);
   filter: blur(4px);
   transition:
     opacity $form-reveal-item-duration $form-reveal-ease,
@@ -167,17 +167,17 @@ $form-reveal-offset-item: -28px;
     filter $form-reveal-item-duration $form-reveal-ease;
 
   @media (max-width: $contact-breakpoint) {
-    transform: translate3d(-20px, 0, 0);
+    transform: translate3d(0, 18px, 0);
   }
 
   &[data-row-visible="false"] {
     opacity: 0;
-    transform: translate3d($form-reveal-offset-item, 0, 0);
+    transform: translate3d(0, $form-reveal-offset-item, 0);
     filter: blur(4px);
     will-change: transform, opacity, filter;
 
     @media (max-width: $contact-breakpoint) {
-      transform: translate3d(-20px, 0, 0);
+      transform: translate3d(0, 18px, 0);
     }
   }
 
@@ -576,19 +576,17 @@ $form-reveal-offset-item: -28px;
   text-transform: uppercase;
   cursor: pointer;
   transition:
-    opacity 0.22s $form-reveal-ease,
-    transform 0.22s $form-reveal-ease,
-    box-shadow 0.22s $form-reveal-ease;
+    background-color 0.22s $form-reveal-ease,
+    color 0.22s $form-reveal-ease,
+    opacity 0.22s $form-reveal-ease;
 
   &:hover:not(:disabled) {
-    opacity: 0.95;
-    transform: translate3d(0, -1px, 0);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    background: $framer-blue;
+    color: $pure-white;
   }
 
   &:active:not(:disabled) {
-    transform: translate3d(0, 0, 0);
-    box-shadow: none;
+    opacity: 0.92;
   }
 
   &:focus-visible {
@@ -777,9 +775,7 @@ $contact-dark-placeholder: rgba(255, 255, 255, 0.45);
       background-color 0.22s $form-reveal-ease,
       color 0.22s $form-reveal-ease,
       border-color 0.22s $form-reveal-ease,
-      opacity 0.22s $form-reveal-ease,
-      transform 0.22s $form-reveal-ease,
-      box-shadow 0.22s $form-reveal-ease;
+      opacity 0.22s $form-reveal-ease;
 
     svg {
       color: $pure-white;
@@ -787,13 +783,12 @@ $contact-dark-placeholder: rgba(255, 255, 255, 0.45);
     }
 
     &:hover:not(:disabled) {
-      background: $pure-white;
-      color: $void-black;
-      border-color: $pure-white;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+      background: $framer-blue;
+      color: $pure-white;
+      border-color: $framer-blue;
 
       svg {
-        color: $void-black;
+        color: $pure-white;
       }
     }
   }

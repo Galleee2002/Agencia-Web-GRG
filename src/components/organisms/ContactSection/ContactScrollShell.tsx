@@ -108,9 +108,12 @@ export function ContactScrollShell() {
               >
                 <ContactIntro />
               </motion.div>
-              <div className={styles.revealBlock}>
+              <motion.div
+                className={styles.revealBlock}
+                style={{ opacity: introOpacity, y: introY }}
+              >
                 <ContactForm />
-              </div>
+              </motion.div>
             </>
           )}
         </div>

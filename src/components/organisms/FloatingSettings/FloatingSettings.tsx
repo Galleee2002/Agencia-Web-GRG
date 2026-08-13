@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Settings, Sun } from "lucide-react";
+import { Moon, Settings, Sun, X } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -14,12 +14,6 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import styles from "./FloatingSettings.module.scss";
 
 type FloatingSettingsProps = {
-  /**
-   * "floating": botón flotante esquina inferior derecha (legacy).
-   * "inline": se integra en el nav desktop.
-   * "dock": junto al menú en el dock mobile (esquina inferior izquierda).
-   * "panel": toggles de idioma/tema siempre visibles al pie del menú lateral.
-   */
   placement?: "floating" | "inline" | "dock" | "panel";
 };
 
@@ -33,9 +27,21 @@ export function FloatingSettings({
   const [open, setOpen] = useState(false);
   const isDark = theme === "dark";
   const isPanel = placement === "panel";
+  const isDock = placement === "dock";
   const menuOpen = isPanel || open;
 
   const close = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!isDock) return;
+    const dock = rootRef.current?.closest(".sm-mobile-bottom-dock");
+    if (!dock) return;
+    if (open) dock.setAttribute("data-settings-open", "");
+    else dock.removeAttribute("data-settings-open");
+    return () => {
+      dock.removeAttribute("data-settings-open");
+    };
+  }, [isDock, open]);
 
   useEffect(() => {
     if (!open || isPanel) return;
@@ -44,9 +50,10 @@ export function FloatingSettings({
       if (event.key === "Escape") close();
     };
 
-    const onPointerDown = (event: MouseEvent) => {
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
       const root = rootRef.current;
-      if (!root || root.contains(event.target as Node)) return;
+      const target = event.target as Node | null;
+      if (!root || !target || root.contains(target)) return;
       close();
     };
 
@@ -56,10 +63,12 @@ export function FloatingSettings({
 
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
       window.removeEventListener("scroll", onScroll);
     };
   }, [close, open, isPanel]);
@@ -162,9 +171,14 @@ export function FloatingSettings({
           aria-controls={menuId}
           onClick={() => setOpen((value) => !value)}
         >
-          <span className={styles.triggerIcon} aria-hidden>
+          <span className={styles.triggerIcon} aria-hidden data-icon="settings">
             <Settings size={20} strokeWidth={1.75} />
           </span>
+          {isDock ? (
+            <span className={styles.triggerIcon} aria-hidden data-icon="close">
+              <X size={20} strokeWidth={1.75} />
+            </span>
+          ) : null}
         </button>
       ) : null}
     </div>

@@ -33,20 +33,10 @@ function useMaxWidth(maxWidthPx) {
 
 const COMPACT_NAV_AFTER = 72;
 
-/**
- * `hasResolvedScroll`: una vez asentado el scroll real, solo miramos `scrollY`.
- * Al tope → padding-top grande; al scrollear → padding compacto (efecto “achique”).
- */
-function readCompactNavState({ hasResolvedScroll } = {}) {
+function readCompactNavFromScroll() {
   if (typeof window === 'undefined') return false;
-
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-  if (scrollY > COMPACT_NAV_AFTER) return true;
-
-  if (hasResolvedScroll) return false;
-
-  const hash = window.location.hash;
-  return Boolean(hash && hash !== '#inicio');
+  return scrollY > COMPACT_NAV_AFTER;
 }
 
 const StaggeredMenu = ({
@@ -84,10 +74,11 @@ const StaggeredMenu = ({
 }) => {
   const [open, setOpen] = useState(false);
   /* SSR siempre arranca en false para coincidir con la salida del server.
-   * El useLayoutEffect de abajo sincroniza el estado real antes del primer
-   * paint, así no hay flash visible y se evita el hydration mismatch que
-   * causaba leer `window` en el initial state. */
+   * useLayoutEffect sincroniza el scroll real antes del paint; las
+   * transiciones CSS solo se habilitan después (`navReady`) para no
+   * animar achique/agrande en el reload. */
   const [compactNav, setCompactNav] = useState(false);
+  const [navReady, setNavReady] = useState(false);
   const mobileBottomNav = useMaxWidth(MOBILE_BOTTOM_NAV_MAX_WIDTH);
   const mobileBottomNavRef = useRef(false);
   const compactNavRef = useRef(false);
@@ -651,17 +642,14 @@ const StaggeredMenu = ({
   useLayoutEffect(() => {
     if (!isFixed || typeof window === 'undefined') return;
 
-    let hasResolvedScroll = false;
-
     let scrollRaf = 0;
 
     const syncCompactNav = () => {
-      const next = readCompactNavState({ hasResolvedScroll });
+      const next = readCompactNavFromScroll();
       setCompactNav(prev => (prev === next ? prev : next));
     };
 
-    const markResolvedAndSync = () => {
-      hasResolvedScroll = true;
+    const onScroll = () => {
       if (scrollRaf) return;
       scrollRaf = requestAnimationFrame(() => {
         scrollRaf = 0;
@@ -669,36 +657,19 @@ const StaggeredMenu = ({
       });
     };
 
+    // Estado correcto ya (sin animar): el CSS aún no tiene data-nav-ready.
     syncCompactNav();
 
-    const raf = requestAnimationFrame(() => {
-      syncCompactNav();
-      requestAnimationFrame(syncCompactNav);
+    const readyRaf = requestAnimationFrame(() => {
+      setNavReady(true);
     });
 
-    const timers = [0, 50, 150, 400].map((ms) => window.setTimeout(syncCompactNav, ms));
-
-    /* Después de 600ms ya pasó el reposicionamiento automático del navegador
-     * por el hash inicial. A partir de aquí confiamos solo en `scrollY`. */
-    const resolveTimer = window.setTimeout(() => {
-      hasResolvedScroll = true;
-      syncCompactNav();
-    }, 600);
-
-    window.addEventListener('scroll', markResolvedAndSync, { passive: true });
-    window.addEventListener('load', syncCompactNav);
-    window.addEventListener('pageshow', syncCompactNav);
-    window.addEventListener('hashchange', syncCompactNav);
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(readyRaf);
       if (scrollRaf) cancelAnimationFrame(scrollRaf);
-      timers.forEach((id) => window.clearTimeout(id));
-      window.clearTimeout(resolveTimer);
-      window.removeEventListener('scroll', markResolvedAndSync);
-      window.removeEventListener('load', syncCompactNav);
-      window.removeEventListener('pageshow', syncCompactNav);
-      window.removeEventListener('hashchange', syncCompactNav);
+      window.removeEventListener('scroll', onScroll);
     };
   }, [isFixed]);
 
@@ -807,6 +778,7 @@ const StaggeredMenu = ({
         className="sm-sticky-brand-host"
         data-open={open || undefined}
         data-compact={compactNav || undefined}
+        data-nav-ready={navReady || undefined}
         aria-label="Marca"
       >
         {logoBlock}

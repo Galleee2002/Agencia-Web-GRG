@@ -97,26 +97,34 @@
   }
 
   &[data-placement="dock"] {
+    --fs-dock-ease: cubic-bezier(0.32, 0.72, 0, 1);
+    --fs-dock-duration: 0.38s;
     position: relative;
     inset: auto;
-    display: grid;
-    grid-template: 1fr / 1fr;
-    place-items: center;
-    flex-direction: unset;
-    align-items: unset;
-    justify-content: unset;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     gap: 0;
-    width: 2.75rem;
+    width: auto;
+    max-width: 2.75rem;
     height: 2.75rem;
-    flex: 0 0 2.75rem;
+    flex: 0 0 auto;
     margin: 0;
     padding: 0;
+    overflow: hidden;
     pointer-events: auto;
     bottom: auto;
     top: auto;
     right: auto;
     left: auto;
     transform: none;
+    transition: max-width var(--fs-dock-duration) var(--fs-dock-ease);
+
+    &[data-open="true"] {
+      max-width: 22rem;
+      gap: 0.35rem;
+    }
 
     @media (min-width: 1025px) {
       display: none !important;
@@ -293,7 +301,8 @@
 .root[data-placement="dock"] .trigger {
   position: relative;
   z-index: 1;
-  grid-area: 1 / 1;
+  order: 0;
+  flex: 0 0 2.75rem;
   display: grid;
   place-items: center;
   width: 2.75rem;
@@ -308,7 +317,7 @@
   box-shadow: none;
   backdrop-filter: none;
   line-height: 0;
-  align-self: unset;
+  align-self: center;
   transform: none;
 
   &:hover {
@@ -318,6 +327,7 @@
 }
 
 .root[data-placement="dock"] .triggerIcon {
+  grid-area: 1 / 1;
   display: grid;
   place-items: center;
   width: 1.25rem;
@@ -326,32 +336,104 @@
   padding: 0;
   line-height: 0;
   transform: none;
+  transition:
+    opacity 0.28s var(--fs-dock-ease),
+    transform 0.28s var(--fs-dock-ease);
 
   svg {
     display: block;
     width: 1.25rem;
     height: 1.25rem;
   }
+
+  &[data-icon="close"] {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.7);
+    pointer-events: none;
+  }
+}
+
+.root[data-placement="dock"][data-open="true"] .triggerIcon {
+  &[data-icon="settings"] {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.7);
+    pointer-events: none;
+  }
+
+  &[data-icon="close"] {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    pointer-events: auto;
+  }
 }
 
 .root[data-placement="dock"] .menu {
-  position: absolute;
-  grid-area: 1 / 1;
-  bottom: calc(100% + 0.55rem);
-  left: 50%;
-  z-index: 2;
+  position: relative;
+  order: 1;
+  inset: auto;
+  bottom: auto;
+  left: auto;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  width: max-content;
+  max-width: 0;
   margin: 0;
-  transform-origin: bottom center;
-  transform: translateX(-50%) translateY(8px) scale(0.96);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  opacity: 0;
+  visibility: visible;
+  transform: translate3d(-0.65rem, 0, 0);
+  transform-origin: left center;
+  pointer-events: none;
+  transition:
+    max-width var(--fs-dock-duration) var(--fs-dock-ease),
+    opacity 0.28s var(--fs-dock-ease),
+    transform var(--fs-dock-duration) var(--fs-dock-ease),
+    padding var(--fs-dock-duration) var(--fs-dock-ease);
 
   &:not([data-open="true"]) {
-    display: none !important;
+    display: flex !important;
   }
 
   &[data-open="true"] {
     display: flex;
-    transform: translateX(-50%) translateY(0) scale(1);
+    max-width: 18rem;
+    padding-inline: 0.15rem 0.35rem;
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    pointer-events: auto;
   }
+}
+
+.root[data-placement="dock"] .menuSection {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+  white-space: nowrap;
+}
+
+.root[data-placement="dock"] .menuSection + .menuSection {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  padding-left: 0.65rem;
+  border-left: 1px solid var(--fs-menu-divider);
+}
+
+.root[data-placement="dock"] .menuLabel {
+  display: block;
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
 }
 
 .root[data-placement="panel"] {
@@ -689,6 +771,18 @@
 
     &[data-open="true"] {
       transform: none;
+    }
+  }
+
+  .root[data-placement="dock"] {
+    transition: none;
+
+    .menu {
+      transform: none;
+    }
+
+    .triggerIcon {
+      transition: none;
     }
   }
 

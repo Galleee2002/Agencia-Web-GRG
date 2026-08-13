@@ -140,16 +140,6 @@ $footer-breakpoint: 809px;
   margin-top: 0;
 }
 
-.contactPhoneNumbers {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.contactPhoneNumbers .contactLink {
-  display: block;
-}
-
 .contactAddressRow {
   display: flex;
   align-items: flex-start;

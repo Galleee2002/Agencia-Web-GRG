@@ -781,6 +781,7 @@ $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
   .card {
     min-height: 13.75rem;
+    padding-bottom: 0.55rem;
     pointer-events: none;
   }
 }

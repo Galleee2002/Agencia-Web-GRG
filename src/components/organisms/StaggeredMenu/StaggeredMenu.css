@@ -105,6 +105,10 @@
   padding: max(1.5rem, calc(env(safe-area-inset-top) + 1rem))
     clamp(1.25rem, 4vw, 2rem) 0;
   pointer-events: none;
+  transition: none;
+}
+
+.sm-sticky-brand-host[data-nav-ready] {
   transition: padding 0.7s cubic-bezier(0.33, 1, 0.32, 1);
 }
 
@@ -128,6 +132,10 @@
 .sm-sticky-brand-host .sm-logo-img {
   height: 32px;
   width: auto;
+  transition: none;
+}
+
+.sm-sticky-brand-host[data-nav-ready] .sm-logo-img {
   transition: height 0.45s cubic-bezier(0.33, 1, 0.32, 1);
 }
 
@@ -1110,6 +1118,8 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
   align-items: center;
   justify-content: flex-start;
   gap: 0.25rem;
+  width: auto;
+  max-width: calc(100vw - 0.5rem);
   height: calc(2.75rem + 1.4rem);
   min-height: calc(2.75rem + 1.4rem);
   padding: 0.7rem 0.85rem;
@@ -1123,6 +1133,13 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
     10px -8px 32px rgba(0, 0, 0, 0.07),
     0 -1px 0 rgba(0, 0, 0, 0.04);
   pointer-events: auto;
+  transition:
+    padding 0.38s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sm-mobile-bottom-dock[data-settings-open] {
+  padding-right: 0.95rem;
 }
 
 /* Menú vive en el dock; en mobile también se oculta el slot de settings del header */
@@ -1137,17 +1154,22 @@ html.dark .staggered-menu-wrapper.fixed-wrapper[data-open] .sm-sticky-brand-host
 .sm-mobile-bottom-dock > .sm-toggle--dock,
 .sm-mobile-bottom-dock > [data-placement="dock"] {
   pointer-events: auto;
-  flex: 0 0 2.75rem;
-  width: 2.75rem;
+  flex: 0 0 auto;
+  width: auto;
   height: 2.75rem;
   margin: 0;
   padding: 0;
   align-self: center;
 }
 
+.sm-mobile-bottom-dock > .sm-toggle--dock {
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+}
+
 .sm-mobile-bottom-dock > [data-placement="dock"] {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .sm-mobile-bottom-dock .sm-toggle--dock {

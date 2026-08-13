@@ -70,20 +70,6 @@ function teamIllustration(file: string): string {
 export function getTeamMembers(t: TranslateFn): readonly TeamMember[] {
   return [
     {
-      name: "Gael Garcia",
-      nameSegments: [
-        { text: "Gael " },
-        { text: "G", accent: true },
-        { text: "arcia" },
-      ],
-      role: t("team.role"),
-      description: [{ text: t("team.gael.description.full") }],
-      imageSrc: teamIllustration("gael-ilustracion.webp"),
-      imageAlt: t("team.gael.imageAlt"),
-      imageWidth: 1086,
-      imageHeight: 1448,
-    },
-    {
       name: "Manuel Rodriguez Garcia",
       nameSegments: [
         { text: "Manuel " },
@@ -96,6 +82,20 @@ export function getTeamMembers(t: TranslateFn): readonly TeamMember[] {
       description: [{ text: t("team.manuel.description.full") }],
       imageSrc: teamIllustration("manuel-ilustracion.webp"),
       imageAlt: t("team.manuel.imageAlt"),
+      imageWidth: 1086,
+      imageHeight: 1448,
+    },
+    {
+      name: "Gael Garcia",
+      nameSegments: [
+        { text: "Gael " },
+        { text: "G", accent: true },
+        { text: "arcia" },
+      ],
+      role: t("team.role"),
+      description: [{ text: t("team.gael.description.full") }],
+      imageSrc: teamIllustration("gael-ilustracion.webp"),
+      imageAlt: t("team.gael.imageAlt"),
       imageWidth: 1086,
       imageHeight: 1448,
     },
